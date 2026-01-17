@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>芭比公主赛车游戏 🎀</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 50%, #ffd4eb 100%);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #ff69b4;
+            text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.3);
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(255, 105, 180, 0.3);
+            border: 4px solid #ff69b4;
+        }
+
+        canvas {
+            border: 3px solid #ff1493;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #fff5fb 0%, #ffe8f5 100%);
+            display: block;
+        }
+
+        .info-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .leaderboard {
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #ff69b4;
+        }
+
+        .leaderboard h3 {
+            color: #ff1493;
+            margin-top: 0;
+        }
+
+        .racer-status {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 10px;
+            margin: 5px 0;
+            background: linear-gradient(90deg, #fff 0%, #ffe8f5 100%);
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .winner-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 0 50px rgba(255, 20, 147, 0.5);
+            border: 5px solid #ff69b4;
+            text-align: center;
+            z-index: 1000;
+            animation: popIn 0.5s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .winner-modal h2 {
+            color: #ff1493;
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        .winner-modal .trophy {
+            font-size: 4em;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎀 芭比公主赛车大赛 🎀</h1>
+
+    <div class="game-container">
+        <canvas id="gameCanvas" width="800" height="500"></canvas>
+
+        <div class="info-panel" id="infoPanel">
+            点击开始按钮开始比赛！
+        </div>
+
+        <div class="controls">
+            <button id="startBtn" onclick="startRace()">🏁 开始比赛</button>
+            <button onclick="resetRace()">🔄 重新开始</button>
+        </div>
+
+        <div class="leaderboard">
+            <h3>🏆 赛车手排名</h3>
+            <div id="leaderboard"></div>
+        </div>
+    </div>
+
+    <div class="winner-modal" id="winnerModal">
+        <div class="trophy">🏆</div>
+        <h2 id="winnerText"></h2>
+        <p style="font-size: 1.5em; color: #ff69b4;">恭喜获胜！</p>
+        <button onclick="resetRace()">再玩一次</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 赛车颜色（芭比风格）
+        const racerColors = [
+            '#ff69b4', // 热粉色
+            '#ff1493', // 深粉色
+            '#da70d6', // 兰花紫
+            '#ee82ee', // 紫罗兰
+            '#ffa0d2'  // 浅粉色
+        ];
+
+        // 赛车名字
+        const racerNames = [
+            '芭比公主',
+            '粉红女王',
+            '紫罗兰',
+            '玫瑰骑士',
+            '樱花公主'
+        ];
+
+        // 游戏状态
+        let gameState = 'ready'; // ready, racing, finished
+        let racers = [];
+        let trackLength = 700;
+        let lapsRequired = 2;
+        let winner = null;
+
+        class Racer {
+            constructor(id, name, color, lane) {
+                this.id = id;
+                this.name = name;
+                this.color = color;
+                this.lane = lane;
+                this.position = 0;
+                this.laps = 0;
+                this.speed = 0.5 + Math.random() * 1.5; // 随机速度
+                this.acceleration = 0.98 + Math.random() * 0.04; // 随机加速度
+                this.finished = false;
+                this.finishTime = null;
+                this.carWidth = 40;
+                this.carHeight = 25;
+            }
+
+            update() {
+                if (this.finished) return;
+
+                // 添加一些速度变化，让比赛更有趣
+                this.speed *= this.acceleration;
+                this.speed += (Math.random() - 0.5) * 0.1;
+                this.speed = Math.max(0.5, Math.min(2.5, this.speed));
+
+                this.position += this.speed;
+
+                // 检查是否完成一圈
+                if (this.position >= trackLength) {
+                    this.position = 0;
+                    this.laps++;
+
+                    // 检查是否完成比赛
+                    if (this.laps >= lapsRequired) {
+                        this.finished = true;
+                        this.finishTime = Date.now();
+
+                        if (!winner) {
+                            winner = this;
+                        }
+                    }
+                }
+            }
+
+            draw() {
+                const x = 50 + this.position;
+                const y = 80 + this.lane * 80;
+
+                // 绘制赛车（简化的车辆形状）
+                ctx.fillStyle = this.color;
+
+                // 车身
+                ctx.fillRect(x, y, this.carWidth, this.carHeight);
+
+                // 车头
+                ctx.beginPath();
+                ctx.moveTo(x + this.carWidth, y);
+                ctx.lineTo(x + this.carWidth + 10, y + this.carHeight / 2);
+                ctx.lineTo(x + this.carWidth, y + this.carHeight);
+                ctx.closePath();
+                ctx.fill();
+
+                // 车窗
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.fillRect(x + 5, y + 5, 15, 15);
+
+                // 车轮
+                ctx.fillStyle = '#333';
+                ctx.fillRect(x + 5, y - 3, 8, 3);
+                ctx.fillRect(x + 27, y - 3, 8, 3);
+                ctx.fillRect(x + 5, y + this.carHeight, 8, 3);
+                ctx.fillRect(x + 27, y + this.carHeight, 8, 3);
+
+                // 显示名字
+                ctx.fillStyle = this.color;
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText(this.name, x, y - 5);
+
+                // 显示圈数
+                ctx.fillStyle = '#333';
+                ctx.font = '10px Arial';
+                ctx.fillText(`${this.laps}/${lapsRequired}圈`, x, y + this.carHeight + 15);
+            }
+        }
+
+        function initRacers() {
+            racers = [];
+            for (let i = 0; i < 5; i++) {
+                racers.push(new Racer(i, racerNames[i], racerColors[i], i));
+            }
+        }
+
+        function drawTrack() {
+            // 绘制跑道
+            for (let i = 0; i < 5; i++) {
+                const y = 80 + i * 80;
+
+                // 跑道背景
+                ctx.fillStyle = i % 2 === 0 ? '#ffe8f5' : '#fff5fb';
+                ctx.fillRect(50, y - 5, trackLength, 40);
+
+                // 跑道边界线
+                ctx.strokeStyle = '#ff69b4';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(50, y - 5, trackLength, 40);
+
+                // 起跑线
+                ctx.strokeStyle = '#ff1493';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(50, y - 5);
+                ctx.lineTo(50, y + 35);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // 终点线
+                ctx.fillStyle = '#ff1493';
+                for (let j = 0; j < 8; j++) {
+                    ctx.fillRect(50 + trackLength - 10, y - 5 + j * 5, 10, 5);
+                    if (j % 2 === 0) {
+                        ctx.fillStyle = ctx.fillStyle === '#ff1493' ? 'white' : '#ff1493';
+                    }
+                }
+            }
+        }
+
+        function updateLeaderboard() {
+            const leaderboardDiv = document.getElementById('leaderboard');
+
+            // 按完成状态和位置排序
+            const sortedRacers = [...racers].sort((a, b) => {
+                if (a.finished && !b.finished) return -1;
+                if (!a.finished && b.finished) return 1;
+                if (a.finished && b.finished) {
+                    return a.finishTime - b.finishTime;
+                }
+                if (a.laps !== b.laps) return b.laps - a.laps;
+                return b.position - a.position;
+            });
+
+            leaderboardDiv.innerHTML = sortedRacers.map((racer, index) => {
+                const status = racer.finished ? '✓ 完成' : `${racer.laps}/${lapsRequired}圈`;
+                return `
+                    <div class="racer-status" style="border-left-color: ${racer.color}">
+                        <span>${index + 1}. ${racer.name}</span>
+                        <span>${status}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function gameLoop() {
+            if (gameState !== 'racing') return;
+
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制跑道
+            drawTrack();
+
+            // 更新和绘制所有赛车
+            let allFinished = true;
+            racers.forEach(racer => {
+                racer.update();
+                racer.draw();
+                if (!racer.finished) allFinished = false;
+            });
+
+            // 更新排行榜
+            updateLeaderboard();
+
+            // 更新信息面板
+            const infoPanelText = winner ?
+                `🏆 ${winner.name} 获胜了！` :
+                '比赛进行中...';
+            document.getElementById('infoPanel').textContent = infoPanelText;
+
+            // 检查是否所有赛车都完成了
+            if (allFinished && gameState === 'racing') {
+                gameState = 'finished';
+                showWinner();
+            } else {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function startRace() {
+            if (gameState === 'racing') return;
+
+            gameState = 'racing';
+            winner = null;
+            document.getElementById('winnerModal').style.display = 'none';
+            document.getElementById('startBtn').textContent = '🏁 比赛中...';
+            document.getElementById('startBtn').disabled = true;
+
+            gameLoop();
+        }
+
+        function resetRace() {
+            gameState = 'ready';
+            winner = null;
+            initRacers();
+            document.getElementById('winnerModal').style.display = 'none';
+            document.getElementById('startBtn').textContent = '🏁 开始比赛';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('infoPanel').textContent = '点击开始按钮开始比赛！';
+
+            // 绘制初始状态
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawTrack();
+            racers.forEach(racer => racer.draw());
+            updateLeaderboard();
+        }
+
+        function showWinner() {
+            const modal = document.getElementById('winnerModal');
+            const winnerText = document.getElementById('winnerText');
+            winnerText.textContent = `${winner.name} 获胜！`;
+            modal.style.display = 'block';
+        }
+
+        // 初始化游戏
+        initRacers();
+        drawTrack();
+        racers.forEach(racer => racer.draw());
+        updateLeaderboard();
+    </script>
+</body>
+</html>
