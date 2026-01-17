@@ -381,6 +381,9 @@
         function startRace() {
             if (gameState === 'racing') return;
 
+            // 重新初始化赛车手
+            initRacers();
+
             gameState = 'racing';
             winner = null;
             document.getElementById('winnerModal').style.display = 'none';
