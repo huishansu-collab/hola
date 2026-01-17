@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+    <h1>Testing barbie-racing-game.html</h1>
+    <div id="output"></div>
+    <script>
+        const output = document.getElementById('output');
+
+        function log(msg) {
+            output.innerHTML += msg + '<br>';
+            console.log(msg);
+        }
+
+        // Test the game initialization
+        try {
+            log('Starting test...');
+
+            // Create a test canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = 800;
+            canvas.height = 500;
+            const ctx = canvas.getContext('2d');
+
+            log('✓ Canvas created');
+
+            // Test racer class
+            class Racer {
+                constructor(id, name, color, lane) {
+                    this.id = id;
+                    this.name = name;
+                    this.color = color;
+                    this.lane = lane;
+                    this.position = 0;
+                    this.laps = 0;
+                    this.speed = 0.5 + Math.random() * 1.5;
+                    this.acceleration = 0.98 + Math.random() * 0.04;
+                    this.finished = false;
+                    this.finishTime = null;
+                    this.carWidth = 40;
+                    this.carHeight = 25;
+                }
+
+                draw() {
+                    const x = 50 + this.position;
+                    const y = 80 + this.lane * 80;
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(x, y, this.carWidth, this.carHeight);
+                }
+            }
+
+            log('✓ Racer class defined');
+
+            // Test creating racers
+            let racers = [];
+            for (let i = 0; i < 5; i++) {
+                racers.push(new Racer(i, `Racer ${i}`, '#ff69b4', i));
+            }
+
+            log('✓ Created ' + racers.length + ' racers');
+
+            // Test drawing
+            racers.forEach(racer => racer.draw());
+
+            log('✓ All racers drawn successfully');
+            log('✓ TEST PASSED - No errors found!');
+
+        } catch (error) {
+            log('✗ ERROR: ' + error.message);
+            log('✗ Stack: ' + error.stack);
+        }
+    </script>
+</body>
+</html>

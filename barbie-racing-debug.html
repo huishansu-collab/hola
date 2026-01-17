@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>芭比公主赛车游戏 🎀 - Debug</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 50%, #ffd4eb 100%);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        .debug {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: lime;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            max-width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 5px;
+            z-index: 9999;
+        }
+
+        h1 {
+            color: #ff69b4;
+            text-align: center;
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 3px solid #ff1493;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #fff5fb 0%, #ffe8f5 100%);
+        }
+
+        .controls {
+            text-align: center;
+            margin: 20px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎀 芭比公主赛车大赛 🎀 (Debug Mode)</h1>
+
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+
+    <div class="controls">
+        <button onclick="startRace()">🏁 开始比赛</button>
+        <button onclick="resetRace()">🔄 重新开始</button>
+        <button onclick="clearDebug()">清空日志</button>
+    </div>
+
+    <div class="debug" id="debug"></div>
+
+    <script>
+        const debugDiv = document.getElementById('debug');
+
+        function debug(msg) {
+            const timestamp = new Date().toTimeString().split(' ')[0];
+            debugDiv.innerHTML += `[${timestamp}] ${msg}<br>`;
+            debugDiv.scrollTop = debugDiv.scrollHeight;
+            console.log(msg);
+        }
+
+        function clearDebug() {
+            debugDiv.innerHTML = '';
+        }
+
+        debug('✓ Script started');
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        debug('✓ Canvas and context initialized');
+
+        const racerColors = ['#ff69b4', '#ff1493', '#da70d6', '#ee82ee', '#ffa0d2'];
+        const racerNames = ['芭比公主', '粉红女王', '紫罗兰', '玫瑰骑士', '樱花公主'];
+
+        let gameState = 'ready';
+        let racers = [];
+        let trackLength = 700;
+        let lapsRequired = 2;
+        let winner = null;
+
+        debug('✓ Variables initialized');
+
+        class Racer {
+            constructor(id, name, color, lane) {
+                this.id = id;
+                this.name = name;
+                this.color = color;
+                this.lane = lane;
+                this.position = 0;
+                this.laps = 0;
+                this.speed = 0.5 + Math.random() * 1.5;
+                this.acceleration = 0.98 + Math.random() * 0.04;
+                this.finished = false;
+                this.finishTime = null;
+                this.carWidth = 40;
+                this.carHeight = 25;
+            }
+
+            update() {
+                if (this.finished) return;
+
+                this.speed *= this.acceleration;
+                this.speed += (Math.random() - 0.5) * 0.1;
+                this.speed = Math.max(0.5, Math.min(2.5, this.speed));
+
+                this.position += this.speed;
+
+                if (this.position >= trackLength) {
+                    this.position = 0;
+                    this.laps++;
+
+                    debug(`${this.name} completed lap ${this.laps}/${lapsRequired}`);
+
+                    if (this.laps >= lapsRequired) {
+                        this.finished = true;
+                        this.finishTime = Date.now();
+
+                        if (!winner) {
+                            winner = this;
+                            debug(`🏆 ${this.name} WON!`);
+                        }
+                    }
+                }
+            }
+
+            draw() {
+                const x = 50 + this.position;
+                const y = 80 + this.lane * 80;
+
+                ctx.fillStyle = this.color;
+                ctx.fillRect(x, y, this.carWidth, this.carHeight);
+
+                // Car front
+                ctx.beginPath();
+                ctx.moveTo(x + this.carWidth, y);
+                ctx.lineTo(x + this.carWidth + 10, y + this.carHeight / 2);
+                ctx.lineTo(x + this.carWidth, y + this.carHeight);
+                ctx.closePath();
+                ctx.fill();
+
+                // Window
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.fillRect(x + 5, y + 5, 15, 15);
+
+                // Wheels
+                ctx.fillStyle = '#333';
+                ctx.fillRect(x + 5, y - 3, 8, 3);
+                ctx.fillRect(x + 27, y - 3, 8, 3);
+                ctx.fillRect(x + 5, y + this.carHeight, 8, 3);
+                ctx.fillRect(x + 27, y + this.carHeight, 8, 3);
+
+                // Name
+                ctx.fillStyle = this.color;
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText(this.name, x, y - 5);
+
+                // Laps
+                ctx.fillStyle = '#333';
+                ctx.font = '10px Arial';
+                ctx.fillText(`${this.laps}/${lapsRequired}圈`, x, y + this.carHeight + 15);
+            }
+        }
+
+        debug('✓ Racer class defined');
+
+        function initRacers() {
+            racers = [];
+            for (let i = 0; i < 5; i++) {
+                racers.push(new Racer(i, racerNames[i], racerColors[i], i));
+            }
+            debug(`✓ Initialized ${racers.length} racers`);
+        }
+
+        function drawTrack() {
+            for (let i = 0; i < 5; i++) {
+                const y = 80 + i * 80;
+
+                ctx.fillStyle = i % 2 === 0 ? '#ffe8f5' : '#fff5fb';
+                ctx.fillRect(50, y - 5, trackLength, 40);
+
+                ctx.strokeStyle = '#ff69b4';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(50, y - 5, trackLength, 40);
+
+                // Start line
+                ctx.strokeStyle = '#ff1493';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(50, y - 5);
+                ctx.lineTo(50, y + 35);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Finish line - FIXED
+                for (let j = 0; j < 8; j++) {
+                    ctx.fillStyle = j % 2 === 0 ? '#ff1493' : 'white';
+                    ctx.fillRect(50 + trackLength - 10, y - 5 + j * 5, 10, 5);
+                }
+            }
+        }
+
+        function gameLoop() {
+            if (gameState !== 'racing') return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawTrack();
+
+            let allFinished = true;
+            racers.forEach(racer => {
+                racer.update();
+                racer.draw();
+                if (!racer.finished) allFinished = false;
+            });
+
+            if (allFinished && gameState === 'racing') {
+                gameState = 'finished';
+                debug('🏁 Race finished!');
+                alert(`🏆 ${winner.name} 获胜！`);
+            } else {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function startRace() {
+            debug('--- Starting race ---');
+            if (gameState === 'racing') {
+                debug('⚠ Race already running');
+                return;
+            }
+
+            initRacers();
+            gameState = 'racing';
+            winner = null;
+
+            debug('✓ Race started!');
+            gameLoop();
+        }
+
+        function resetRace() {
+            debug('--- Resetting race ---');
+            gameState = 'ready';
+            winner = null;
+            initRacers();
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawTrack();
+            racers.forEach(racer => racer.draw());
+
+            debug('✓ Race reset');
+        }
+
+        // Initialize
+        try {
+            debug('--- Initializing game ---');
+            initRacers();
+            drawTrack();
+            racers.forEach(racer => racer.draw());
+            debug('✓ Game initialized successfully!');
+            debug('Click "开始比赛" to start');
+        } catch (error) {
+            debug('✗ ERROR: ' + error.message);
+            debug('Stack: ' + error.stack);
+        }
+    </script>
+</body>
+</html>

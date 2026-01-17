@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>芭比赛车 - 最小测试版</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #ffeef8, #ffe0f0, #ffd4eb);
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 { color: #ff69b4; }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 3px solid #ff1493;
+            background: white;
+        }
+        button {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        #status {
+            margin: 20px;
+            font-size: 20px;
+            color: #ff1493;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎀 芭比公主赛车大赛 🎀</h1>
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+    <div id="status">准备就绪 - 点击开始比赛！</div>
+    <button onclick="startRace()">🏁 开始比赛</button>
+    <button onclick="resetRace()">🔄 重置</button>
+
+    <script>
+        console.log('✓ Script loading...');
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const statusDiv = document.getElementById('status');
+
+        if (!canvas || !ctx) {
+            alert('ERROR: Canvas not supported!');
+            throw new Error('Canvas not available');
+        }
+
+        console.log('✓ Canvas initialized');
+
+        // Game variables
+        let isRacing = false;
+        let racers = [];
+        const TRACK_LENGTH = 700;
+        const LAPS_REQUIRED = 2;
+        const COLORS = ['#ff69b4', '#ff1493', '#da70d6', '#ee82ee', '#ffa0d2'];
+        const NAMES = ['芭比公主', '粉红女王', '紫罗兰', '玫瑰骑士', '樱花公主'];
+
+        // Racer class
+        class Racer {
+            constructor(id, name, color, lane) {
+                this.id = id;
+                this.name = name;
+                this.color = color;
+                this.lane = lane;
+                this.position = 0;
+                this.laps = 0;
+                this.speed = 1 + Math.random();
+                this.finished = false;
+            }
+
+            update() {
+                if (this.finished) return;
+
+                this.position += this.speed;
+
+                if (this.position >= TRACK_LENGTH) {
+                    this.position = 0;
+                    this.laps++;
+                    console.log(`${this.name} completed lap ${this.laps}`);
+
+                    if (this.laps >= LAPS_REQUIRED) {
+                        this.finished = true;
+                        console.log(`${this.name} FINISHED!`);
+                    }
+                }
+            }
+
+            draw() {
+                const x = 50 + this.position;
+                const y = 80 + this.lane * 80;
+
+                // Car body
+                ctx.fillStyle = this.color;
+                ctx.fillRect(x, y, 40, 25);
+
+                // Name
+                ctx.fillStyle = '#000';
+                ctx.font = '12px Arial';
+                ctx.fillText(this.name, x, y - 5);
+
+                // Lap counter
+                ctx.fillText(`Lap ${this.laps}/${LAPS_REQUIRED}`, x, y + 40);
+            }
+        }
+
+        console.log('✓ Racer class defined');
+
+        // Draw track
+        function drawTrack() {
+            for (let i = 0; i < 5; i++) {
+                const y = 80 + i * 80;
+
+                // Track background
+                ctx.fillStyle = i % 2 === 0 ? '#ffe8f5' : '#fff0f8';
+                ctx.fillRect(50, y - 5, TRACK_LENGTH, 40);
+
+                // Track border
+                ctx.strokeStyle = '#ff69b4';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(50, y - 5, TRACK_LENGTH, 40);
+            }
+        }
+
+        // Initialize racers
+        function initRacers() {
+            racers = [];
+            for (let i = 0; i < 5; i++) {
+                racers.push(new Racer(i, NAMES[i], COLORS[i], i));
+            }
+            console.log('✓ Initialized', racers.length, 'racers');
+        }
+
+        // Game loop
+        function gameLoop() {
+            if (!isRacing) return;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw track
+            drawTrack();
+
+            // Update and draw racers
+            let allFinished = true;
+            racers.forEach(racer => {
+                racer.update();
+                racer.draw();
+                if (!racer.finished) allFinished = false;
+            });
+
+            // Update status
+            const finishedCount = racers.filter(r => r.finished).length;
+            statusDiv.textContent = `比赛中... (${finishedCount}/5 完成)`;
+
+            // Check if race is over
+            if (allFinished) {
+                isRacing = false;
+                const winner = racers.find(r => r.finished);
+                statusDiv.textContent = `🏆 ${winner.name} 获胜！`;
+                console.log('✓ Race finished!');
+                alert(`🏆 ${winner.name} 获胜！`);
+                return;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start race
+        function startRace() {
+            console.log('Starting race...');
+
+            if (isRacing) {
+                console.log('Race already running!');
+                return;
+            }
+
+            initRacers();
+            isRacing = true;
+            statusDiv.textContent = '比赛开始！';
+
+            console.log('✓ Race started');
+            gameLoop();
+        }
+
+        // Reset race
+        function resetRace() {
+            console.log('Resetting race...');
+
+            isRacing = false;
+            initRacers();
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawTrack();
+            racers.forEach(r => r.draw());
+
+            statusDiv.textContent = '准备就绪 - 点击开始比赛！';
+            console.log('✓ Race reset');
+        }
+
+        // Initialize on load
+        window.addEventListener('load', function() {
+            console.log('✓ Window loaded');
+
+            try {
+                initRacers();
+                drawTrack();
+                racers.forEach(r => r.draw());
+                console.log('✓ Game initialized successfully!');
+                statusDiv.textContent = '准备就绪 - 点击开始比赛！';
+            } catch (error) {
+                console.error('✗ Initialization error:', error);
+                statusDiv.textContent = 'ERROR: ' + error.message;
+                alert('初始化失败: ' + error.message);
+            }
+        });
+
+        console.log('✓ Script loaded');
+    </script>
+</body>
+</html>

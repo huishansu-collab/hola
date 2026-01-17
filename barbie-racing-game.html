@@ -308,12 +308,9 @@
                 ctx.setLineDash([]);
 
                 // 终点线
-                ctx.fillStyle = '#ff1493';
                 for (let j = 0; j < 8; j++) {
+                    ctx.fillStyle = j % 2 === 0 ? '#ff1493' : 'white';
                     ctx.fillRect(50 + trackLength - 10, y - 5 + j * 5, 10, 5);
-                    if (j % 2 === 0) {
-                        ctx.fillStyle = ctx.fillStyle === '#ff1493' ? 'white' : '#ff1493';
-                    }
                 }
             }
         }
