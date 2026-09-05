@@ -1,20 +1,20 @@
 {
   "clips": {
     "oq1": {
-      "file": "oq1.m4a",
-      "size": 80417,
-      "mtime": 1788607867038.4646,
-      "duration_ms": 6741,
-      "format": "MPEG-4/AAC",
+      "file": "oq1.mp3",
+      "size": 54422,
+      "mtime": 1788615870650.7593,
+      "duration_ms": 6744,
+      "format": "MPEG 1 Layer 3",
       "sample_rate": 48000,
       "source": "import"
     },
     "scene_training": {
-      "file": "scene_training.m4a",
-      "size": 111477,
-      "mtime": 1788607867038.691,
-      "duration_ms": 8085,
-      "format": "MPEG-4/AAC",
+      "file": "scene_training.mp3",
+      "size": 65174,
+      "mtime": 1788615870730.7593,
+      "duration_ms": 8088,
+      "format": "MPEG 1 Layer 3",
       "sample_rate": 48000,
       "source": "import"
     }

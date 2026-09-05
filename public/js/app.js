@@ -93,6 +93,7 @@ async function selectCase(id) {
   $$('#caseMenu .case-item').forEach(b => b.classList.toggle('active', b.dataset.id === id));
   state.overrides = await loadOverrides(id);
   await engine.load(id, state.data.script, state.data.manifest, state.overrides);
+  renderNoAudioNote(script);
   renderBeats(script);
   $('#logBody').innerHTML = '<div class="log-empty editorial">按下播放,日志从这里开始。</div>';
   renderEditor();
@@ -109,6 +110,19 @@ async function selectCase(id) {
   if (v?.errors?.length) showMsg('#editorMsg', 'err', v.errors.join('\n'));
   else if (v?.warnings?.length) showMsg('#editorMsg', 'warn', v.warnings.join('\n'));
   else showMsg('#editorMsg', '', '');
+}
+
+/* 没语音的 case:在舞台上方明确提示,别让人以为是坏了 */
+function renderNoAudioNote(script) {
+  const spoken = script.timeline.filter(x => x.type === 'say' && x.clip && !x.typed);
+  const have = spoken.filter(x => state.data.manifest?.clips?.[x.clip]?.file || state.overrides.has(x.clip)).length;
+  const el = $('#noAudioNote');
+  if (!spoken.length || have === spoken.length) { el.hidden = true; return; }
+  el.hidden = false;
+  el.innerHTML = have === 0
+    ? `这个 case 还没有语音(${spoken.length} 句),播放时台词按语速上屏、不出声。去 <a href="#" data-goto="script">「脚本 · 语音」</a> 页贴上 OpenAI key 一键生成,或本地 <code>npm run tts -- ${esc(script.id)}</code>。`
+    : `这个 case 有 ${spoken.length - have} 句还没有语音,这些句子按语速上屏。去 <a href="#" data-goto="script">「脚本 · 语音」</a> 页生成缺失语音。`;
+  el.querySelector('[data-goto]')?.addEventListener('click', (e) => { e.preventDefault(); switchView('script'); });
 }
 
 /* ---------------- 编辑器 ---------------- */
@@ -299,6 +313,7 @@ async function reloadWithOverrides() {
   const r = await fetch(`/api/cases/${state.id}`);
   if (r.ok) { state.data = await r.json(); state.mode = state.data.dsl ? state.mode : 'json'; }
   await engine.load(state.id, state.data.script, state.data.manifest, state.overrides);
+  renderNoAudioNote(state.data.normalized_script || normalizeScript(state.data.script));
   renderClips();
   renderBrowserTts();
   renderTimeline(state.data.normalized_script || normalizeScript(state.data.script), mergedDurations());
@@ -419,7 +434,8 @@ async function init() {
   pill.innerHTML = `<i></i>${state.status.openai ? 'OpenAI TTS · ' + esc(state.status.model) : 'TTS 未配置'}`;
   await loadCases();
   const want = location.hash.slice(1);
-  const first = state.cases.find(c => c.id === want) || state.cases[0];
+  /* 默认打开有语音的 case;没有 hash 时不落到尚未生成语音的 case 上 */
+  const first = state.cases.find(c => c.id === want) || state.cases.find(c => c.audio_ready > 0 && c.audio_ready === c.utterances) || state.cases.find(c => c.audio_ready > 0) || state.cases[0];
   if (first) await selectCase(first.id); else { $('#caseName').textContent = '没有 case'; }
 
   $('#caseChip').addEventListener('click', () => $('#caseChip').classList.toggle('open'));

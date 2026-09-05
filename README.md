@@ -54,7 +54,7 @@ node server/cli.js list
 | 10 | `read` 伴读 | 文章页 → 读屏卡 → 追问打断 |
 | 11 | `stock` 股票查询 | 四次连续抢话 → 行情卡 → "你退下吧" |
 
-01‒11 的语音沿用参考包里的定妆音色片段（m4a）；`morning` 没有随仓库附带音频，在「脚本 · 语音」页贴上 OpenAI key 点一下即可生成（65 句，约两三分钟），或 `npm run tts -- morning`。
+01‒11 的语音沿用参考包里的定妆音色片段（已转成 mp3，所有浏览器都能解码）；`morning` 没有随仓库附带音频，在「脚本 · 语音」页贴上 OpenAI key 点一下即可生成（65 句，约两三分钟），或 `npm run tts -- morning`。
 
 ## 剧本怎么写
 
@@ -86,7 +86,7 @@ node server/cli.js list
 | --- | --- | --- |
 | 浏览器直连 | 工作台「脚本 · 语音」页 | 贴上你的 OpenAI key（只存本机 `localStorage`），点「生成缺失语音」。浏览器直接调 OpenAI，结果缓存在 IndexedDB，演示与 JSON 导出立即生效；本地运行时还会 `PUT /api/cases/<id>/clips/<clip>` 写回 `cases/<id>/audio/`。在 `dist/duplex-demo.html`、GitHub Pages 版里同样可用 |
 | 服务端 | `.env` 里的 `OPENAI_API_KEY` | 「脚本 · 语音」页的服务端按钮，或 `npm run tts -- <id> [--force] [--only u001,u002]`；走代理时 `NODE_USE_ENV_PROXY=1`（Node 自带 fetch 默认不读 HTTPS_PROXY） |
-| 手动导入 | `cases/<id>/audio/` | 放入 `<clip>.wav\|m4a\|mp3`（文件名 = 台词 id 或 `clip`），服务重新扫描即可 |
+| 手动导入 | `cases/<id>/audio/` | 放入 `<clip>.wav\|mp3\|m4a`（文件名 = 台词 id 或 `clip`），服务重新扫描即可 |
 
 - 模型默认 `gpt-4o-mini-tts`：每个说话人的 `instructions`（定妆音色描述）+ `voice` 决定音色；台词的舞台提示（急促 / 轻缓 / 低语）会附加进 instructions。`tts-1 / tts-1-hd` 不支持 instructions。
 - claude.ai 上的 Artifact 版受内容安全策略限制无法访问外网，浏览器直连在那里不可用；用 GitHub Pages 版（仓库 Settings → Pages → Source 选 GitHub Actions，`.github/workflows/pages.yml` 会自动发布）或本地运行。
@@ -105,6 +105,6 @@ docs/      SCRIPT_FORMAT.md
 
 ## 已知边界
 
-- 浏览器需要能解码片段格式：wav 任何浏览器都行；参考包的 m4a（AAC）在 Chrome / Safari / Edge 正常，纯开源 Chromium 无 AAC 解码器会退化为按语速上屏。
+- 片段格式：wav / mp3 所有浏览器都能解码（参考包的 m4a 已用 ffmpeg 转成 64kbps mp3）；若自行导入 m4a（AAC），纯开源 Chromium / 部分 Linux 浏览器无解码器时会退化为按语速上屏。
 - 服务端混音只处理 wav 片段（OpenAI 生成的即是）；其它格式请用工作台的「浏览器混音 WAV」。
 - 场景环境音（scene_*.m4a）来自参考包；新 case 的环境音需自行准备后放入 `audio/` 并在剧本里 `ambience:` 指定。
