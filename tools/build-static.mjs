@@ -52,6 +52,11 @@ async function main() {
     for (const [clip, entry] of Object.entries(manifest.clips || {})) {
       if (!entry.file) continue;
       if (noAmbience && /^scene_/.test(clip)) { delete manifest.clips[clip]; continue; }
+      /* 仓库里同名 .mp3 与 .wav 并存时(离线引擎生成的母带 + 压缩版),单文件包只带小的那份 */
+      if (/\.wav$/i.test(entry.file)) {
+        const alt = entry.file.replace(/\.wav$/i, '.mp3');
+        if (await fs.stat(path.join(dir, 'audio', alt)).then(() => true).catch(() => false)) entry.file = alt;
+      }
       const buf = await fs.readFile(path.join(dir, 'audio', entry.file)).catch(() => null);
       if (!buf) { delete manifest.clips[clip]; continue; }
       audio[entry.file] = { mime: MIME[path.extname(entry.file).toLowerCase()] || 'application/octet-stream', b64: buf.toString('base64') };

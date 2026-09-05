@@ -63,7 +63,8 @@ export async function generateCaseAudio(id, rawScript, { force = false, only = n
     const entry = manifest.clips[it.clip];
     const file = it.clip + '.wav';
     const exists = entry?.file === file && await fs.stat(path.join(dir, file)).then(() => true).catch(() => false);
-    if (!force && exists && entry.hash === it.hash) {
+    const localCurrent = /^local:/.test(entry?.source || '') && entry.text === it.text;   // 离线引擎生成且文本没变:不用 OpenAI 重做,--force 才替换
+    if (!force && exists && (entry.hash === it.hash || localCurrent)) {
       result.skipped.push(it.id);
       onProgress({ phase: 'skip', clip: it.clip, id: it.id, index, total: targets.length, status: 'cached', message: '未变化,沿用缓存' });
       continue;

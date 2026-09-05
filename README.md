@@ -4,7 +4,7 @@
 
 ```
 剧本 (script.dsl / script.json)
-   ├─▶ 语音生成 (OpenAI TTS · gpt-4o-mini-tts, 逐句 wav + 缓存)
+   ├─▶ 语音生成 (OpenAI TTS · gpt-4o-mini-tts,或离线 Kokoro v1.1-zh,逐句 wav + 缓存)
    ├─▶ 手机演示 (living edge · 双工打断 · 卡片 / 任务卡 / 来电 / 转写 · 八轨日志面板)
    └─▶ 规范化 JSON + 双声道母带 (utterances / events / world_signal / fdx & emotion annotation)
 ```
@@ -15,7 +15,7 @@
 
 ```bash
 npm install
-cp .env.example .env        # 填入 OPENAI_API_KEY（语音生成用；不配也能跑，缺语音的台词按语速上屏）
+cp .env.example .env        # 可选：填入 OPENAI_API_KEY（OpenAI 音色）；不配也能跑，内置 case 已带语音，新 case 可用离线引擎生成
 npm start                   # http://localhost:5173
 ```
 
@@ -54,7 +54,7 @@ node server/cli.js list
 | 10 | `read` 伴读 | 文章页 → 读屏卡 → 追问打断 |
 | 11 | `stock` 股票查询 | 四次连续抢话 → 行情卡 → "你退下吧" |
 
-01‒11 的语音沿用参考包里的定妆音色片段（已转成 mp3，所有浏览器都能解码）；`morning` 没有随仓库附带音频，在「脚本 · 语音」页贴上 OpenAI key 点一下即可生成（65 句，约两三分钟），或 `npm run tts -- morning`。
+01‒11 的语音沿用参考包里的定妆音色片段（已转成 mp3，所有浏览器都能解码）；`morning` 的 65 句由离线引擎 Kokoro v1.1-zh 生成（`python3 tools/offline_tts.py morning`，wav 母带 + mp3 一并随仓库附带）。想换成 OpenAI 音色：「脚本 · 语音」页贴上 key 点「全部重新生成」，或 `npm run tts -- morning --force`。
 
 ## 剧本怎么写
 
@@ -78,7 +78,19 @@ node server/cli.js list
 
 严格按 Draft v5 骨架：`meta_data / static_context / dynamic_context / utterances / events / annotation{fdx_annotation, emotion_annotation, paralinguistic_annotation}`，另加 `annotation.track_annotation` 保留八轨日志原文。JSON Schema 见 [schema/normalized.schema.json](schema/normalized.schema.json)。时间戳与母带 `audio/synthetic/{case_id}_{sample_id}.wav`（Channel 1 用户/第三方，Channel 2 助手，被打断的句子按 0.7s/1.75s 让位包络混入）对齐。
 
-## 语音生成（OpenAI TTS）
+## 语音生成
+
+### 离线引擎（不需要任何 key）
+
+```bash
+pip install sherpa-onnx numpy imageio-ffmpeg     # 一次性；imageio-ffmpeg 只为顺手输出 mp3
+python3 tools/offline_tts.py morning             # 首次自动从 GitHub Releases 下载模型（≈365MB）到 ~/.cache/duplex-studio/
+python3 tools/offline_tts.py mycase --voice user=zm_010 --voice assistant=zf_001 --voice 司机=zm_029
+```
+
+引擎是 Kokoro v1.1-zh（82M 参数，中文 100 个音色 + 英文），CPU 上约 3× 实时，65 句两分多钟。台词的舞台提示会影响语速（急促 / 抢话加快，轻缓 / 低语放慢），低语句自动压低音量；`--list-voices` 列出全部音色，剧本里也可以按说话人写 `tts.local_voice`。输出 `<clip>.wav`（24kHz 母带，服务端混音用）和同名 `.mp3`（单文件包 / 网页只带这份），manifest 里 `source=local:kokoro-v1.1-zh:<voice>`；之后 `npm run tts` 不会动这些句子，除非 `--force`。
+
+### OpenAI TTS
 
 三条路都走同一套逻辑（`shared/tts.js`：逐句计划 → `/v1/audio/speech` → 24kHz wav → 按 `model|voice|speed|instructions|text` 的哈希缓存，改了文本只重生成那一句）：
 
@@ -96,6 +108,7 @@ node server/cli.js list
 
 ```
 server/    index.js (Express API) · tts.js (OpenAI) · audio.js (wav 混音) · cases.js (存储/清单) · cli.js
+tools/     offline_tts.py (离线 Kokoro 语音) · build-static.mjs (单文件包)
 shared/    script.js (格式/校验) · dsl.js (剧本编译) · tracks.js (八轨日志解析) · schedule.js (时间轴) · normalize.js (Draft v5)
 public/    index.html · css/platform.css · js/engine.js (演示引擎) · js/app.js (工作台) · assets/{icons,fonts,img,fx}
 cases/<id>/ script.dsl? · script.json · audio/{clips, manifest.json} · export/ (gitignored)
@@ -106,5 +119,5 @@ docs/      SCRIPT_FORMAT.md
 ## 已知边界
 
 - 片段格式：wav / mp3 所有浏览器都能解码（参考包的 m4a 已用 ffmpeg 转成 64kbps mp3）；若自行导入 m4a（AAC），纯开源 Chromium / 部分 Linux 浏览器无解码器时会退化为按语速上屏。
-- 服务端混音只处理 wav 片段（OpenAI 生成的即是）；其它格式请用工作台的「浏览器混音 WAV」。
+- 服务端混音只处理 wav 片段（OpenAI / 离线引擎生成的即是）；其它格式请用工作台的「浏览器混音 WAV」。同名 wav 与 mp3 并存时，服务端与混音用 wav，单文件包只带 mp3 以控制体积。
 - 场景环境音（scene_*.m4a）来自参考包；新 case 的环境音需自行准备后放入 `audio/` 并在剧本里 `ambience:` 指定。

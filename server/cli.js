@@ -4,6 +4,7 @@
  *   node server/cli.js list
  *   node server/cli.js parse <script.dsl> [--out script.json]        剧本 → script.json
  *   node server/cli.js validate <caseId|script.json>
+ *   node server/cli.js plan <caseId>                                  逐句语音计划 JSON(离线引擎 tools/offline_tts.py 用)
  *   node server/cli.js tts <caseId> [--force] [--only u001,u002]     生成语音(OpenAI)
  *   node server/cli.js export <caseId> [--out dir] [--sample s01]    规范化 JSON + 双声道 WAV
  */
@@ -12,6 +13,7 @@ import path from 'node:path';
 import { existsSync } from 'node:fs';
 import { ROOT, listCases, loadCase, audioDir } from './cases.js';
 import { generateCaseAudio, ttsConfig } from './tts.js';
+import { ttsPlan } from '../shared/tts.js';
 import { mixSchedule } from './audio.js';
 import { parseDSL } from '../shared/dsl.js';
 import { validateScript, normalizeScript } from '../shared/script.js';
@@ -51,6 +53,21 @@ async function main() {
       v.warnings.forEach(w => console.warn('⚠', w)); v.errors.forEach(e => console.error('✗', e));
       console.log(v.errors.length ? '校验失败' : '校验通过');
       if (v.errors.length) process.exit(1);
+      break;
+    }
+    case 'plan': {
+      const id = args[0]; if (!id) throw new Error('用法:plan <caseId>');
+      const c = await loadCase(id);
+      const s = normalizeScript(c.script);
+      const steps = Object.fromEntries(s.timeline.filter(x => x.type === 'say').map(x => [x.id, x]));
+      const items = ttsPlan(s).map(it => {
+        const st = steps[it.id] || {}; const sp = s.speakers[it.speaker] || {};
+        const have = c.manifest.clips?.[it.clip] || null;
+        return { ...it, role: sp.role || (it.speaker === 'assistant' ? 'assistant' : 'user'), local_voice: sp.tts?.local_voice || st.tts?.local_voice || null,
+          direction: st.direction || null, whisper: !!st.whisper, soft: !!st.soft, tone: st.tone || null,
+          have: have ? { file: have.file, source: have.source || null, hash: have.hash || null, text: have.text ?? null } : null };
+      });
+      console.log(JSON.stringify({ id, name: s.name, audio_dir: audioDir(id), speakers: s.speakers, items }, null, flags.compact ? 0 : 2));
       break;
     }
     case 'tts': {

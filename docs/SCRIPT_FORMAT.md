@@ -38,7 +38,7 @@ speaker 司机: role=third_party voice=onyx instructions="…"   ← 额外说�
 ### 说话人
 
 `用户 / 助手（AI助手、Step）/ 系统` 为内置。其他名字（司机、老李、房东…）自动成为第三方说话人，
-用 `speaker 司机: voice=onyx instructions="…"` 指定音色。导出时主用户是 `user_1`，其他真人依出现顺序 `user_2`、`user_3`…，助手为 `assistant`。
+用 `speaker 司机: voice=onyx instructions="…"` 指定音色（`voice` / `instructions` 给 OpenAI TTS；`local_voice=zm_029` 给离线引擎 `tools/offline_tts.py`，不写则按角色默认：助手女声 zf_001、用户男声 zm_010、第三方轮换）。导出时主用户是 `user_1`，其他真人依出现顺序 `user_2`、`user_3`…，助手为 `assistant`。
 
 ### 舞台提示（括号）决定双工行为
 
@@ -109,7 +109,7 @@ speaker 司机: role=third_party voice=onyx instructions="…"   ← 额外说�
   "id": "commute", "case_id": "01", "name": "出门上班", "group": "A · 微意图", "order": 1, "summary": "…",
   "scene": { "title": "…", "desc": "…", "ambience": "scene_commute.m4a", "clock": "07:52:00" },
   "speakers": {
-    "user":      { "name": "你",   "tts": { "voice": "ash",   "instructions": "…", "speed": 1.0 } },
+    "user":      { "name": "你",   "tts": { "voice": "ash",   "instructions": "…", "speed": 1.0, "local_voice": "zm_010" } },
     "assistant": { "name": "Step", "tts": { "voice": "coral", "instructions": "…" } },
     "driver":    { "name": "司机", "role": "third_party", "tts": { "voice": "onyx" } }
   },
