@@ -54,7 +54,7 @@ node server/cli.js list
 | 10 | `read` 伴读 | 文章页 → 读屏卡 → 追问打断 |
 | 11 | `stock` 股票查询 | 四次连续抢话 → 行情卡 → "你退下吧" |
 
-01‒11 的语音沿用参考包里的定妆音色片段（m4a）；`morning` 没有随仓库附带音频，配好 `.env` 后 `npm run tts -- morning` 即可生成（约 60 句）。
+01‒11 的语音沿用参考包里的定妆音色片段（m4a）；`morning` 没有随仓库附带音频，在「脚本 · 语音」页贴上 OpenAI key 点一下即可生成（65 句，约两三分钟），或 `npm run tts -- morning`。
 
 ## 剧本怎么写
 
@@ -78,11 +78,18 @@ node server/cli.js list
 
 严格按 Draft v5 骨架：`meta_data / static_context / dynamic_context / utterances / events / annotation{fdx_annotation, emotion_annotation, paralinguistic_annotation}`，另加 `annotation.track_annotation` 保留八轨日志原文。JSON Schema 见 [schema/normalized.schema.json](schema/normalized.schema.json)。时间戳与母带 `audio/synthetic/{case_id}_{sample_id}.wav`（Channel 1 用户/第三方，Channel 2 助手，被打断的句子按 0.7s/1.75s 让位包络混入）对齐。
 
-## 语音生成
+## 语音生成（OpenAI TTS）
 
-- 模型默认 `gpt-4o-mini-tts`，每个说话人的 `instructions`（定妆音色描述）+ `voice` 决定音色；台词的舞台提示（急促 / 轻缓 / 低语）会附加到 instructions。
-- 输出 24kHz wav，按 `sha1(model|voice|speed|instructions|text)` 缓存在 `cases/<id>/audio/manifest.json`，改了文本只重生成那一句。
-- 走代理时用 `NODE_USE_ENV_PROXY=1 npm run tts -- <id>`（Node 自带 fetch 默认不读 HTTPS_PROXY）。
+三条路都走同一套逻辑（`shared/tts.js`：逐句计划 → `/v1/audio/speech` → 24kHz wav → 按 `model|voice|speed|instructions|text` 的哈希缓存，改了文本只重生成那一句）：
+
+| 方式 | 在哪 | 怎么用 |
+| --- | --- | --- |
+| 浏览器直连 | 工作台「脚本 · 语音」页 | 贴上你的 OpenAI key（只存本机 `localStorage`），点「生成缺失语音」。浏览器直接调 OpenAI，结果缓存在 IndexedDB，演示与 JSON 导出立即生效；本地运行时还会 `PUT /api/cases/<id>/clips/<clip>` 写回 `cases/<id>/audio/`。在 `dist/duplex-demo.html`、GitHub Pages 版里同样可用 |
+| 服务端 | `.env` 里的 `OPENAI_API_KEY` | 「脚本 · 语音」页的服务端按钮，或 `npm run tts -- <id> [--force] [--only u001,u002]`；走代理时 `NODE_USE_ENV_PROXY=1`（Node 自带 fetch 默认不读 HTTPS_PROXY） |
+| 手动导入 | `cases/<id>/audio/` | 放入 `<clip>.wav\|m4a\|mp3`（文件名 = 台词 id 或 `clip`），服务重新扫描即可 |
+
+- 模型默认 `gpt-4o-mini-tts`：每个说话人的 `instructions`（定妆音色描述）+ `voice` 决定音色；台词的舞台提示（急促 / 轻缓 / 低语）会附加进 instructions。`tts-1 / tts-1-hd` 不支持 instructions。
+- claude.ai 上的 Artifact 版受内容安全策略限制无法访问外网，浏览器直连在那里不可用；用 GitHub Pages 版（仓库 Settings → Pages → Source 选 GitHub Actions，`.github/workflows/pages.yml` 会自动发布）或本地运行。
 - `.env` 不会被提交；不要把 key 写进任何脚本。
 
 ## 目录

@@ -7,7 +7,7 @@ import express from 'express';
 import path from 'node:path';
 import { existsSync } from 'node:fs';
 import { ROOT, CASES_DIR, listCases, loadCase, saveCase, createCase, audioDir, refreshManifest, clipDurations, defaultTemplate } from './cases.js';
-import { generateCaseAudio, ttsConfig, TTS_VOICES } from './tts.js';
+import { generateCaseAudio, ttsConfig, TTS_VOICES, saveClip } from './tts.js';
 import { mixSchedule } from './audio.js';
 import { parseDSL, scriptToDSL } from '../shared/dsl.js';
 import { validateScript, normalizeScript } from '../shared/script.js';
@@ -27,8 +27,21 @@ const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch
 
 app.get('/api/status', (req, res) => {
   const cfg = ttsConfig();
-  res.json({ ok: true, openai: !!cfg.apiKey, model: cfg.model, base_url: cfg.baseUrl, proxy_hint: cfg.proxyHint, voices: TTS_VOICES, node: process.version });
+  res.json({ ok: true, openai: !!cfg.apiKey, model: cfg.model, base_url: cfg.baseUrl, proxy_hint: cfg.proxyHint, voices: TTS_VOICES, node: process.version, browser_tts: true, static: false });
 });
+
+/* 浏览器直连 OpenAI 生成的片段写回 case(body = wav) */
+app.put('/api/cases/:id/clips/:clip', express.raw({ type: ['audio/wav', 'audio/wave', 'audio/x-wav', 'application/octet-stream'], limit: '60mb' }), wrap(async (req, res) => {
+  const { id, clip } = req.params;
+  if (!/^[\w-]{1,80}$/.test(clip)) return res.status(400).json({ error: '非法的 clip 名' });
+  if (!Buffer.isBuffer(req.body) || !req.body.length) return res.status(400).json({ error: '缺少 wav 数据(Content-Type: audio/wav)' });
+  await loadCase(id);
+  let entry;
+  try {
+    entry = await saveClip(id, clip, req.body, { hash: req.get('X-Clip-Hash') || null, source: req.get('X-Clip-Source') || 'browser', text: req.get('X-Clip-Text') ? decodeURIComponent(req.get('X-Clip-Text')) : undefined });
+  } catch (e) { return res.status(400).json({ error: e.message }); }
+  res.json({ ok: true, clip, entry });
+}));
 
 app.get('/api/cases', wrap(async (req, res) => res.json(await listCases())));
 

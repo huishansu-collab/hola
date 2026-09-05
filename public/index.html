@@ -132,15 +132,33 @@
       </div>
       <div>
         <div class="side-card">
-          <h3>语音 <span class="sub" id="voiceSummary"></span></h3>
+          <h3>语音片段 <span class="sub" id="voiceSummary"></span></h3>
           <div class="progress" id="ttsProgress" hidden><i></i></div>
+          <div class="tbl-wrap"><table class="tbl" id="clipTable"></table></div>
+        </div>
+        <div class="side-card" id="browserTts">
+          <h3>浏览器直连 OpenAI 生成 <span class="sub" id="btSummary"></span></h3>
           <div class="toolbar">
-            <button class="btn sm warm server-only" id="btnTtsMissing">生成缺失语音</button>
-            <button class="btn sm ghost server-only" id="btnTtsAll">全部重新生成</button>
+            <input class="field" id="btKey" type="password" placeholder="sk-…  OpenAI API key(只留在本机)" autocomplete="off" spellcheck="false" style="flex:1;min-width:200px">
+            <select class="field" id="btModel"></select>
+          </div>
+          <div class="toolbar">
+            <button class="btn sm warm" id="btGenMissing">生成缺失语音</button>
+            <button class="btn sm ghost" id="btGenAll">全部重新生成</button>
+            <button class="btn sm ghost" id="btClear">清除本机缓存</button>
+            <button class="btn sm ghost" id="btStop" hidden>停止</button>
+          </div>
+          <div id="btMsg"></div>
+          <p class="help" style="margin-top:8px">浏览器直接调用 OpenAI <code>/v1/audio/speech</code>(24kHz wav),每个说话人的定妆描述作 <code>instructions</code>;结果缓存在本机 IndexedDB,演示与 JSON 导出立即使用,本地运行时还会写回 <code>cases/&lt;id&gt;/audio/</code>。claude.ai 上的 Artifact 版受内容安全策略限制无法访问外网,请用 <code>dist/duplex-demo.html</code>、GitHub Pages 版或本地 <code>npm start</code>。</p>
+        </div>
+        <div class="side-card server-only">
+          <h3>服务端生成 <span class="sub">.env 里的 OPENAI_API_KEY</span></h3>
+          <div class="toolbar">
+            <button class="btn sm warm" id="btnTtsMissing">生成缺失语音</button>
+            <button class="btn sm ghost" id="btnTtsAll">全部重新生成</button>
             <button class="btn sm ghost" id="btnTtsStop" hidden>停止</button>
           </div>
           <div id="ttsMsg"></div>
-          <div class="tbl-wrap"><table class="tbl" id="clipTable"></table></div>
         </div>
         <div class="side-card">
           <h3>说话人与音色</h3>

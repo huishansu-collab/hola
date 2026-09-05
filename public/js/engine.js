@@ -48,14 +48,22 @@ export class DemoEngine {
   }
 
   /* ---------------- 加载 ---------------- */
-  async load(caseId, script, manifest) {
+  /* overrides:浏览器直连生成、缓存在本机的片段 Map(clip → { wav: ArrayBuffer }) */
+  async load(caseId, script, manifest, overrides = null) {
     this.reset();
     this.caseId = caseId;
     this.script = normalizeScript(script);
     this.manifest = manifest || { clips: {} };
+    this.overrides = overrides || new Map();
     this.buffers = {};
     this.missing = [];
     this.renderIdle();
+  }
+  /* 已解码片段的实际时长(用于导出与时间轴,与演示完全一致) */
+  durations() {
+    const d = {};
+    for (const [k, b] of Object.entries(this.buffers)) d[k] = Math.round(b.duration * 1000);
+    return d;
   }
 
   async ensureAudio() {
@@ -68,14 +76,16 @@ export class DemoEngine {
       this.fxReady = true;
     }
     if (!this.buffersReady) {
-      const clips = Object.entries(this.manifest.clips || {});
+      const wanted = new Map();
+      for (const [k, v] of Object.entries(this.manifest.clips || {})) if (v.file) wanted.set(k, { file: v.file });
+      for (const [k, v] of this.overrides || []) if (v?.wav) wanted.set(k, { ab: v.wav });   // 本机生成的片段优先
       this.missing = [];
-      await Promise.all(clips.map(async ([k, v]) => {
-        if (!v.file) return;
+      await Promise.all([...wanted].map(async ([k, src]) => {
         try {
-          const r = await fetch(`/cases/${this.caseId}/audio/${v.file}`);
-          if (!r.ok) throw new Error(r.status);
-          this.buffers[k] = await this.ctx.decodeAudioData(await r.arrayBuffer());
+          let ab;
+          if (src.ab) ab = src.ab.slice(0);                                   // decodeAudioData 会 detach,传副本
+          else { const r = await fetch(`/cases/${this.caseId}/audio/${src.file}`); if (!r.ok) throw new Error(r.status); ab = await r.arrayBuffer(); }
+          this.buffers[k] = await this.ctx.decodeAudioData(ab);
         } catch (e) { this.missing.push(k); }
       }));
       for (const st of this.script.timeline) if (st.type === 'say' && st.clip && !this.buffers[st.clip] && !this.missing.includes(st.clip)) this.missing.push(st.clip);

@@ -389,3 +389,8 @@ pre.json { background: var(--panel); border: 1px solid var(--line); border-radiu
 body.static .server-only { display: none !important; }
 body.static .static-note { display: block; }
 .static-note { display: none; }
+
+/* 表单控件(浏览器直连 TTS) */
+input.field, select.field { height: 28px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--panel); color: var(--ink); font-family: var(--mono); font-size: 11.5px; outline: none; }
+input.field:focus, select.field:focus { border-color: rgba(var(--warm),.7); }
+select.field option { background: var(--panel); }

@@ -74,10 +74,10 @@ async function main() {
   html = html.slice(html.indexOf('<body>') + 6, html.lastIndexOf('</body>'));
   html = html.replace(/<script[^>]*src="\/js\/app\.js"[^>]*><\/script>/, '');
   html = html.replace(/src="\/assets\/icons\/([\w-]+)\.png"/g, (m, n) => `src="${icons[n] || m}"`);
-  html = html.replace('<div class="tagline editorial">', '<div class="tagline editorial static-note" style="color:rgb(232,178,132)">在线演示版 · 可播放全部 case、改剧本解析预览、查看规范化 JSON;保存 / 语音生成 / 母带混音需本地运行仓库</div><div class="tagline editorial">');
+  html = html.replace('<div class="tagline editorial">', '<div class="tagline editorial static-note" style="color:rgb(232,178,132)">在线演示版 · 可播放全部 case、改剧本解析预览、查看规范化 JSON、在「脚本 · 语音」页用自己的 OpenAI key 直接生成语音(Artifact 版除外);保存与母带混音需本地运行仓库</div><div class="tagline editorial">');
 
   /* 脚本 */
-  const order = [['shared/script.js', 'script'], ['shared/tracks.js', 'tracks'], ['shared/schedule.js', 'schedule'], ['shared/normalize.js', 'normalize'], ['shared/dsl.js', 'dsl'], ['public/js/engine.js', 'engine'], ['public/js/app.js', 'app']];
+  const order = [['shared/script.js', 'script'], ['shared/tts.js', 'tts'], ['shared/tracks.js', 'tracks'], ['shared/schedule.js', 'schedule'], ['shared/normalize.js', 'normalize'], ['shared/dsl.js', 'dsl'], ['public/js/engine.js', 'engine'], ['public/js/app.js', 'app']];
   const bundle = ['const __mods = {};'];
   for (const [file, name] of order) bundle.push(transformModule(await read(file), name));
 
@@ -100,7 +100,7 @@ window.fetch = async (input, init = {}) => {
   const { buildNormalized } = __mods.normalize;
   const { parseDSL, scriptToDSL } = __mods.dsl;
   let m;
-  if (p === '/api/status') return __json({ ok: true, openai: false, model: 'gpt-4o-mini-tts', base_url: '', proxy_hint: false, voices: [], static: true });
+  if (p === '/api/status') return __json({ ok: true, openai: false, model: 'gpt-4o-mini-tts', base_url: '', proxy_hint: false, voices: [], static: true, browser_tts: true });
   if (p === '/api/cases' && method === 'GET') {
     const list = Object.values(__DATA.cases).map(c => { const s = normalizeScript(c.script); const clips = s.timeline.filter(x => x.type === 'say' && x.clip).map(x => x.clip); return { id: c.id, name: s.name, case_id: s.case_id, group: s.group || null, order: s.order ?? 999, summary: s.summary || '', has_dsl: !!c.dsl, utterances: clips.length, audio_ready: clips.filter(k => c.manifest.clips?.[k]?.file).length, scene: s.scene?.title || null }; });
     list.sort((a, b) => (a.order - b.order) || a.id.localeCompare(b.id));
@@ -115,6 +115,7 @@ window.fetch = async (input, init = {}) => {
     const sub = m[2] || '';
     if (!sub && method === 'GET') { const v = validateScript(c.script); return __json({ id: c.id, script: c.script, dsl: c.dsl, manifest: c.manifest, durations: __durations(c.manifest), normalized_script: v.script, validation: { errors: v.errors, warnings: v.warnings }, dsl_view: c.dsl || scriptToDSL(c.script) }); }
     if (!sub) return __json({ error: __STATIC_MSG }, 405);
+    if (sub.startsWith('clips/')) return __json({ error: '静态页不写回文件;片段已缓存在本机' }, 405);
     if (sub === 'normalized.json') return __json(buildNormalized(c.script, __durations(c.manifest)).json);
     if (sub === 'schedule') return __json(schedule(normalizeScript(c.script), __durations(c.manifest)));
     if (sub === 'tts') return new Response('event: fatal\\ndata: ' + JSON.stringify({ error: __STATIC_MSG }) + '\\n\\n', { headers: { 'Content-Type': 'text/event-stream' } });

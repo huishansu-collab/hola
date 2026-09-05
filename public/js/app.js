@@ -6,12 +6,13 @@ import { normalizeScript, msToClock, TRACKS, validateScript } from '/shared/scri
 import { schedule } from '/shared/schedule.js';
 import { buildNormalized, checkNormalized } from '/shared/normalize.js';
 import { scriptToDSL } from '/shared/dsl.js';
+import { ttsPlan, synthesizeSpeech, wavDurationMs, TTS_MODELS } from '/shared/tts.js';
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-const state = { cases: [], id: null, data: null, mode: 'dsl', filter: null, status: null, ttsAbort: null, sectionIdx: -1 };
+const state = { cases: [], id: null, data: null, mode: 'dsl', filter: null, status: null, ttsAbort: null, btAbort: null, sectionIdx: -1, overrides: new Map() };
 
 const engine = new DemoEngine({
   onLog: renderLog,
@@ -90,13 +91,15 @@ async function selectCase(id) {
   $('#caseName').textContent = `${script.case_id} · ${script.name}`;
   $('#footLeft').textContent = `${script.scene?.title || ''}${script.scene?.desc ? ' · ' + script.scene.desc : ''}`;
   $$('#caseMenu .case-item').forEach(b => b.classList.toggle('active', b.dataset.id === id));
-  await engine.load(id, state.data.script, state.data.manifest);
+  state.overrides = await loadOverrides(id);
+  await engine.load(id, state.data.script, state.data.manifest, state.overrides);
   renderBeats(script);
   $('#logBody').innerHTML = '<div class="log-empty editorial">按下播放,日志从这里开始。</div>';
   renderEditor();
   renderClips();
   renderSpeakers(script);
-  renderTimeline(script, state.data.durations || {});
+  renderTimeline(script, mergedDurations());
+  renderBrowserTts();
   $('#jsonPreview').textContent = '点「生成规范化 JSON」预览 Draft v5 结构。';
   $('#kpi').innerHTML = ''; $('#uttTable').innerHTML = ''; $('#evTable').innerHTML = '';
   $('#lnkJson').href = `/api/cases/${id}/normalized.json?download=1`;
@@ -174,9 +177,10 @@ function renderClips(scriptOverride) {
   let ok = 0;
   const rows = says.map(s => {
     const c = s.clip ? clips[s.clip] : null;
-    const has = !!(c && c.file); if (has) ok++;
+    const ov = s.clip ? state.overrides.get(s.clip) : null;
+    const has = !!(c && c.file) || !!ov; if (has && !s.typed) ok++;
     const stateCls = s.typed ? '' : has ? 'ok' : 'miss';
-    const stateTxt = s.typed ? '打字' : has ? `${(c.format || '').toString().split('/')[0]} · ${(c.duration_ms / 1000).toFixed(1)}s` : '缺失';
+    const stateTxt = s.typed ? '打字' : ov ? `wav · ${(ov.duration_ms / 1000).toFixed(1)}s · 本机` : has ? `${(c.format || '').toString().split('/')[0]} · ${(c.duration_ms / 1000).toFixed(1)}s` : '缺失';
     return `<tr class="${stateCls}" data-id="${esc(s.id)}"><td class="mono">${esc(s.id)}</td><td>${esc(script.speakers[s.speaker]?.name || s.speaker)}</td><td>${esc(s.text.slice(0, 26))}${s.text.length > 26 ? '…' : ''}</td><td class="state mono">${esc(stateTxt)}</td></tr>`;
   });
   $('#clipTable').innerHTML = `<thead><tr><th>id</th><th>说话人</th><th>台词</th><th>语音</th></tr></thead><tbody>${rows.join('')}</tbody>`;
@@ -185,6 +189,121 @@ function renderClips(scriptOverride) {
   $('#btnTtsMissing').disabled = !(state.status?.openai) || ok === spoken;
   $('#btnTtsAll').disabled = !(state.status?.openai);
   $('#ttsMsg').innerHTML = state.status?.openai ? '' : '<div class="msg info">未配置 OPENAI_API_KEY:复制 .env.example 为 .env 填入后重启服务,即可一键生成语音。缺语音的台词演示时按语速上屏。</div>';
+  $('#btGenMissing').disabled = ok === spoken;
+  $('#btClear').disabled = state.overrides.size === 0;
+}
+
+/* ---------------- 浏览器直连 OpenAI TTS(key 只留本机,结果缓存 IndexedDB) ---------------- */
+const IDB_NAME = 'duplex-tts', IDB_STORE = 'clips';
+function idbOpen() {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('no indexedDB'));
+    const rq = indexedDB.open(IDB_NAME, 1);
+    rq.onupgradeneeded = () => rq.result.createObjectStore(IDB_STORE);
+    rq.onsuccess = () => res(rq.result);
+    rq.onerror = () => rej(rq.error);
+  });
+}
+async function idbGetPrefix(prefix) {
+  const db = await idbOpen();
+  return new Promise((res, rej) => {
+    const out = new Map();
+    const rq = db.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).openCursor(IDBKeyRange.bound(prefix, prefix + '\uffff'));
+    rq.onsuccess = () => { const c = rq.result; if (c) { out.set(String(c.key).slice(prefix.length), c.value); c.continue(); } else { db.close(); res(out); } };
+    rq.onerror = () => { db.close(); rej(rq.error); };
+  });
+}
+async function idbPut(key, val) {
+  const db = await idbOpen();
+  return new Promise((res, rej) => { const tx = db.transaction(IDB_STORE, 'readwrite'); tx.objectStore(IDB_STORE).put(val, key); tx.oncomplete = () => { db.close(); res(); }; tx.onerror = () => { db.close(); rej(tx.error); }; });
+}
+async function idbDeletePrefix(prefix) {
+  const db = await idbOpen();
+  return new Promise((res, rej) => {
+    const st = db.transaction(IDB_STORE, 'readwrite').objectStore(IDB_STORE);
+    const rq = st.openCursor(IDBKeyRange.bound(prefix, prefix + '\uffff'));
+    rq.onsuccess = () => { const c = rq.result; if (c) { c.delete(); c.continue(); } else { db.close(); res(); } };
+    rq.onerror = () => { db.close(); rej(rq.error); };
+  });
+}
+async function loadOverrides(caseId) {
+  try { return await idbGetPrefix(caseId + '/'); } catch { return new Map(); }
+}
+function mergedDurations() {
+  const d = { ...(state.data?.durations || {}) };
+  for (const [k, v] of state.overrides) if (v.duration_ms) d[k] = v.duration_ms;
+  Object.assign(d, engine.durations());
+  return d;
+}
+function renderBrowserTts() {
+  const sel = $('#btModel');
+  if (!sel.options.length) TTS_MODELS.forEach(m => { const o = document.createElement('option'); o.value = o.textContent = m; sel.appendChild(o); });
+  try { const k = localStorage.getItem('duplex.openai_key'); if (k && !$('#btKey').value) $('#btKey').value = k; } catch { /* private mode */ }
+  const n = state.overrides.size;
+  $('#btSummary').textContent = n ? `本机已缓存 ${n} 段` : '';
+}
+async function uploadClip(caseId, it, wav) {
+  const r = await fetch(`/api/cases/${caseId}/clips/${it.clip}`, { method: 'PUT', headers: { 'Content-Type': 'audio/wav', 'X-Clip-Hash': it.hash, 'X-Clip-Source': `browser:${it.model}:${it.voice}`, 'X-Clip-Text': encodeURIComponent(it.text) }, body: wav });
+  if (!r.ok) throw new Error('写回失败 ' + r.status);
+}
+async function browserTts(force) {
+  if (state.btAbort || !state.data) return;
+  const key = $('#btKey').value.trim();
+  if (!key) { showMsg('#btMsg', 'warn', '先填 OpenAI API key。它只保存在这台电脑的浏览器里,不会上传到任何服务器。'); return; }
+  try { localStorage.setItem('duplex.openai_key', key); } catch { /* ignore */ }
+  const model = $('#btModel').value || TTS_MODELS[0];
+  const plan = ttsPlan(state.data.normalized_script, { model });
+  const ac = new AbortController(); state.btAbort = ac;
+  $('#btStop').hidden = false; $('#ttsProgress').hidden = false; $('#ttsProgress i').style.width = '0%';
+  $('#btGenMissing').disabled = true; $('#btGenAll').disabled = true;
+  const caseId = state.id;
+  let done = 0, skipped = 0, fatal = null; const failed = [];
+  for (let i = 0; i < plan.length; i++) {
+    const it = plan[i];
+    const have = state.overrides.get(it.clip);
+    if (!force && have?.hash === it.hash) { skipped++; continue; }
+    const tr = $(`#clipTable tr[data-id="${it.id}"]`);
+    if (tr) { tr.className = 'gen'; tr.querySelector('.state').textContent = '生成中…'; }
+    showMsg('#btMsg', 'info', `[${i + 1}/${plan.length}] ${it.speaker_name} · ${it.voice} · ${it.text.slice(0, 26)}`);
+    try {
+      const wav = await synthesizeSpeech(it, { apiKey: key, model, signal: ac.signal });
+      const duration_ms = wavDurationMs(wav) ?? 0;
+      const rec = { wav, hash: it.hash, duration_ms, voice: it.voice, model, text: it.text, at: Date.now() };
+      state.overrides.set(it.clip, rec);
+      await idbPut(`${caseId}/${it.clip}`, rec).catch(() => {});
+      if (!state.status?.static) await uploadClip(caseId, it, wav).catch(e => console.warn(e.message));
+      done++;
+      if (tr) { tr.className = 'ok'; tr.querySelector('.state').textContent = `wav · ${(duration_ms / 1000).toFixed(1)}s · 本机`; }
+    } catch (e) {
+      failed.push({ id: it.id, error: e.message });
+      if (tr) { tr.className = 'miss'; tr.querySelector('.state').textContent = '失败'; }
+      if (e.name === 'AbortError') break;
+      if (e.network) { fatal = '浏览器连不到 api.openai.com。claude.ai 上的 Artifact 版受内容安全策略限制不能访问外网;请用本地 npm start、dist/duplex-demo.html 或 GitHub Pages 版打开本页再生成。'; break; }
+      if (e.status === 401 || e.status === 403) { fatal = `OpenAI 拒绝了这个 key(${e.status})。请检查 key 是否有效、是否有 audio 权限。`; break; }
+    }
+    $('#ttsProgress i').style.width = Math.round((i + 1) / plan.length * 100) + '%';
+  }
+  state.btAbort = null; $('#btStop').hidden = true; $('#ttsProgress').hidden = true; $('#btGenAll').disabled = false;
+  if (fatal) showMsg('#btMsg', 'err', fatal);
+  else showMsg('#btMsg', failed.length ? 'warn' : 'ok', `生成 ${done} · 沿用缓存 ${skipped} · 失败 ${failed.length}${failed.length ? '\n' + failed.slice(0, 5).map(f => f.id + ':' + f.error).join('\n') : ''}${done ? '\n已缓存在本机' + (state.status?.static ? '' : ',并写回 cases/' + caseId + '/audio/') + ';演示与导出立即生效。' : ''}`);
+  await reloadWithOverrides();
+}
+async function clearBrowserClips() {
+  if (!state.id || !confirm('清除本机缓存的这个 case 的浏览器生成语音?')) return;
+  await idbDeletePrefix(state.id + '/').catch(() => {});
+  state.overrides = new Map();
+  showMsg('#btMsg', 'info', '已清除本机缓存(服务端写回的 wav 不受影响)。');
+  await reloadWithOverrides();
+}
+async function reloadWithOverrides() {
+  const r = await fetch(`/api/cases/${state.id}`);
+  if (r.ok) { state.data = await r.json(); state.mode = state.data.dsl ? state.mode : 'json'; }
+  await engine.load(state.id, state.data.script, state.data.manifest, state.overrides);
+  renderClips();
+  renderBrowserTts();
+  renderTimeline(state.data.normalized_script || normalizeScript(state.data.script), mergedDurations());
+  await loadCases();
+  $$('#caseMenu .case-item').forEach(b => b.classList.toggle('active', b.dataset.id === state.id));
 }
 function renderSpeakers(script) {
   $('#speakerList').innerHTML = Object.entries(script.speakers).filter(([k]) => k !== 'system').map(([k, sp]) => `<div class="speaker-row"><span class="k">${esc(k)}</span><span class="v"><b>${esc(sp.name)}</b> · ${esc(sp.role)} · ${esc(sp.speaker_id || '')}<br><code>voice=${esc(sp.tts?.voice || '-')}</code> ${sp.tts?.speed && sp.tts.speed !== 1 ? `<code>speed=${sp.tts.speed}</code>` : ''}<br><span style="color:var(--ink-mute)">${esc((sp.tts?.instructions || '').slice(0, 80))}${(sp.tts?.instructions || '').length > 80 ? '…' : ''}</span></span></div>`).join('');
@@ -228,8 +347,8 @@ async function runTts(force) {
 /* ---------------- 导出 ---------------- */
 function setIssues(text, cls) { const el = $('#exportIssues'); el.className = 'status-pill ' + cls; el.innerHTML = `<i></i>${esc(text)}`; }
 async function buildJson() {
-  const r = await fetch(`/api/cases/${state.id}/normalized.json`);
-  const json = await r.json();
+  await engine.ensureAudio().catch(() => {});
+  const { json } = buildNormalized(state.data.script, mergedDurations());
   const issues = checkNormalized(json);
   $('#jsonPreview').textContent = JSON.stringify(json, null, 2);
   const a = json.annotation;
@@ -242,7 +361,7 @@ async function buildJson() {
   const evRows = json.events.map(e => `<tr><td class="mono">${esc(e.event_id)}</td><td>${esc(e.event_type)}${e.tool_name ? '<br><small>' + esc(e.tool_name) + '</small>' : ''}</td><td class="mono">${e.time_at_ms}</td><td>${esc(e.query ?? e.arguments ?? e.results ?? e.result ?? '')}</td></tr>`);
   const fdxRows = a.fdx_annotation.map(f => `<tr><td class="mono">fdx</td><td>${esc(f.fdx_type)}<br><small>${esc(f.role)}</small></td><td class="mono">${f.start_at_ms}‒${f.end_at_ms}</td><td>${esc(f.utterance_id || '')}</td></tr>`);
   $('#evTable').innerHTML = `<thead><tr><th>id</th><th>type</th><th class="mono">t(ms)</th><th>内容</th></tr></thead><tbody>${[...evRows, ...fdxRows].join('')}</tbody>`;
-  renderTimeline(state.data.normalized_script, state.data.durations || {});
+  renderTimeline(state.data.normalized_script, mergedDurations());
 }
 function renderTimeline(script, durations) {
   const sch = schedule(script, durations);
@@ -257,7 +376,7 @@ function renderTimeline(script, durations) {
 async function mixInBrowser() {
   await engine.ensureAudio();
   const script = state.data.normalized_script;
-  const sch = schedule(script, state.data.durations || {});
+  const sch = schedule(script, mergedDurations());
   const sr = 24000; const frames = Math.ceil(sch.total_ms / 1000 * sr) + sr;
   const off = new OfflineAudioContext(2, frames, sr);
   const merger = off.createChannelMerger(2); merger.connect(off.destination);
@@ -318,6 +437,11 @@ async function init() {
   $('#btnTtsMissing').addEventListener('click', () => runTts(false));
   $('#btnTtsAll').addEventListener('click', () => { if (confirm('全部重新生成会覆盖已有音频(含导入的片段),继续?')) runTts(true); });
   $('#btnTtsStop').addEventListener('click', () => state.ttsAbort?.abort());
+  $('#btGenMissing').addEventListener('click', () => browserTts(false));
+  $('#btGenAll').addEventListener('click', () => { if (confirm('用浏览器重新生成这个 case 的全部台词语音?')) browserTts(true); });
+  $('#btStop').addEventListener('click', () => state.btAbort?.abort());
+  $('#btClear').addEventListener('click', clearBrowserClips);
+  $('#btKey').addEventListener('change', () => { try { localStorage.setItem('duplex.openai_key', $('#btKey').value.trim()); } catch { /* ignore */ } });
   $('#btnBuildJson').addEventListener('click', () => buildJson().catch(e => setIssues('生成失败:' + e.message, 'warn')));
   $('#btnMixBrowser').addEventListener('click', () => mixInBrowser().catch(e => setIssues('混音失败:' + e.message, 'warn')));
   window.addEventListener('hashchange', () => { const id = location.hash.slice(1); if (id && id !== state.id) selectCase(id); });
