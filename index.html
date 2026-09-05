@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Principle 工作台 · 从想法到可评审 Draft</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">P1</div>
+        <div class="brand-text">
+          <div class="brand-title">Principle 工作台</div>
+          <div class="brand-sub">从想法到可评审 Draft</div>
+        </div>
+      </div>
+
+      <nav class="nav" id="nav">
+        <a class="nav-item" data-route="workbench" href="#/workbench">
+          <span class="nav-ico">▤</span> 工作台
+        </a>
+        <a class="nav-item" data-route="new" href="#/new">
+          <span class="nav-ico">＋</span> 新建需求
+        </a>
+        <a class="nav-item" data-route="principle" href="#/principle">
+          <span class="nav-ico">◎</span> 总原则
+        </a>
+      </nav>
+
+      <div class="nav-sep">当前需求</div>
+      <nav class="nav" id="stage-nav">
+        <a class="nav-item stage-link" data-stage="smoke" href="#">
+          <span class="stage-dot" data-dot="smoke"></span> 冒烟讨论
+        </a>
+        <a class="nav-item stage-link" data-stage="draft" href="#">
+          <span class="stage-dot" data-dot="draft"></span> Draft
+        </a>
+        <a class="nav-item stage-link" data-stage="architecture" href="#">
+          <span class="stage-dot" data-dot="architecture"></span> 架构拆解
+        </a>
+        <a class="nav-item stage-link" data-stage="review" href="#">
+          <span class="stage-dot" data-dot="review"></span> 评审 / 排期
+        </a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <button class="btn btn-ghost btn-sm" id="seed-btn" title="载入一条示例需求">载入示例</button>
+        <button class="btn btn-ghost btn-sm" id="reset-btn" title="清空本地全部数据">清空数据</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main" id="view">
+      <!-- routed content -->
+    </main>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="data.js"></script>
+  <script src="generator.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
