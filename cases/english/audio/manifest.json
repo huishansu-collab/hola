@@ -1,0 +1,76 @@
+{
+  "clips": {
+    "ea0": {
+      "file": "ea0.m4a",
+      "size": 16263,
+      "mtime": 1788607867030.1038,
+      "duration_ms": 1621,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "eq1": {
+      "file": "eq1.m4a",
+      "size": 101076,
+      "mtime": 1788607867030.2966,
+      "duration_ms": 9728,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "ea1": {
+      "file": "ea1.m4a",
+      "size": 260877,
+      "mtime": 1788607867030.607,
+      "duration_ms": 22805,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "eq2": {
+      "file": "eq2.m4a",
+      "size": 39450,
+      "mtime": 1788607867030.9126,
+      "duration_ms": 3712,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "ea2": {
+      "file": "ea2.m4a",
+      "size": 116043,
+      "mtime": 1788607867031.17,
+      "duration_ms": 9813,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "eq3": {
+      "file": "eq3.m4a",
+      "size": 99941,
+      "mtime": 1788607867031.4312,
+      "duration_ms": 9451,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "ea3": {
+      "file": "ea3.m4a",
+      "size": 143777,
+      "mtime": 1788607867031.662,
+      "duration_ms": 12565,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "scene_english": {
+      "file": "scene_english.m4a",
+      "size": 135129,
+      "mtime": 1788607867031.9722,
+      "duration_ms": 10091,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    }
+  }
+}

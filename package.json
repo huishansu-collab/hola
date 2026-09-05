@@ -1,0 +1,21 @@
+{
+  "name": "duplex-demo-platform",
+  "version": "0.1.0",
+  "description": "全双工语音 demo 平台：脚本 + 八轨日志 → 高保真手机 case 演示 + Live Interaction 规范化 JSON",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "tts": "node server/cli.js tts",
+    "export": "node server/cli.js export",
+    "parse": "node server/cli.js parse",
+    "validate": "node server/cli.js validate",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "music-metadata": "^11.0.0"
+  }
+}

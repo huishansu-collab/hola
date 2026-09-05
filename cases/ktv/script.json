@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "id": "ktv",
+  "case_id": "04",
+  "name": "KTV 脱身电话",
+  "group": "B · Aha features",
+  "order": 4,
+  "summary": "进包厢前定个局 → 任务卡倒计时 → 五分钟后\"老妈\"准时来电 → 接起来就能走",
+  "scene": { "title": "KTV 门口走廊", "desc": "包厢低音和走廊人声,马上要进去了", "ambience": "scene_ktv.m4a", "clock": "21:30:00" },
+  "speakers": {
+    "user": { "name": "你" },
+    "assistant": { "name": "Step" },
+    "mom": { "name": "老妈", "role": "third_party", "tts": { "voice": "sage", "instructions": "五十多岁的中国女性，电话里的声音，语气着急但慈爱，普通话带一点口音。" } }
+  },
+  "context": { "tools": [ { "type": "function", "function": { "name": "later.call", "description": "定时发起一通模拟来电,可指定来电显示与开场白" } } ] },
+  "timeline": [
+    { "type": "section", "title": "01｜scene｜KTV 门口,包厢低音和走廊人声,马上要进去了" },
+    { "type": "section", "title": "02｜living edge｜摸一下 living edge,建连后模型应声" },
+    { "type": "edge", "action": "touch" },
+    { "type": "say", "id": "ka0", "clip": "ka0", "speaker": "assistant", "text": "我在，你说。", "nature": "应答（应声）" },
+
+    { "type": "section", "title": "03｜用户 · voice｜\"五分钟之后给我打个电话,就说家里有急事——来电人显示成我妈啊。\"" },
+    { "type": "say", "id": "kq1", "clip": "kq1", "speaker": "user", "text": "一会儿五分钟之后给我打个电话，就说家里有急事——来电人显示成我妈啊。", "to": "对助手说", "kind": "指令（定时任务）", "emotion": "无奈", "pause_after": "点名要你答",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（定时任务 + 来电显示参数）；情绪｜无奈；这句之后的停顿｜点名要你答", "【世界信息】场景/状态｜环境音：KTV 走廊低音 + 人声；信号来源｜手机感知·麦克风阵列环境声检测"] },
+
+    { "type": "section", "title": "04｜模型｜\"哦哦,懂。\"调度卡落地,overlay 自动收起为定时任务卡" },
+    { "type": "say", "id": "ka1", "clip": "ka1", "speaker": "assistant", "text": "哦哦，懂。我来设置一下——五分钟之后我会打给你，你放心进去吧。", "nature": "回执（承接·说明 + 可验证承诺）", "parallel": true,
+      "log": ["【语音·助手】助手句性质｜回执（承接·说明：懂了 + 做什么 + 何时）", "【决策点】该不该开口｜开口；开多大｜一句话；依据｜被叫到了；决策类型｜计划（可验证承诺）"] },
+    { "type": "tool", "name": "later.call", "args": "in=5min, caller=老妈, excuse=家里有急事", "result": "scheduled · 21:35", "elapsed_ms": 300, "silent": true, "parallel": true, "delay_ms": 600, "task_type": "打电话",
+      "log": ["【任务】任务类型｜打电话·定时（当场就做）：later.call(5min, 老妈)→结果 已注册（耗时 0.3s）"] },
+    { "type": "card", "icon": "phoneclock", "title": "Call Scheduled", "sub": "Mom · in 5 minutes", "meta": ["Excuse: family emergency", "Cancel anytime"], "parallel": true, "delay_ms": 2400, "log_label": "调度卡落地" },
+    { "type": "join" },
+    { "type": "log", "label": "调度完成", "detail": "later.call(5min, 老妈) 已注册" },
+    { "type": "overlay", "action": "collapse", "label": "任务收起", "detail": "定时任务卡入通知区 · 五分钟倒计时(演示 5 秒)" },
+    { "type": "pill", "id": "call", "icon": "phoneclock", "name": "Scheduled Call", "now": "5:00", "stops": ["Mom", "Family emergency", "Auto-dial"], "countdown": { "steps": 5, "step_ms": 1000, "end": "now" }, "log_label": "定时任务卡" },
+
+    { "type": "section", "title": "05｜定时触发｜五分钟(演示 5 秒)后,\"老妈\"来电,iOS 来电界面接管" },
+    { "type": "pill", "id": "call", "action": "hide" },
+    { "type": "call", "action": "ring", "name": "老妈", "wait_ms": 5000, "log_label": "定时触发",
+      "log": ["【任务】任务类型｜打电话·定时：later.call 到点→结果 来电已发起（来电显示：老妈）", "【世界信息】场景/状态｜来电话；信号来源｜助手内部事件·定时任务到点；值不值得打扰｜值得打扰（用户预授权）", "【硬件交互】用哪种硬件反馈｜铃声 + 亮屏；时延档｜常规"] },
+
+    { "type": "section", "title": "06｜接听｜铃声一响就够了——五分钟前定好的局准时到,接起来就能走" },
+    { "type": "say", "id": "km1", "clip": "km1", "speaker": "mom", "text": "喂？儿子啊，你在哪儿呢？家里有点急事，你赶紧回来一趟吧！", "to": "对用户说", "kind": "台词（模型扮演来电人）", "emotion": "着急",
+      "log": ["【语音·助手】助手句性质｜对第三方（扮演来电人\"老妈\"，按用户预设的借口说）", "【决策点】该不该开口｜开口；开多大｜一句话；依据｜用户预授权；决策类型｜主动（社交代理）"] },
+    { "type": "say", "id": "kq2", "clip": "kq2", "speaker": "user", "text": "哎行，知道了，我马上回去！", "to": "对别人说", "kind": "台词（配合演出）", "emotion": "开心",
+      "log": ["【语音·用户】对谁说的｜对别人说（对\"老妈\"，说给包厢里的人听）；情绪｜开心"] },
+    { "type": "wait", "ms": 600 },
+    { "type": "call", "action": "end", "label": "通话结束", "detail": "接起来就能走 —— 五分钟前定好的局，准时到" },
+    { "type": "log", "label": "脱身就绪", "detail": "一通定时来电 · 借口、来电显示、时机全部由模型代办" }
+  ]
+}

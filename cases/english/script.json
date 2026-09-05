@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "english",
+  "case_id": "03",
+  "name": "临时学英语",
+  "group": "A · 微意图 · 轻任务",
+  "order": 3,
+  "summary": "国外等车 → 想先绕去星巴克 → 求地道说法 → 双语示范 + 短语卡 → 跟读点评",
+  "scene": { "title": "国外街头等车", "desc": "等车时想先绕去星巴克买杯咖啡,要跟司机说一声", "ambience": "scene_english.m4a", "clock": "09:20:00" },
+  "speakers": {
+    "user": { "name": "你" },
+    "assistant": { "name": "Step", "tts": { "instructions": "二十七八岁的中国女性，声音温暖松弛、真人感强，像贴心的朋友在身边说话，语气 chill 自然口语化，普通话标准；英文部分发音地道流利。" } }
+  },
+  "timeline": [
+    { "type": "section", "title": "01｜scene｜国外街头等车,想着先绕去星巴克买杯咖啡" },
+    { "type": "section", "title": "02｜living edge｜摸一下 living edge,建连后模型应声\"我在,你说\"" },
+    { "type": "edge", "action": "touch" },
+    { "type": "say", "id": "ea0", "clip": "ea0", "speaker": "assistant", "text": "我在，你说。", "nature": "应答（应声）" },
+
+    { "type": "section", "title": "03｜用户 · voice｜\"帮我用地道英语造个句——师傅,前面有个星巴克,能先拉我过去一下吗？\"" },
+    { "type": "say", "id": "eq1", "clip": "eq1", "speaker": "user", "text": "帮我用地道英语造个句，我一会儿要跟司机说一声——师傅，前面几十米有个星巴克，你能先把我拉到那儿一下吗？", "to": "对助手说", "kind": "指令（翻译/造句）", "emotion": "平静", "pause_after": "点名要你答",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（翻译 + 造句）；情绪｜平静；这句之后的停顿｜点名要你答", "【任务】任务类型｜翻译（当场就做）：受理"] },
+
+    { "type": "section", "title": "04｜模型｜给两个版本的地道说法,英文原声示范,短语卡落地" },
+    { "type": "say", "id": "ea1", "clip": "ea1", "speaker": "assistant", "text": "可以这么说——Excuse me, there is a Starbucks just up ahead, about fifty meters. Could you pull over there for a quick sec? 想再随意一点就说：Hey, could we make a quick stop at the Starbucks up ahead? 你说第一句就很自然。", "nature": "应答（讲解：两个版本 + 推荐）", "overlap": "竞争打断（被用户叠上）·完成度｜快说完被断",
+      "log": ["【语音·助手】助手句性质｜应答（讲解：两个版本 + 推荐）；是否重叠｜竞争打断（被用户叠上）·完成度｜快说完被断", "【决策点】该不该开口｜开口；开多大｜完整说；依据｜被叫到了；决策类型｜信息（答案收敛：给两个可选、推荐一个）"] },
+    { "type": "card", "id": "phrase", "icon": "quote", "title": "\"Could you pull over at the Starbucks just up ahead for a quick sec?\"", "sub": "Version 1 · Casual · polite", "meta": ["Tap to hear again", "Save phrase →"], "parallel": true, "delay_ms": 4500, "log_label": "短语卡落地" },
+    { "type": "say", "id": "eq2", "clip": "eq2", "speaker": "user", "text": "诶第二个不错，你再重新读一下给我。", "barge_in": true, "at_ms": 20800, "to": "对助手说", "kind": "指令（选择 + 重读）", "emotion": "开心", "overlap": "竞争打断（叠在助手上）",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（选中第二版 + 重读）；情绪｜开心；是否重叠｜竞争打断（叠在助手上）", "【决策点】该不该开口｜闭嘴；打断语义｜改参数（只要第二版）；依据｜用户在纠正；禁止｜接着说旧答案；决策类型｜打断处理"] },
+
+    { "type": "section", "title": "05｜模型 · 被跟读打断｜重读 Version 2 到一半,用户直接开口生硬跟读" },
+    { "type": "say", "id": "ea2", "clip": "ea2", "speaker": "assistant", "text": "好——听好啦：Hey, could we make a quick stop at the Starbucks up ahead? 就这句，到时候直接说就行。", "nature": "应答（回读：只念被选中的那句）", "overlap": "竞争打断（被用户叠上）·完成度｜快说完被断",
+      "log": ["【语音·助手】助手句性质｜应答（回读：只念第二版，不解释）；是否重叠｜竞争打断（被用户跟读叠上）"] },
+    { "type": "card", "update": "phrase", "title": "\"Hey, could we make a quick stop at the Starbucks up ahead?\"", "sub": "Version 2 · Picked · say it just like this", "parallel": true, "delay_ms": 2200 },
+    { "type": "say", "id": "eq3", "clip": "eq3", "speaker": "user", "text": "Hey, could we make a quick stop at the Starbucks up ahead? 你听我说的 OK 不？", "barge_in": true, "at_ms": 7200, "to": "对助手说", "kind": "指令（求点评）", "emotion": "期待", "overlap": "竞争打断（叠在助手上）", "voicing": "跟读",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（跟读 + 求点评）；发声方式｜跟读（生硬版）；是否重叠｜竞争打断（叠在助手上）", "【决策点】该不该开口｜闭嘴（让用户把句子念完）；依据｜用户在说话；决策类型｜打断处理"] },
+
+    { "type": "section", "title": "06｜模型｜点评鼓励：发音过关,quick stop 连读小建议,放心说" },
+    { "type": "say", "id": "ea3", "clip": "ea3", "speaker": "assistant", "text": "诶说得挺好的呀！quick stop 连起来再顺一点——quick stop。已经完全够用了，司机肯定听得懂，放心说。", "nature": "应答（安抚：过关 + 一个小建议）",
+      "log": ["【语音·助手】助手句性质｜应答（安抚·托底：一句肯定 + 一个具体建议 + 一句底气）", "【对话互动】接话方式｜正常接话；回应是否及时｜及时", "【决策点】该不该开口｜开口；开多大｜一句话；依据｜被叫到了；禁止｜盖过用户重点（不逐字纠音）"] },
+    { "type": "log", "label": "回答完成", "detail": "跟读过关 · 短语卡固定 · 放心去说" }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "id": "read",
+  "case_id": "10",
+  "name": "伴读",
+  "group": "C · 高价值 Features",
+  "order": 10,
+  "summary": "读到生僻概念 → 摸一下 → 模型读你这一屏 → 边听边追问",
+  "scene": { "title": "沙发上刷公众号", "desc": "一篇讲 Agent Graph Engineering 的文章,读到生僻概念", "ambience": "scene_read.m4a", "clock": "22:10:00" },
+  "speakers": { "user": { "name": "你" }, "assistant": { "name": "Step" } },
+  "context": { "tools": [ { "type": "function", "function": { "name": "screen.capture", "description": "读取当前屏幕内容与位置关系" } }, { "type": "function", "function": { "name": "web_search", "description": "联网搜索" } } ] },
+  "timeline": [
+    { "type": "section", "title": "01｜scene｜沙发上刷公众号,一篇讲 Agent Graph Engineering 的文章" },
+    { "type": "article", "action": "show", "source": "机器之心 · 公众号", "title": "Agent Graph Engineering：为什么图正在取代流程图", "meta": "8.2 万次阅读 · 2026 年 8 月 11 日", "hold_ms": 2200,
+      "body": [
+        { "p": "过去两年，多数 agent 产品的骨架是一条流水线：检索、规划、执行、总结，一步接一步写死在代码里。好调试，但任务的形状一变，整条线就得重写。" },
+        { "h2": "Graph Workflow" },
+        { "p": "所谓 Graph Workflow，是把工作流本身描述成一张有向图：每个能力是一个节点，依赖是边，模型在运行时决定走哪条路径。", "em": "Graph Workflow" },
+        { "p": "它天然支持分支、回环与并行；某个节点失败，只需要重跑那一个节点，而不是整条流程从头再来。" } ],
+      "log": ["【世界信息】场景/状态｜在家·阅读中；信号来源｜手机系统·ScreenUsage（公众号文章页停留 > 40s）"] },
+
+    { "type": "section", "title": "02｜living edge｜读到生僻概念,摸一下 living edge,模型应声" },
+    { "type": "edge", "action": "touch" },
+    { "type": "say", "id": "ra0", "clip": "ra0", "speaker": "assistant", "text": "我在，你说。", "nature": "应答（应声）" },
+
+    { "type": "section", "title": "03｜用户 · voice｜\"Graph workflow 不就是 agent workflow 么？有啥特殊的？\"" },
+    { "type": "say", "id": "rq1", "clip": "rq1", "speaker": "user", "text": "Graph workflow 不就是 agent workflow 么？这个有啥特殊的？", "to": "对助手说", "kind": "指令（提问·带屏幕上下文）", "emotion": "疑惑", "pause_after": "点名要你答",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（提问，指代屏幕上的概念）；情绪｜疑惑；这句之后的停顿｜点名要你答", "【世界信息】场景/状态｜读屏；信号来源｜手机系统·ScreenUsage + 屏幕内容 caption；值不值得打扰｜值得打扰（被叫到了）"] },
+
+    { "type": "section", "title": "04｜读屏 · 检索｜自动截取当前这一屏定位段落,\"等我收集点资料\",带着上下文去查" },
+    { "type": "card", "style": "shot", "icon": "screenshot", "title": "已读取当前这一屏", "sub": "Agent Graph Engineering · 第 3 节「Graph Workflow」", "log_label": "读屏",
+      "log": ["【任务】任务类型｜读屏（当场就做）：screen.capture()→结果 定位到「Graph Workflow」段落（耗时 0.3s）"] },
+    { "type": "tool", "name": "screen.capture", "args": "", "result": "第 3 节「Graph Workflow」", "elapsed_ms": 300, "silent": true, "parallel": true },
+    { "type": "say", "id": "ra1", "clip": "ra1", "speaker": "assistant", "text": "嗯……我看到你在读的这段了。我来帮你查查，你等我收集一点资料哈。", "nature": "回执（承接·说明）",
+      "log": ["【语音·助手】助手句性质｜回执（承接·说明：看到了 + 去查 + 等一下）", "【决策点】该不该开口｜开口；开多大｜一句话；依据｜被叫到了；禁止｜半天不吭声；决策类型｜分级（慢）"] },
+    { "type": "tool", "name": "web_search", "args": "graph workflow vs agent workflow", "result": "3 篇原文 + 2 个实现仓库", "elapsed_ms": 5000, "task_type": "联网搜索", "speed": "查一下再答（慢）",
+      "ui": { "icon": "search", "doing": "正在查这个概念…", "done": "3 篇原文 + 2 个实现仓库", "ms": 5000 },
+      "log": ["【任务】任务类型｜联网搜索（查一下再答（慢））：web_search(graph workflow vs agent workflow)→结果 3 篇原文 + 2 个实现仓库（耗时 5.0s）", "【硬件交互】用哪种硬件反馈｜任务等待音（话说完了、资料还在查——这时候才铺嘟嘟）"] },
+    { "type": "log", "label": "检索完成", "detail": "带着你正在读的上下文去查,不是干答" },
+
+    { "type": "section", "title": "05｜模型 · 被打断｜讲到一半,用户顺势追问：\"那这个和 harness 有什么关系？\"" },
+    { "type": "say", "id": "ra2", "clip": "ra2", "speaker": "assistant", "gap_ms": 300, "text": "简单说，agent workflow 是你把步骤一条条写死，模型照着走；graph workflow 是把每个能力做成一个节点，节点之间连成图，模型在图里自己选路径。所以它能分支、能回头重试、能并行跑几条线，出错了也只需要重跑那一个节点，而不是整条流程从头再来。", "nature": "应答（讲解）", "overlap": "竞争打断（被用户叠上）·完成度｜快说完被断",
+      "log": ["【语音·助手】助手句性质｜应答（讲解：写死的步骤 vs 图里自选路径）；是否重叠｜竞争打断（被用户叠上）", "【决策点】该不该开口｜开口；开多大｜完整说；依据｜被叫到了"] },
+    { "type": "say", "id": "rq2", "clip": "rq2", "speaker": "user", "text": "那这个和 harness 有什么关系？", "barge_in": true, "at_ms": 22000, "to": "对助手说", "kind": "指令（追问）", "emotion": "好奇", "overlap": "竞争打断（叠在助手上）",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（顺着往下追问）；是否重叠｜竞争打断（叠在助手上）", "【决策点】该不该开口｜闭嘴；打断语义｜他自己搞定了（前半段够了）+改参数（转 harness）；依据｜用户在纠正；决策类型｜打断处理"] },
+
+    { "type": "section", "title": "06｜模型｜\"图是地图,harness 是开车的人\"——读着文章问,问完接着读" },
+    { "type": "say", "id": "ra3", "clip": "ra3", "speaker": "assistant", "text": "harness 是外面那层壳——负责调度、给上下文、管工具权限和重试。图是地图，harness 是开车的那个人。同一张图换个 harness，跑出来的效果可以差很多，所以现在大家比的其实是 harness。", "nature": "应答（收敛：顺着上一句往下接）",
+      "log": ["【语音·助手】助手句性质｜应答（收敛：不重复，顺着上一句接）", "【对话互动】接话方式｜正常接话（打断落点后 400ms）；回应是否及时｜及时"] },
+    { "type": "log", "label": "回答完成", "detail": "读着文章问,问完接着读 · 没离开过这一屏" },
+    { "type": "wait", "ms": 1200 },
+    { "type": "overlay", "action": "hide", "end_session": true },
+    { "type": "wait", "ms": 600 },
+    { "type": "article", "action": "hide" }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "id": "landlord",
+  "case_id": "06",
+  "name": "房东来电",
+  "group": "C · 高价值 Features",
+  "order": 6,
+  "summary": "房东要涨到 8500 → 红闪微震 → Memory 命中合同 → 上限 7800 当场反杀",
+  "scene": { "title": "晚上的家", "desc": "晚上在家,安静的居家氛围,房东打来电话", "ambience": "scene_landlord.m4a", "clock": "20:32:00" },
+  "speakers": {
+    "user": { "name": "你" },
+    "assistant": { "name": "Step" },
+    "landlord": { "name": "房东", "role": "third_party", "tts": { "voice": "onyx", "instructions": "五十岁上下的中国男性，电话里的声音，语气客气但带压迫感，北方口音的普通话。" } }
+  },
+  "context": {
+    "memory": { "documents": [ { "name": "租房合同.pdf", "signed": "2024.06", "term": "2 年", "clauses": { "4.2": "次年租金涨幅上限 5%" }, "rent": 7428 } ] },
+    "tools": [ { "type": "function", "function": { "name": "memory.search", "description": "长期记忆 / 个人文件检索" } }, { "type": "function", "function": { "name": "doc.extract", "description": "从文档中提取条款" } } ]
+  },
+  "timeline": [
+    { "type": "section", "title": "01｜scene｜晚上在家,安静的居家氛围" },
+    { "type": "section", "title": "02｜来电｜房东来电,Step 电话助攻自动挂载(可手动关闭)" },
+    { "type": "call", "action": "ring", "name": "房东", "assist": true, "wait_ms": 4500, "log_label": "来电",
+      "log": ["【世界信息】场景/状态｜来电话；信号来源｜手机系统·通话状态（来电：房东）；值不值得打扰｜值得打扰", "【硬件交互】用哪种硬件反馈｜通话助攻胶囊（可点按关闭）；时延档｜即时"] },
+
+    { "type": "section", "title": "03｜接听｜房东：\"这一片儿都在涨……下个月涨到八千五。\"接着继续寒暄铺垫" },
+    { "type": "say", "id": "lq1", "clip": "lq1", "speaker": "user", "text": "喂，王哥，您说。", "to": "对别人说", "kind": "闲聊（接电话）", "emotion": "平静",
+      "log": ["【语音·用户】对谁说的｜对别人说（对房东）；话语类型｜闲聊", "【决策点】该不该开口｜闭嘴（通话中只听）；依据｜旁人在说话；禁止｜回应旁人；决策类型｜响应（不响应）"] },
+    { "type": "say", "id": "ll1", "clip": "ll1", "speaker": "landlord", "text": "喂，小刘啊，跟你商量个事儿。最近这一片儿租金都在涨，你也知道哈。你那房子，我打算下个月起，房租涨到八千五一个月。", "to": "对用户说", "kind": "通话（涨租）",
+      "log": ["【语音·用户】谁在说｜用户2（房东，通话对方）；对谁说的｜对用户说；话语类型｜通知（涨租到 8500）", "【世界信息】场景/状态｜通话中；信号来源｜通话音轨（对方声道）"] },
+
+    { "type": "section", "title": "04｜关键事件｜房东还在说的同时——living edge 红色闪烁,手机微微震动" },
+    { "type": "say", "id": "ll1b", "clip": "ll1b", "speaker": "landlord", "gap_ms": 200, "text": "你别嫌高啊，我这也是没办法。你看隔壁那栋，一样的户型，人家现在都九千了。而且咱这物业费、暖气费年年往上走，我这边压力也大。你也住了两年多了，我一直没给你涨过，是不是？这回真是实在扛不住了才跟你提。", "to": "对用户说", "kind": "通话（铺垫）", "parallel": true,
+      "log": ["【语音·用户】谁在说｜用户2（房东）；对谁说的｜对用户说；话语类型｜闲聊（铺垫）；这句之后的停顿｜点名要你答", "【决策点】该不该开口｜不出声但要确认（关键事件：涨租意图）；依据｜有紧急风险（涉及钱）+ 旁人在说话；禁止｜回应旁人/外放隐私；决策类型｜信息（三方核验：先翻合同）"] },
+    { "type": "hardware", "feedback": "alert", "anchor": "prev_start", "delay_ms": 100, "latency": "即时≤50ms",
+      "log": ["【硬件交互】用哪种硬件反馈｜边缘灯效·告警（红闪）+ 震动；时延档｜即时≤50ms"] },
+    { "type": "overlay", "action": "over-call", "anchor": "prev_start", "delay_ms": 300 },
+    { "type": "say", "id": "la0", "speaker": "assistant", "typed": true, "alert": true, "label": "alert", "duration_ms": 900, "text": "检测到涨租——我翻一下你的合同。", "nature": "主动播报（插话·软：文字，不出声）", "anchor": "prev_start", "delay_ms": 500, "parallel": true,
+      "log": ["【语音·助手】助手句性质｜主动播报（文字：告知在翻合同）；交付形态｜文本"] },
+
+    { "type": "section", "title": "05｜memory｜通话不中断,后台检索 Memory,命中租房合同第 4.2 条" },
+    { "type": "agent", "inline": true, "delay_ms": 1200, "steps": [
+        { "icon": "search", "doing": "正在翻你的文件…", "done": "找到：租房合同.pdf · 2 年期", "ms": 3200, "tool": "memory.search", "args": "租房合同", "result": "租房合同.pdf（2024.06 · 2 年期）" },
+        { "icon": "doc", "doing": "正在核对涨租条款…", "done": "第 4.2 条：次年涨幅上限 5%", "ms": 3600, "tool": "doc.extract", "args": "租房合同.pdf, 涨租条款", "result": "第 4.2 条：次年涨幅上限 5%" },
+        { "icon": "price", "doing": "正在算这次能涨多少…", "done": "7,428 × 1.05 = 7,800 封顶", "ms": 3400 } ],
+      "done_log": "Memory 检索 · 合同命中 · 条款提取 · 上限算完",
+      "log": ["【记忆】Recall类型｜事实；记忆消费｜核对后用（合同条款 → 算上限）· documents.租房合同.clauses[4.2]=次年涨幅上限 5%；记忆更新｜不更新", "【任务】任务类型｜查资料（查一下再答（慢））：memory.search(租房合同)→结果 命中 1 份（耗时 3.2s）；doc.extract(4.2)→结果 上限 5%（耗时 3.6s）"] },
+
+    { "type": "section", "title": "06｜助攻卡片｜现在 7,428 / 封顶 7,800 / 要价 8,500,并给一句可照说的话术" },
+    { "type": "card", "style": "alert", "icon": "doc", "title": "租房合同 · 第 4.2 条", "sub": "签于 2024.06 · 2 年期", "log_label": "提醒卡片",
+      "rows": [ { "k": "当前租金", "v": "¥7,428" }, { "k": "合同涨幅上限 5%", "v": "+¥372" }, { "k": "可涨到", "v": "¥7,800", "cls": "cap" }, { "k": "他的要价", "v": "¥8,500 · 超 ¥700", "cls": "over" } ],
+      "say": "\"合同写了次年最多涨 5%，顶多七千八。\"",
+      "log": ["【硬件交互】用哪种硬件反馈｜生卡片（证据 + 一句可直接照说的话术）；时延档｜常规", "【决策点】该不该开口｜不出声但要确认；开多大｜生卡片；依据｜旁人在说话 + 涉敏 + 第三方在场；禁止｜外放隐私"] },
+    { "type": "join" },
+    { "type": "wait", "ms": 400 },
+
+    { "type": "section", "title": "07｜用户 · 反杀｜当场引用合同条款,房东讪讪让步\"按合同来\"" },
+    { "type": "say", "id": "lq2", "clip": "lq2", "speaker": "user", "text": "王哥，咱们合同里不是写了么——房租次年涨幅最多百分之五，按这个算顶多也就七千八，八千五可不行啊。", "to": "对别人说", "kind": "通话（引用条款反驳）", "emotion": "严肃",
+      "log": ["【语音·用户】对谁说的｜对别人说（对房东）；话语类型｜通话（照卡片话术反驳）；情绪｜严肃", "【对话互动】接话方式｜正常接话（用户接房东）"] },
+    { "type": "say", "id": "ll2", "clip": "ll2", "speaker": "landlord", "text": "呃……这个……行吧行吧，那就先按合同来，按合同来。", "to": "对用户说", "kind": "通话（让步）", "emotion": "尴尬", "voicing": "语气词（迟疑）",
+      "log": ["【语音·用户】谁在说｜用户2（房东）；对谁说的｜对用户说；情绪｜尴尬；发声方式｜语气词（呃……）"] },
+    { "type": "wait", "ms": 800 },
+    { "type": "call", "action": "end", "label": "通话结束", "detail": "按合同执行 · 一通电话守住 ¥8,400/年" }
+  ]
+}

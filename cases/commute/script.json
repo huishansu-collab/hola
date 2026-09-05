@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "id": "commute",
+  "case_id": "01",
+  "name": "出门上班",
+  "group": "A · 微意图 · 轻任务",
+  "order": 1,
+  "summary": "问天气 → 开口打断改打车 → 比价选车 → 一键确认叫车",
+  "scene": { "title": "临出门前的家", "desc": "早上出门前,随手摸一下 living edge 问天气", "ambience": "scene_commute.m4a", "clock": "07:52:00" },
+  "speakers": {
+    "user": { "name": "你" },
+    "assistant": { "name": "Step" }
+  },
+  "context": {
+    "memory": { "work_profile": { "office": "公司", "commute": "打车约 20 分钟" } },
+    "tools": [
+      { "type": "function", "function": { "name": "weather.now", "description": "当前天气与短时预报" } },
+      { "type": "function", "function": { "name": "ride.compare", "description": "多平台叫车比价" } }
+    ]
+  },
+  "timeline": [
+    { "type": "section", "title": "01｜scene · edge｜场景音带入 → 点按 living edge 建连，模型应声" },
+    { "type": "edge", "action": "touch" },
+    { "type": "say", "id": "a0", "clip": "a0", "speaker": "assistant", "text": "我在，你说。", "nature": "应答（应声）" },
+
+    { "type": "section", "title": "02｜用户 · voice｜\"今天出门要带伞么？\"" },
+    { "type": "say", "id": "q1", "clip": "q1", "speaker": "user", "text": "今天出门要带伞么？", "to": "对助手说", "kind": "指令（查询）", "emotion": "平静", "pause_after": "点名要你答",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（查询）；情绪｜平静；这句之后的停顿｜点名要你答"] },
+
+    { "type": "section", "title": "03｜模型 · 垫场｜先高情商垫一句\"稍等我看一下\"，争取查询时间，再播报天气" },
+    { "type": "say", "id": "a1a", "clip": "a1a", "speaker": "assistant", "text": "嗯——稍等哈，我帮你看一眼今天的天气。", "nature": "回执（承接·简短）", "parallel": true,
+      "log": ["【语音·助手】助手句性质｜回执（承接·简短「稍等哈」，400ms开口）", "【决策点】该不该开口｜开口；开多大｜一句话；多快回｜马上；依据｜被叫到了；决策类型｜分级（快）+播报（交付预告）"] },
+    { "type": "tool", "name": "weather.now", "args": "本地,当日", "result": "下午有阵雨 · 26° · 湿度偏高", "elapsed_ms": 2400, "delay_ms": 800, "parallel": true,
+      "task_type": "查天气", "speed": "查一下再答（快）",
+      "ui": { "icon": "weather", "doing": "正在查今天的天气…", "done": "下午有阵雨 · 26° · 湿度偏高", "ms": 2400 },
+      "log": ["【任务】任务类型｜查天气（查一下再答（快））：weather.now(本地,当日)→结果 下午有阵雨·26°·湿度偏高（耗时 2.4s）"] },
+    { "type": "join" },
+    { "type": "log", "label": "工具调用返回", "detail": "垫场话争取到查询时间 · 用户通道保持开麦" },
+    { "type": "say", "id": "a1", "clip": "a1", "speaker": "assistant", "gap_ms": 350,
+      "text": "今天下午两点之后有阵雨，出门建议带把伞。现在气温二十六度，湿度有点高，如果你走路去地铁站的话，路上大概要十五分钟，我建议你出门前再看一眼雷达图。",
+      "nature": "应答（讲解）", "overlap": "竞争打断（被用户叠上）·完成度｜中途被断",
+      "log": ["【语音·助手】助手句性质｜应答（讲解：核心结论前置，细节在可打断尾部）；是否重叠｜竞争打断（被用户叠上）·完成度｜中途被断", "【对话互动】接话方式｜正常接话；原说话人的话轮结果｜被打断；回应是否及时｜及时（首包 ~400ms）"] },
+
+    { "type": "section", "title": "04｜用户 · 开口打断｜\"还是打个车吧。\"两个声音短暂重叠，模型立即 fade out" },
+    { "type": "say", "id": "q2", "clip": "q2", "speaker": "user", "text": "还是打个车吧。", "barge_in": true, "at_ms": 5200,
+      "to": "对助手说", "kind": "指令（新任务）", "emotion": "平静", "overlap": "竞争打断（叠在助手上 1.8s）", "pause_after": "点名要你答",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（新任务：叫车）；是否重叠｜竞争打断（叠在助手上 1.8s）；这句之后的停顿｜点名要你答", "【硬件交互】用哪种硬件反馈｜边缘灯效·聆听态；时延档｜即时≤50ms", "【决策点】该不该开口｜闭嘴（≤200ms收口）；打断语义｜改参数（天气→叫车）；依据｜用户在纠正；禁止｜接着说旧答案；决策类型｜打断处理"] },
+
+    { "type": "section", "title": "05｜模型｜\"好的，是去公司吧，我来帮你挑辆车。\"" },
+    { "type": "say", "id": "a2", "clip": "a2", "speaker": "assistant", "text": "好的，是去公司吧，我来帮你挑辆车。", "nature": "应答（收敛）",
+      "log": ["【语音·助手】助手句性质｜应答（收敛：不重复已被打断的内容）", "【对话互动】接话方式｜正常接话（打断落点后 400ms）；回应是否及时｜及时", "【记忆】Recall类型｜事实；记忆消费｜直接用（目的地默认公司）· work_profile.office=公司；记忆更新｜不更新"] },
+    { "type": "memory", "kind": "memory_call_fast", "query": "work_profile.office", "result": "公司", "recall_type": "事实", "consume": "直接用", "parallel": true, "silent": true, "anchor": "prev_start", "delay_ms": -200, "elapsed_ms": 300 },
+
+    { "type": "section", "title": "06｜执行 · agent｜模型选好车、算好时间和价格，Book 按钮交给用户确认" },
+    { "type": "say", "id": "a3", "clip": "a3", "speaker": "assistant", "text": "我先帮你比价，选一辆最快到的，几秒钟就好，你可以先收拾东西。", "nature": "回执（承接·说明）", "parallel": true,
+      "log": ["【语音·助手】助手句性质｜回执（承接·说明：做什么 + 多久 + 你可以先干嘛）", "【决策点】该不该开口｜开口；开多大｜一句话；依据｜有任务进展；禁止｜半天不吭声；决策类型｜分级（慢）+播报（交付预告）"] },
+    { "type": "agent", "ticker": "正在规划…", "think": "去公司对吧——先看看哪家车最快。", "done": "已选好车，等你确认", "done_log": "方案就绪 · 白色轿车 · 3 min · ¥18 · 等待用户确认",
+      "steps": [
+        { "icon": "loc", "doing": "正在确认你的位置…", "done": "你在家，从这儿出发", "ms": 3200, "tool": "location.current", "result": "家" },
+        { "icon": "price", "doing": "正在帮你比价…", "done": "比了 3 家，这辆最快——3 分钟就到，¥18", "ms": 6800, "tool": "ride.compare", "args": "家→公司", "result": "白色轿车 · 3 min · ¥18（3 家中最快）" },
+        { "icon": "sparkles", "doing": "正在整理方案…", "done": "方案好了，就等你确认", "ms": 5600 }
+      ],
+      "log": ["【任务】任务类型｜叫车（长任务）：location.current()∥ride.compare(家→公司)→结果 白色轿车·3min·¥18（耗时 15.6s）；交付形态｜生卡片", "【硬件交互】用哪种硬件反馈｜生卡片 + 任务等待音（模型闭嘴后才铺）"] },
+    { "type": "join" },
+    { "type": "say", "id": "a4", "clip": "a4", "speaker": "assistant", "gap_ms": 280, "text": "车帮你选好了，白色轿车，三分钟能到，十八块钱，觉得合适的话，点一下打车就可以了。", "nature": "主动播报（合并）", "parallel": true,
+      "log": ["【语音·助手】助手句性质｜主动播报（到达：车型 + 时间 + 价格 + 一句给完）", "【决策点】该不该开口｜开口；开多大｜完整说；依据｜有任务进展；禁止｜没经允许乱插（下单等授权）；决策类型｜权限（消费动作先征询）"] },
+    { "type": "card", "id": "ride", "icon": "car", "title": "Ride Ready", "sub": "White sedan · Plate ·· 8291", "eta": { "n": "3", "unit": "min" }, "meta": ["Home → Office", "¥18"], "delay_ms": 900,
+      "button": { "label": "Book Ride", "done_label": "Booked · Driver on the way", "done_title": "Ride Booked", "done_log": "已叫车", "wait_ms": 7000 } },
+    { "type": "join" },
+    { "type": "overlay", "action": "collapse", "label": "overlay 收起", "detail": "化作顶部的小任务卡 · 司机赶来中" },
+    { "type": "pill", "icon": "car", "name": "White Sedan", "now": "3 min", "stops": ["Driver", "Home", "Office"], "progress": true, "log_label": "任务落地" }
+  ]
+}

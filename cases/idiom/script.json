@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "id": "idiom",
+  "case_id": "07",
+  "name": "成语接龙",
+  "group": "B · Aha features",
+  "order": 7,
+  "summary": "周末无聊开局 → 抢着定规则 → 你来我往互相调侃 → 倒计时刚开就被抢答",
+  "scene": { "title": "周末躺在家里", "desc": "周末躺在家里,无聊得很", "ambience": "scene_idiom.m4a", "clock": "14:20:00" },
+  "speakers": { "user": { "name": "你" }, "assistant": { "name": "Step" } },
+  "timeline": [
+    { "type": "section", "title": "01｜scene｜周末躺在家里,无聊得很" },
+    { "type": "section", "title": "02｜living edge｜摸一下 living edge,建连后模型应声" },
+    { "type": "edge", "action": "touch" },
+    { "type": "say", "id": "ia0", "clip": "ia0", "speaker": "assistant", "text": "我在，你说。", "nature": "应答（应声）" },
+
+    { "type": "section", "title": "03｜用户 · voice｜\"我们玩一下成语接龙吧。\"" },
+    { "type": "say", "id": "iq1", "clip": "iq1", "speaker": "user", "text": "太无聊了，我们来玩下成语接龙吧。", "to": "对助手说", "kind": "闲聊（提议游戏）", "emotion": "无聊", "pause_after": "点名要你答",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜闲聊（提议游戏）；情绪｜无聊；这句之后的停顿｜点名要你答"] },
+
+    { "type": "section", "title": "04｜模型 · 被打断｜\"你确定你能玩得过我…\"话没完,用户抢着定规则：四声通配、30 秒限时" },
+    { "type": "say", "id": "ia1", "clip": "ia1", "speaker": "assistant", "text": "行呀，你先说还是我先说哈？你确定你能玩得过我？我们要不要先约束一下规则什么的？", "nature": "应答（应战 + 追问·征询）", "overlap": "竞争打断（被用户叠上）·完成度｜快说完被断",
+      "log": ["【语音·助手】助手句性质｜应答（应战）+追问（征询规则）；是否重叠｜竞争打断（被用户叠上）", "【决策点】该不该开口｜开口；开多大｜完整说；依据｜被叫到了；决策类型｜主动（提议：先定规则）"] },
+    { "type": "card", "id": "idiom", "icon": "game", "title": "成语接龙", "sub": "规则待定", "meta": ["等待开局…"], "parallel": true, "delay_ms": 300, "log_label": "对局卡落地" },
+    { "type": "say", "id": "iq2", "clip": "iq2", "speaker": "user", "text": "我先说下规则啊：最后一个字，四个声调的字都算。谁三十秒说不出来就算输。", "barge_in": true, "at_ms": 6400, "to": "对助手说", "kind": "指令（定规则）", "emotion": "兴奋", "overlap": "竞争打断（叠在助手上）",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（定规则：四声通配 + 30s 限时）；是否重叠｜竞争打断（叠在助手上）", "【决策点】该不该开口｜闭嘴；打断语义｜改参数（规则由用户定）；依据｜用户在纠正；决策类型｜打断处理", "【记忆】记忆更新｜不更新（一次性游戏规则不进长期记忆）"] },
+    { "type": "card", "update": "idiom", "sub": "四声通配 · 30s 限时 · 计时未开" },
+
+    { "type": "section", "title": "05｜对局｜马到成功 → 功成名就(数声调的功夫)" },
+    { "type": "say", "id": "ia2", "clip": "ia2", "speaker": "assistant", "text": "好呀，那准备好了我要说了哈——马到成功。", "nature": "应答（先手）", "parallel": true,
+      "log": ["【语音·助手】助手句性质｜应答（接受规则 + 先手出题）", "【对话互动】接话方式｜正常接话（打断落点后 400ms）；回应是否及时｜及时"] },
+    { "type": "card", "update": "idiom", "meta": ["Step · 马到成功", "chain 继续 →"], "parallel": true, "delay_ms": 3400 },
+    { "type": "join" },
+    { "type": "say", "id": "iq3", "clip": "iq3", "speaker": "user", "gap_ms": 300, "text": "嗯……工，巩，共……嗯，功成名就。", "to": "对助手说", "kind": "接龙", "emotion": "专注", "voicing": "语气词（数声调）", "pause_after": "点名要你答", "parallel": true,
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜接龙；发声方式｜语气词（数声调时的嗯……）；这句之后的停顿｜在想词儿→点名要你答", "【决策点】该不该开口｜闭嘴（用户在想词儿，不接话不催）；依据｜安静更好；决策类型｜留白"] },
+    { "type": "card", "update": "idiom", "meta": ["你 · 功成名就", "chain 继续 →"], "parallel": true, "delay_ms": 6800 },
+    { "type": "join" },
+
+    { "type": "section", "title": "06｜模型 · 被打断｜\"嗯,你可以呀。我都快给你开倒计时了…\",用户直接怼回去" },
+    { "type": "say", "id": "ia3", "clip": "ia3", "speaker": "assistant", "gap_ms": 300, "text": "嗯，你可以呀。我都快给你开倒计时了。", "nature": "应答（调侃）", "overlap": "竞争打断（被用户叠上）·完成度｜快说完被断",
+      "log": ["【语音·助手】助手句性质｜应答（调侃）；是否重叠｜竞争打断（被用户叠上）"] },
+    { "type": "say", "id": "iq4", "clip": "iq4", "speaker": "user", "text": "你直接把倒计时打开就行，不用让着我。", "barge_in": true, "at_ms": 5400, "to": "对助手说", "kind": "指令（开计时）", "emotion": "不服", "overlap": "竞争打断（叠在助手上）",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（开倒计时）；情绪｜不服；是否重叠｜竞争打断（叠在助手上）", "【决策点】该不该开口｜闭嘴；打断语义｜改参数（开计时）；依据｜用户在纠正；决策类型｜打断处理"] },
+
+    { "type": "section", "title": "07｜开计时 · 抢答｜\"好,那我可开了啊……咎由自取\";用户数着\"区渠取去\"接上：屈打成招" },
+    { "type": "say", "id": "ia4", "clip": "ia4", "speaker": "assistant", "text": "好，那我可开了啊。前面那个成语……我想到了，咎由自取。", "nature": "应答（开计时 + 补上自己的成语）", "parallel": true,
+      "log": ["【语音·助手】助手句性质｜应答（执行指令 + 接龙）", "【任务】任务类型｜设闹钟·计时（当场就做）：timer.create(30s)→结果 计时中（耗时 0.2s）", "【硬件交互】用哪种硬件反馈｜生卡片（30s 倒计时）；时延档｜即时"] },
+    { "type": "tool", "name": "timer.create", "args": "30s", "result": "running", "elapsed_ms": 200, "silent": true, "parallel": true, "anchor": "prev_start", "delay_ms": 200 },
+    { "type": "card", "update": "idiom", "sub": "四声通配 · 30s 限时 · 计时中", "timer": { "from": 30, "unit": "s" }, "parallel": true, "delay_ms": 200 },
+    { "type": "card", "update": "idiom", "meta": ["Step · 咎由自取", "chain 继续 →"], "parallel": true, "delay_ms": 6200 },
+    { "type": "join" },
+    { "type": "say", "id": "iq5", "clip": "iq5", "speaker": "user", "gap_ms": 200, "text": "区，渠，取，去……嗯，屈打成招。", "to": "对助手说", "kind": "接龙（抢答）", "emotion": "得意", "voicing": "语气词（数声调）", "pause_after": "点名要你答",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜接龙（抢答）；发声方式｜语气词（数声调）；情绪｜得意"] },
+    { "type": "card", "update": "idiom", "meta": ["你 · 屈打成招", "chain 继续 →"], "sub": "四声通配 · 30s 限时 · 7 秒接上", "timer": false, "eta": { "n": "7", "unit": "s" } },
+    { "type": "log", "label": "回合结束", "detail": "数完声调 7 秒接上 · 轮到 Step" }
+  ]
+}

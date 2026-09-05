@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Duplex Studio · 全双工 demo 平台</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/css/platform.css">
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Duplex Studio · script → demo → dataset</div>
+      <h1>全双工语音 · 场景演示平台</h1>
+      <div class="tagline editorial">输入脚本与八轨日志 → 高保真手机 demo → Live Interaction 规范化 JSON</div>
+    </div>
+    <div class="top-right">
+      <div class="case-chip" id="caseChip">
+        <span class="eyebrow">当前 case</span>
+        <span class="cn"><b id="caseName">加载中…</b><svg class="cv" width="10" height="6" viewBox="0 0 11 7" fill="none"><path d="M1 1.5 L5.5 5.5 L10 1.5" stroke="#A6AFB2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="case-menu" id="caseMenu"></div>
+      </div>
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-view="demo">演示</button>
+        <button class="tab" data-view="script">脚本 · 语音</button>
+        <button class="tab" data-view="export">导出 JSON</button>
+      </div>
+      <span class="status-pill" id="ttsStatus"><i></i>TTS</span>
+    </div>
+  </header>
+
+  <!-- ================= 演示 ================= -->
+  <section class="view active" id="view-demo">
+    <div class="grid">
+      <aside>
+        <div class="panel-title"><span class="eyebrow">演示脚本</span><span class="sub editorial" id="beatCount">beats</span></div>
+        <div class="beats" id="beats"></div>
+        <div class="story-clock"><span class="eyebrow">story clock</span><b id="storyClock">--:--:--</b></div>
+        <p class="hint-note">演示为脚本化表演:模型播报到一半时,用户会<b>开口打断</b>,两个声音短暂重叠、模型 fade out 让位。若浏览器授权了麦克风,你也可以<b>亲口打断</b>;点一下手机屏幕同样有效。</p>
+      </aside>
+
+      <section class="stage" id="stage">
+        <div class="sidephone">
+          <div class="sp-body"></div>
+          <div class="sp-edge" id="spEdge" title="点按 living edge 开始"></div>
+          <div class="sp-callout"><span>living edge</span></div>
+          <div class="touch-ring" id="touchRing"></div>
+        </div>
+        <div class="phone" id="phone">
+          <div class="phone-screen" id="screen">
+            <div class="camera"></div>
+            <div class="statusbar">
+              <svg width="15" height="11" viewBox="0 0 15 11" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M1 8.5h1.6V10H1zM4.4 6.5H6V10H4.4zM7.8 4H9.4v6H7.8zM11.2 1.5h1.6V10h-1.6z"/></svg>
+              <svg width="20" height="11" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="15" height="9" rx="2.5"/><path d="M17.5 4v3"/><rect x="3" y="3" width="9" height="5" rx="1" fill="currentColor" stroke="none"/></svg>
+            </div>
+            <div class="lockscreen" id="lockscreen">
+              <div class="lock-date" id="lockDate">Tue 9 Jan</div>
+              <div class="lock-clock" id="lockClock">9:41</div>
+              <div class="lock-badge" id="lockBadge"></div>
+              <button class="lock-qbtn left"><img src="/assets/icons/flashlight.png" alt=""></button>
+              <button class="lock-qbtn right"><img src="/assets/icons/camera.png" alt=""></button>
+              <div class="lock-bar"></div>
+            </div>
+            <div class="article" id="article"></div>
+            <div class="ai-overlay" id="overlay">
+              <div class="ov-head">
+                <span class="ov-brand" id="ovBrand">Step Intelligence</span>
+                <span class="ov-rec" id="ovRec"><i></i><span>REC</span><b id="ovRecTime">00:00</b></span>
+                <span class="ov-silent" id="ovSilent" style="display:none">只听不说</span>
+                <button class="ov-expand" id="ovExpand" title="Expand">
+                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#F2F4F5" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M7.2 1.5H10.5V4.8M10.5 1.5L6.9 5.1M4.8 10.5H1.5V7.2M1.5 10.5L5.1 6.9"/></svg>
+                </button>
+              </div>
+              <div class="ov-lines" id="ovLines"></div>
+            </div>
+            <div id="pills"></div>
+            <div class="call-screen" id="callScreen">
+              <div class="cs-name" id="csName">老妈</div>
+              <div class="cs-sub" id="csSub">mobile · incoming call…</div>
+              <div class="cs-dock" id="csDock"></div>
+              <div class="cs-grid">
+                <div class="cs-gbtn"><span class="cs-gcircle"><img src="/assets/icons/mute.png" alt=""></span><span>mute</span></div>
+                <div class="cs-gbtn"><span class="cs-gcircle"><img src="/assets/icons/keypad.png" alt=""></span><span>keypad</span></div>
+                <div class="cs-gbtn"><span class="cs-gcircle"><img src="/assets/icons/speaker.png" alt=""></span><span>speaker</span></div>
+                <div class="cs-gbtn"><span class="cs-gcircle"><img src="/assets/icons/addcall.png" alt=""></span><span>add call</span></div>
+                <div class="cs-gbtn"><span class="cs-gcircle"><img src="/assets/icons/facetime.png" alt=""></span><span>FaceTime</span></div>
+                <div class="cs-gbtn"><span class="cs-gcircle"><img src="/assets/icons/contacts.png" alt=""></span><span>contacts</span></div>
+              </div>
+              <div class="cs-actions">
+                <button class="cs-btn decline" id="csDecline"><span class="cs-circle"><img src="/assets/icons/phonedown.png" alt=""></span><span>Decline</span></button>
+                <button class="cs-btn accept" id="csAccept"><span class="cs-circle"><img src="/assets/icons/phone.png" alt=""></span><span>Accept</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="stage-toast" id="stageToast"></div>
+      </section>
+
+      <aside class="log">
+        <div class="panel-title"><span class="eyebrow">八轨日志</span><span class="sub editorial" id="playHint">点按 living edge 开始</span></div>
+        <div class="log-tools" id="logTools"></div>
+        <div class="log-body" id="logBody"><div class="log-empty editorial">按下播放,日志从这里开始。</div></div>
+        <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap">
+          <button class="btn sm" id="btnPlay">▶ 播放</button>
+          <button class="btn sm ghost" id="btnReset">重置</button>
+          <button class="btn sm ghost" id="btnSkipScene" title="跳过场景环境音">跳过场景音</button>
+          <label class="status-pill" style="cursor:pointer"><input type="checkbox" id="micToggle" checked style="margin-right:4px"> 麦克风打断</label>
+        </div>
+      </aside>
+    </div>
+    <div class="footnote">
+      <span id="footLeft">语音由 OpenAI TTS 合成 · 人声打断依赖麦克风 VAD · 缺语音的台词按语速上屏</span>
+      <span class="mono">duplex studio · v0.1</span>
+    </div>
+  </section>
+
+  <!-- ================= 脚本 · 语音 ================= -->
+  <section class="view" id="view-script">
+    <div class="editor-grid">
+      <div>
+        <div class="toolbar">
+          <div class="seg" id="modeSeg"><button data-mode="dsl" class="on">剧本 (DSL)</button><button data-mode="json">script.json</button></div>
+          <button class="btn sm ghost" id="btnParse">解析预览</button>
+          <button class="btn sm" id="btnSave">保存到 case</button>
+          <span class="spacer"></span>
+          <button class="btn sm ghost" id="btnNewCase">＋ 新建 case</button>
+          <button class="btn sm ghost" id="btnTemplate">插入模板</button>
+        </div>
+        <textarea class="code" id="editor" spellcheck="false" placeholder="# 案例名&#10;id: my-case&#10;## 段1｜09:41:00‒09:41:30｜开场&#10;@edge touch&#10;[09:41:00.0] 助手: 我在，你说。&#10;[09:41:02.0] 用户: 今天出门要带伞么？&#10;  【语音·用户】对谁说的｜对助手说；情绪｜平静"></textarea>
+        <div id="editorMsg"></div>
+      </div>
+      <div>
+        <div class="side-card">
+          <h3>语音 <span class="sub" id="voiceSummary"></span></h3>
+          <div class="progress" id="ttsProgress" hidden><i></i></div>
+          <div class="toolbar">
+            <button class="btn sm warm" id="btnTtsMissing">生成缺失语音</button>
+            <button class="btn sm ghost" id="btnTtsAll">全部重新生成</button>
+            <button class="btn sm ghost" id="btnTtsStop" hidden>停止</button>
+          </div>
+          <div id="ttsMsg"></div>
+          <div class="tbl-wrap"><table class="tbl" id="clipTable"></table></div>
+        </div>
+        <div class="side-card">
+          <h3>说话人与音色</h3>
+          <div id="speakerList"></div>
+          <p class="help" style="margin-top:8px">改音色:在剧本里写 <code>speaker assistant: voice=nova instructions="…"</code>;可选 voice 见 OpenAI TTS 列表(alloy · ash · ballad · coral · echo · fable · nova · onyx · sage · shimmer · verse · marin · cedar)。</p>
+        </div>
+        <div class="side-card">
+          <h3>剧本速查</h3>
+          <div class="help">
+            <h4>台词</h4>
+            <code>[08:03:00.0‒08:03:03.5] 用户: 几点了？</code> · <code>★</code> 特写 · 括号=舞台提示:<code>用户（抢话，与AI语音重叠）: …</code> 自动成为打断;<code>（低语）</code> <code>（打字）</code> 同理
+            <h4>八轨日志(挂在上一句)</h4>
+            <code>【语音·用户】对谁说的｜对助手说；情绪｜焦虑；这句之后的停顿｜点名要你答</code><br>
+            <code>【任务】任务类型｜查天气（查一下再答（快））：weather.query(本地)→结果 20℃·晴（耗时 0.6s）</code> → 自动生成工具卡片与 function_call 事件<br>
+            <code>【记忆】Recall类型｜偏好；记忆消费｜直接用 · user_profile.dressing=偏怕冷</code> → memory_call 事件<br>
+            <code>【世界信息】场景/状态｜…；信号来源｜…</code> → world_signal · <code>【硬件交互】用哪种硬件反馈｜震动</code> → 手机震动
+            <h4>UI 指令</h4>
+            <code>@edge touch|double|alert|rec|off</code> · <code>@card icon=car title="Ride Ready" sub="…" eta="3 min" meta="Home → Office|¥18" button="Book Ride"</code> · <code>@pill icon=car name="White Sedan" now="3 min" stops="Driver|Home|Office" progress=true</code> · <code>@call ring 老妈</code> / <code>@call connect</code> / <code>@call end</code> · <code>@agent think="…" steps=[{"icon":"loc","doing":"…","done":"…","ms":3200}]</code> · <code>@overlay collapse</code> · <code>@vibrate</code> · <code>@banner 悄悄话模式 "· 你轻声说，我只打字"</code> · <code>@rec start from_sec=760</code> · <code>@skip 08:07:10 画面跳过</code> · <code>@wait 800</code> · <code>@article show title="…"</code>
+            <h4>说话人</h4>
+            <code>用户 / 助手 / 系统</code> 为内置;其他名字(司机、老李、房东…)自动成为第三方,<code>speaker 司机: voice=onyx</code> 指定音色
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 导出 ================= -->
+  <section class="view" id="view-export">
+    <div class="editor-grid">
+      <div>
+        <div class="toolbar">
+          <button class="btn sm" id="btnBuildJson">生成规范化 JSON</button>
+          <a class="btn sm ghost" id="lnkJson" download>下载 JSON</a>
+          <a class="btn sm ghost" id="lnkWav" download>下载双声道 WAV(服务端)</a>
+          <button class="btn sm ghost" id="btnMixBrowser">浏览器混音 WAV</button>
+          <span class="spacer"></span>
+          <span class="status-pill" id="exportIssues"><i></i>未生成</span>
+        </div>
+        <div class="kpi" id="kpi"></div>
+        <pre class="json" id="jsonPreview">点「生成规范化 JSON」预览 Draft v5 结构。</pre>
+      </div>
+      <div>
+        <div class="side-card">
+          <h3>时间轴 <span class="sub">Channel 1 用户/第三方 · Channel 2 助手</span></h3>
+          <div class="timeline-strip" id="timelineStrip"></div>
+          <div class="legend"><span><i style="background:rgba(232,178,132,.75)"></i>用户</span><span><i style="background:rgba(122,200,140,.75)"></i>助手</span><span><i style="background:rgba(132,178,232,.75)"></i>第三方</span><span><i style="background:rgba(224,82,76,.8)"></i>被打断后的让位段</span></div>
+        </div>
+        <div class="side-card">
+          <h3>utterances</h3>
+          <div class="tbl-wrap"><table class="tbl" id="uttTable"></table></div>
+        </div>
+        <div class="side-card">
+          <h3>events · annotation</h3>
+          <div class="tbl-wrap"><table class="tbl" id="evTable"></table></div>
+        </div>
+        <div class="side-card">
+          <h3>目录约定</h3>
+          <div class="help">
+            <code>json/synthetic/{case_id}_{sample_id}.json</code> · <code>audio/synthetic/{case_id}_{sample_id}.wav</code><br>
+            服务端混音只接受 WAV 片段(OpenAI TTS 输出);导入的 m4a/mp3 片段请用「浏览器混音」。<br>
+            命令行:<code>npm run export -- &lt;caseId&gt;</code> 会把两者写到 <code>cases/&lt;id&gt;/export/</code>。
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>

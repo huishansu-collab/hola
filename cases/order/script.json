@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "order",
+  "case_id": "09",
+  "name": "会议点外卖",
+  "group": "C · 高价值 Features",
+  "order": 9,
+  "summary": "连摸两下进悄悄话 → 模型只打字 → 悄声点单 → ¥118 送到办公室,全程没出一声",
+  "scene": { "title": "培训会现场", "desc": "台上正在讲这次培训的目的,你在台下", "ambience": "scene_training.m4a", "clock": "10:15:00" },
+  "speakers": { "user": { "name": "你" }, "assistant": { "name": "Step" } },
+  "context": { "tools": [ { "type": "function", "function": { "name": "shop.nearest", "description": "附近门店检索" } }, { "type": "function", "function": { "name": "order.create", "description": "下单" } } ] },
+  "timeline": [
+    { "type": "section", "title": "01｜scene｜培训会现场,台上正在讲这次培训的目的" },
+    { "type": "section", "title": "02｜living edge ×2｜连摸两下进入悄悄话模式,模型只打字：\"我在,你说\"" },
+    { "type": "edge", "action": "double",
+      "log": ["【世界信息】场景/状态｜开会中（多人 · 公共场合）；信号来源｜手机感知·麦克风阵列（台上一人讲话 + 安静听众）+ 日历（培训会进行中）；值不值得打扰｜不适合出声", "【硬件交互】用哪种硬件反馈｜边缘灯效·唤醒（绿色 · 静默模式）；时延档｜即时≤50ms", "【决策点】该不该开口｜不出声但要确认（悄悄话模式：只打字）；依据｜场景=公共；禁止｜外放隐私；决策类型｜播报（场景降级）"] },
+    { "type": "banner", "icon": "ear", "title": "悄悄话模式", "sub": "· 你轻声说，我只打字" },
+    { "type": "say", "id": "oa0", "speaker": "assistant", "typed": true, "text": "我在，你说。", "nature": "应答（应声·打字）",
+      "log": ["【语音·助手】助手句性质｜应答（应声）；交付形态｜文本（不出声）"] },
+
+    { "type": "section", "title": "03｜用户 · 悄悄话｜\"三杯冰美式大杯,两杯热拿铁,送到我办公室。\"" },
+    { "type": "say", "id": "oq1", "clip": "oq1", "speaker": "user", "whisper": true, "text": "帮我订三杯冰美式，大杯的，再来两杯热拿铁，送到我办公室。", "to": "对助手说", "kind": "指令（点单）", "emotion": "平静", "voicing": "低语",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（点单 ×2 + 地址）；发声方式｜低语（凑近拾音）；这句之后的停顿｜点名要你答", "【世界信息】场景/状态｜开会中；信号来源｜手机感知·6 麦阵列（近讲低能量）"] },
+
+    { "type": "section", "title": "04｜模型 · 执行｜打字确认\"我这就去下单\",任务音效起,挑店 → 下单" },
+    { "type": "say", "id": "oa1", "speaker": "assistant", "typed": true, "gap_ms": 300, "text": "收到，我这就去下单。", "nature": "回执（承接·简短·打字）",
+      "log": ["【语音·助手】助手句性质｜回执（承接·简短）；交付形态｜文本", "【决策点】该不该开口｜不出声但要确认；依据｜场景=公共；决策类型｜分级（慢）"] },
+    { "type": "agent", "inline": true, "steps": [
+        { "icon": "coffee", "doing": "正在挑最近的咖啡店…", "done": "瑞幸 · 楼下 200m · 25 分钟送达", "ms": 3400, "tool": "shop.nearest", "args": "咖啡, 办公室", "result": "瑞幸 · 200m · 25min" },
+        { "icon": "bag", "doing": "正在下单…", "done": "3 冰美式(大) + 2 热拿铁 · ¥118", "ms": 3600, "tool": "order.create", "args": "3×冰美式(L), 2×热拿铁 → 办公室", "result": "draft · ¥118" } ],
+      "done_log": "方案就绪 · 瑞幸 · ¥118 · 25 min · 等待用户确认",
+      "log": ["【任务】任务类型｜点餐（长任务）：shop.nearest(咖啡,办公室)→结果 瑞幸·200m（耗时 3.4s）∥order.create(3×冰美式(L),2×热拿铁)→结果 草稿 ¥118（耗时 3.6s）；交付形态｜生卡片", "【硬件交互】用哪种硬件反馈｜生卡片 + 任务等待音（极低音量）"] },
+
+    { "type": "section", "title": "05｜action｜外卖卡落地：¥118 · 25 分钟送到办公室,全程没出一声" },
+    { "type": "card", "icon": "coffee", "title": "Order Ready", "sub": "3× Iced Americano (L) · 2× Hot Latte", "eta": { "n": "25", "unit": "min" }, "meta": ["Deliver to · My office", "¥118"],
+      "button": { "label": "Place Order", "done_label": "Ordered · Courier assigned", "done_title": "Order Placed", "done_log": "已下单", "wait_ms": 6000 },
+      "log": ["【决策点】该不该开口｜不出声但要确认；依据｜场景=公共；禁止｜没经允许乱插（消费动作等授权）；决策类型｜权限"] },
+    { "type": "overlay", "action": "collapse", "edge_off": true, "label": "任务落地", "detail": "overlay 收起为任务卡 · 咖啡在路上 · 全程没出一声" },
+    { "type": "pill", "icon": "coffee", "name": "Coffee on the way", "now": "25 min", "stops": ["Luckin · 200m", "Courier assigned", "My office"] }
+  ]
+}

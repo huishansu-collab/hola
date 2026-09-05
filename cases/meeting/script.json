@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "id": "meeting",
+  "case_id": "08",
+  "name": "会议纪要",
+  "group": "C · 高价值 Features",
+  "order": 8,
+  "summary": "一句话下指令 → 绿灯静默记录 → 三人分离转写 + 抢话双路 → 纪要成形可分享",
+  "scene": { "title": "办公室 · 三人碰一下", "desc": "叫上王琳和老李碰一下市场投放的事儿", "ambience": "scene_meeting.m4a", "clock": "11:00:00" },
+  "speakers": {
+    "user": { "name": "你" },
+    "assistant": { "name": "Step" },
+    "B": { "name": "老李", "role": "third_party", "tts": { "voice": "onyx", "instructions": "四十岁上下的中国男性，会议室里的说话声，语速偏快，普通话标准。" } },
+    "C": { "name": "王琳", "role": "third_party", "tts": { "voice": "shimmer", "instructions": "三十岁上下的中国女性，会议室里的说话声，干练利落，普通话标准。" } }
+  },
+  "context": {
+    "memory": { "output_templates": { "meeting_notes": { "sections": ["决议", "待办", "关键数字"] } }, "colleagues": ["王琳", "老李"] },
+    "tools": [ { "type": "function", "function": { "name": "minutes.generate", "description": "由转写生成结构化纪要" } } ]
+  },
+  "timeline": [
+    { "type": "section", "title": "01｜scene｜办公室里招呼：\"王琳、老李,过来碰一下市场投放的事儿\"" },
+    { "type": "say", "id": "mt_call", "clip": "mt_call", "speaker": "user", "text": "王琳、老李，过来碰一下市场投放的事儿。", "to": "对别人说", "kind": "闲聊（招呼同事）", "emotion": "平静",
+      "log": ["【语音·用户】对谁说的｜对别人说（同事）；话语类型｜闲聊", "【世界信息】场景/状态｜上班中·办公区；信号来源｜手机系统·WifiState(公司 Wi-Fi) + LocationFix(公司) + 麦克风阵列（多人交谈）", "【决策点】该不该开口｜闭嘴；依据｜旁人在说话；决策类型｜响应（不响应）"] },
+    { "type": "wait", "ms": 500 },
+
+    { "type": "section", "title": "02｜用户 A｜摸一下 living edge,模型应声后交代：\"帮我记录一下会议\"" },
+    { "type": "edge", "action": "touch" },
+    { "type": "say", "id": "ma0v", "clip": "ma0v", "speaker": "assistant", "text": "我在，你说。", "nature": "应答（应声）" },
+    { "type": "say", "id": "mq0", "clip": "mq0", "speaker": "user", "label": "A", "gap_ms": 200, "text": "帮我记录一下会议。", "to": "对助手说", "kind": "指令（记会议纪要）", "pause_after": "点名要你答",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（记会议纪要）；这句之后的停顿｜点名要你答", "【任务】任务类型｜记会议纪要（长任务）：受理；交付形态｜生卡片（事后成文）", "【世界信息】场景/状态｜开会中（环境判定：多人会议进行中）；值不值得打扰｜不适合出声"] },
+
+    { "type": "section", "title": "03｜living edge｜识别到在会上——绿色闪一下确认,随后长亮呼吸：静默记录中" },
+    { "type": "wait", "ms": 300 },
+    { "type": "edge", "action": "gflash",
+      "log": ["【硬件交互】用哪种硬件反馈｜边缘灯效·确认（绿闪）→ 聆听态（绿色呼吸）；时延档｜即时≤50ms", "【决策点】该不该开口｜不出声但要确认（转入静默记录：只打字回，之后不再出声）；依据｜场景=公共 + 旁人在说话；禁止｜外放隐私；决策类型｜播报（场景降级）"] },
+    { "type": "say", "id": "ma0", "speaker": "assistant", "typed": true, "text": "好，我记着。你现在不方便说话，我打字。", "nature": "回执（承接·说明·打字）",
+      "log": ["【语音·助手】助手句性质｜回执（承接·说明）；交付形态｜文本"] },
+    { "type": "rec", "action": "start", "from_sec": 760 },
+
+    { "type": "section", "title": "04｜转写 · 说话人分离｜overlay 自动展开,A / B / C 逐条上屏,模型全程不出声" },
+    { "type": "transcript", "action": "open" },
+    { "type": "wait", "ms": 500 },
+    { "type": "say", "id": "mA1", "clip": "mA1", "speaker": "user", "transcript": true, "gap_ms": 0, "text": "咱们把这版商业计划过一下，重点看明年的收入结构。", "to": "对别人说", "kind": "会议发言",
+      "log": ["【语音·用户】谁在说｜用户1（A）；对谁说的｜对别人说；话语类型｜会议发言", "【决策点】该不该开口｜闭嘴（静默记录）；依据｜旁人在说话；决策类型｜响应（不响应）"] },
+    { "type": "say", "id": "mB1", "clip": "mB1", "speaker": "B", "transcript": true, "gap_ms": 320, "text": "订阅这块我算过，明年 ARR 差不多能到一千二百万，但获客成本压不下来。", "to": "对别人说", "kind": "会议发言", "tags": [ { "t": "数字 · 明年 ARR ¥12M", "k": "num" } ],
+      "log": ["【语音·用户】谁在说｜用户2（老李）；对谁说的｜对别人说", "【任务】任务类型｜记会议纪要：静默标注 数字·ARR ¥12M（不出声、不确认）"] },
+    { "type": "say", "id": "mC1", "clip": "mC1", "speaker": "C", "transcript": true, "gap_ms": 320, "text": "CAC 现在是八百块，回本周期十一个月，得压到八个月以内才算健康。", "to": "对别人说", "kind": "会议发言", "tags": [ { "t": "数字 · CAC ¥800", "k": "num" }, { "t": "数字 · 回本 11 个月", "k": "num" } ],
+      "log": ["【语音·用户】谁在说｜用户3（王琳）；对谁说的｜对别人说"] },
+    { "type": "wait", "ms": 400 },
+
+    { "type": "section", "title": "05｜双声重叠｜B 和 C 抢话——两路同时听、分别成句,不丢字" },
+    { "type": "transcript", "action": "split", "text": "两人同时开口 · 双路分离" },
+    { "type": "say", "id": "mB2", "clip": "mB2", "speaker": "B", "transcript": true, "gap_ms": 0, "parallel": true, "text": "那就砍投放，把预算挪到私域，先把口子收住——", "to": "对别人说", "kind": "会议发言", "overlap": "竞争打断（被 C 叠上）", "tags": [ { "t": "分歧 · 投放预算" } ],
+      "log": ["【语音·用户】谁在说｜用户2（老李）；是否重叠｜竞争打断（被王琳叠上 · 中途被断）", "【对话互动】接话方式｜抢话（C 抢 B）；原说话人的话轮结果｜被打断"] },
+    { "type": "say", "id": "mC2", "clip": "mC2", "speaker": "C", "transcript": true, "gap_ms": 0, "delay_ms": 900, "parallel": true, "text": "我不同意全砍，品牌词那部分的转化其实是正的。", "to": "对别人说", "kind": "会议发言", "overlap": "竞争打断（叠在 B 上）", "fdx": ["他人多人聊天"],
+      "log": ["【语音·用户】谁在说｜用户3（王琳）；是否重叠｜竞争打断（叠在老李上）", "【任务】任务类型｜记会议纪要：两路并行识别，各自成句，不丢字；静默标注 分歧·投放预算（记为待决议项）"] },
+    { "type": "join" },
+    { "type": "wait", "ms": 400 },
+
+    { "type": "section", "title": "06｜静默标注｜听到数字打「数字」,听到拍板打「决议」,听到认领打「待办」" },
+    { "type": "say", "id": "mA2", "clip": "mA2", "speaker": "user", "transcript": true, "gap_ms": 0, "text": "折中一下：品牌词保留，效果广告砍一半，下周拿数据复盘。", "to": "对别人说", "kind": "会议发言（拍板）", "tags": [ { "t": "决议 · 品牌词保留 / 效果广告砍半", "k": "res" } ],
+      "log": ["【语音·用户】谁在说｜用户1（A）；话语类型｜拍板", "【任务】任务类型｜记会议纪要：拍板句式命中 → 决议 01"] },
+    { "type": "say", "id": "mC3", "clip": "mC3", "speaker": "C", "transcript": true, "gap_ms": 320, "text": "行，那我周三之前把各渠道的 ROI 拆出来。", "to": "对别人说", "kind": "会议发言（认领）", "tags": [ { "t": "待办 · 王琳 · 周三", "k": "todo" } ],
+      "log": ["【任务】任务类型｜记会议纪要：认领句式命中 → 待办（王琳 · 周三）"] },
+    { "type": "say", "id": "mA3", "clip": "mA3", "speaker": "user", "transcript": true, "gap_ms": 300, "text": "老李你把私域的承接方案也出一版，下周一给我。", "to": "对别人说", "kind": "会议发言（分派）", "tags": [ { "t": "待办 · 老李 · 下周一", "k": "todo" } ],
+      "log": ["【任务】任务类型｜记会议纪要：分派句式命中 → 待办（老李 · 下周一）"] },
+    { "type": "wait", "ms": 500 },
+
+    { "type": "section", "title": "07｜纪要落地｜再摸一下 living edge 说\"可以了\",任务音效响约 15 秒,纪要成形可分享" },
+    { "type": "edge", "action": "flash", "log": ["【硬件交互】用哪种硬件反馈｜边缘灯效·唤醒（二次触碰）；时延档｜即时"] },
+    { "type": "edge", "action": "rec" },
+    { "type": "say", "id": "mq9", "clip": "mq9", "speaker": "user", "label": "A", "gap_ms": 0, "text": "好，可以了。", "to": "对助手说", "kind": "指令（结束记录）",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（结束记录）"] },
+    { "type": "rec", "action": "stop" },
+    { "type": "backend", "query": "由 24 分钟转写生成会议纪要（决议 / 待办 / 关键数字）", "result": "3 条决议 · 2 个待办 · 4 个关键数字", "elapsed_ms": 14200, "ui": { "icon": "sparkles", "doing": "正在整理纪要…", "done": "3 条决议 · 2 个待办 · 4 个关键数字", "ms": 14200 },
+      "log": ["【任务】任务类型｜记会议纪要·成文（长任务）：minutes.generate(转写 24min)→结果 决议 3·待办 2·数字 4（耗时 14.2s）；交付形态｜生卡片", "【硬件交互】用哪种硬件反馈｜任务等待音（约 15s）"] },
+    { "type": "card", "icon": "doc", "title": "商业计划评审 · 会议纪要", "sub": "3 人 · 24 分钟 · 全程静默记录", "log_label": "纪要成形",
+      "sections": [
+        { "h": "决议", "items": [ { "text": "品牌词投放保留，效果广告预算砍一半" }, { "text": "省下的预算转投私域承接" }, { "text": "下周复盘一次投放数据再定下一步" } ] },
+        { "h": "待办", "items": [ { "text": "拆各渠道 ROI", "own": "王琳 · 周三" }, { "text": "私域承接方案 v1", "own": "老李 · 下周一" } ] },
+        { "h": "关键数字", "items": [ { "k": "", "text": "明年 ARR ¥12M · CAC ¥800 · 回本 11 个月（目标 <8）" } ] } ],
+      "button": { "label": "分享", "done_label": "已分享 · 参会 3 人已收到", "done_log": "待办同步到各自任务列表", "wait_ms": 6000 },
+      "log": ["【记忆】Recall类型｜偏好；记忆消费｜直接用（纪要模板：决议/待办/关键数字）· output_templates.meeting_notes；记忆更新｜不更新", "【决策点】该不该开口｜不出声但要确认；依据｜场景=公共；决策类型｜播报（场景降级：发卡片不出声）"] },
+    { "type": "overlay", "action": "collapse", "edge_off": true, "clear": true, "label": "任务落地", "detail": "纪要卡入通知区 · 一场会,模型一句话没插" },
+    { "type": "pill", "icon": "doc", "theme": "green", "name": "Meeting Minutes", "now": "Sent", "stops": ["商业计划评审", "决议 3 · 待办 2", "3 人"] }
+  ]
+}

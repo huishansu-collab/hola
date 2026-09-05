@@ -1,0 +1,177 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://duplex-studio.local/schema/normalized.schema.json",
+  "title": "Live Interaction Normalized JSON (Draft v5)",
+  "description": "全双工语音交互训练数据的规范化 JSON。顶层五段:meta_data(模型不消费) / static_context / dynamic_context / utterances / events / annotation。带 x_ 前缀或在 description 里注明「扩展」的字段为本平台附加,模型不消费。",
+  "type": "object",
+  "required": ["meta_data", "static_context", "dynamic_context", "utterances", "events", "annotation"],
+  "properties": {
+    "meta_data": {
+      "type": "object",
+      "required": ["sample", "media"],
+      "properties": {
+        "sample": {
+          "type": "object",
+          "required": ["sample_id", "case_id", "source_type"],
+          "properties": {
+            "sample_id": { "type": "string" },
+            "sample_name": { "type": "string" },
+            "case_id": { "type": "string" },
+            "case_name": { "type": "string" },
+            "source_type": { "type": "string", "enum": ["recording_data", "synthetic_generation", "data ppl"] },
+            "case_spec_ref": { "type": "string", "description": "json/{source}/{case_id}_{sample_id}.json" },
+            "script_ref": { "type": "string", "description": "扩展:原始剧本路径" },
+            "generated_at": { "type": "string" },
+            "generator": { "type": "string" },
+            "scene": { "type": ["string", "null"] },
+            "story_clock_start": { "type": ["string", "null"], "description": "扩展:剧本时钟起点 HH:MM:SS" }
+          }
+        },
+        "media": {
+          "type": "object",
+          "required": ["audio"],
+          "properties": {
+            "audio": {
+              "type": "object",
+              "required": ["duration_ms", "file", "tracks"],
+              "properties": {
+                "duration_ms": { "type": "integer", "minimum": 0 },
+                "file": { "type": "string", "description": "audio/{source}/{case_id}_{sample_id}.wav" },
+                "sample_rate_hz": { "type": "integer" },
+                "tracks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["track_ref", "role"],
+                    "properties": { "track_ref": { "type": "string" }, "role": { "type": "string", "enum": ["user", "assistant"] } }
+                  }
+                },
+                "clips": { "type": "array", "description": "扩展:逐句片段清单", "items": { "type": "object", "properties": { "id": { "type": "string" }, "file": { "type": "string" } } } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "static_context": {
+      "type": "object",
+      "properties": {
+        "system prompts": { "type": "object" },
+        "device_state": { "type": "object" },
+        "memory": { "type": ["object", "array"] },
+        "constraints": { "type": "object" },
+        "tools": { "type": "array", "items": { "type": "object" } }
+      }
+    },
+    "dynamic_context": {
+      "type": "object",
+      "properties": {
+        "time_at_ms": { "type": "integer" },
+        "world_signal": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["time_at_ms"],
+            "properties": {
+              "time_at_ms": { "type": "integer" },
+              "scene_state": { "type": ["string", "null"] },
+              "signal_source": { "type": ["string", "null"] },
+              "trigger": { "type": ["string", "null"] },
+              "disturb_worth": { "type": ["string", "null"] },
+              "when": { "type": ["string", "null"] },
+              "note": { "type": ["string", "null"] }
+            },
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "utterances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "speaker", "speaker_id", "text", "start_at_ms", "end_at_ms"],
+        "properties": {
+          "id": { "type": "string" },
+          "speaker": { "type": "string", "enum": ["user", "assistant", "third_party"] },
+          "speaker_id": { "type": "string", "description": "user_1 = 主用户;其他真人 user_2…;assistant" },
+          "text": { "type": "string" },
+          "sample_seg_id": { "type": "string" },
+          "start_at_ms": { "type": "integer", "minimum": 0 },
+          "end_at_ms": { "type": "integer", "minimum": 0 },
+          "cut_at_ms": { "type": "integer", "description": "扩展:被打断后开始让位的时刻" },
+          "interrupts": { "type": "string", "description": "扩展:这句打断了哪一句" },
+          "modality": { "type": "string", "enum": ["text"], "description": "扩展:打字回复(无语音)" },
+          "story_clock_ms": { "type": "integer", "description": "扩展:剧本时钟(当天毫秒)" },
+          "speaker_name": { "type": "string", "description": "扩展:第三方说话人显示名" }
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_id", "event_type", "time_at_ms"],
+        "properties": {
+          "event_id": { "type": "string", "description": "同一次调用的请求与返回共用一个 event_id" },
+          "event_type": { "type": "string", "enum": ["function_call", "backend_call", "memory_call", "memory_call_fast"] },
+          "tool_name": { "type": "string" },
+          "time_at_ms": { "type": "integer" },
+          "query": { "type": ["string", "null"] },
+          "arguments": {},
+          "results": {},
+          "result": {},
+          "context": { "type": "object" },
+          "confidence": { "type": "number" }
+        }
+      }
+    },
+    "annotation": {
+      "type": "object",
+      "required": ["fdx_annotation"],
+      "properties": {
+        "fdx_annotation": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["fdx_type", "role", "start_at_ms", "end_at_ms"],
+            "properties": {
+              "fdx_type": { "type": "string", "enum": ["战术性垫句", "打断", "附和", "非结束性停顿", "主动开口", "无关话题语言", "用户和他人对话", "他人多人聊天", "补话"] },
+              "role": { "type": "string", "enum": ["user", "assistant"], "description": "哪条音轨" },
+              "start_at_ms": { "type": "integer" },
+              "end_at_ms": { "type": "integer" },
+              "utterance_id": { "type": "string", "description": "扩展" }
+            }
+          }
+        },
+        "emotion_annotation": {
+          "type": "array",
+          "items": { "type": "object", "required": ["emotion_type", "role", "start_at_ms", "end_at_ms"], "properties": { "emotion_type": { "type": "string" }, "role": { "type": "string" }, "start_at_ms": { "type": "integer" }, "end_at_ms": { "type": "integer" }, "utterance_id": { "type": "string" } } }
+        },
+        "paralinguistic_annotation": {
+          "type": "array",
+          "items": { "type": "object", "required": ["paralinguistic_type", "role", "start_at_ms", "end_at_ms"], "properties": { "paralinguistic_type": { "type": "string" }, "role": { "type": "string" }, "start_at_ms": { "type": "integer" }, "end_at_ms": { "type": "integer" }, "utterance_id": { "type": "string" } } }
+        },
+        "track_annotation": {
+          "type": "array",
+          "description": "扩展:八轨日志(语音 / 世界信息 / 任务 / 决策点 / 硬件交互 / 对话互动 / 记忆 / 自定义)原文与结构化字段",
+          "items": {
+            "type": "object",
+            "required": ["track", "time_at_ms", "text"],
+            "properties": {
+              "track": { "type": "string" },
+              "sub": { "type": ["string", "null"] },
+              "role": { "type": ["string", "null"] },
+              "time_at_ms": { "type": "integer" },
+              "end_at_ms": { "type": "integer" },
+              "utterance_id": { "type": ["string", "null"] },
+              "step": { "type": "integer" },
+              "text": { "type": "string" },
+              "fields": { "type": "object" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

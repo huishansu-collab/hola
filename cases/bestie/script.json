@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "id": "bestie",
+  "case_id": "02",
+  "name": "闺蜜聊天",
+  "group": "A · 微意图 · 轻任务",
+  "order": 2,
+  "summary": "咖啡厅八卦 → 演员名字卡壳 → 摸一下 → 安抚 + 搜索 → 吴谨言 → 追问被接住",
+  "scene": { "title": "午后咖啡厅", "desc": "和闺蜜聊到《延禧攻略》女主的新片,名字卡壳了", "ambience": "scene_bestie.m4a", "clock": "15:12:00",
+    "ambience_prompt": "纯环境音效，没有旁白和音乐：午后咖啡厅——远处有听不清内容的轻声人语和笑声，杯碟轻碰的瓷器声，意式咖啡机打奶泡的蒸汽声。" },
+  "speakers": {
+    "user": { "name": "闺蜜", "tts": { "voice": "nova", "instructions": "二十五六岁的中国女生，声音明快甜亮，和闺蜜聊八卦的松弛语气，普通话标准。" } },
+    "assistant": { "name": "Step" }
+  },
+  "context": { "tools": [ { "type": "function", "function": { "name": "web_search", "description": "联网搜索,可搜索实时公开信息" } } ] },
+  "timeline": [
+    { "type": "section", "title": "01｜scene｜咖啡厅闲聊,聊到\"延禧攻略女主的新片\",名字卡壳了" },
+    { "type": "section", "title": "02｜living edge｜闺蜜摸一下 living edge,建连后模型应声\"我在,你说\"" },
+    { "type": "edge", "action": "touch" },
+    { "type": "say", "id": "ba0", "clip": "ba0", "speaker": "assistant", "text": "我在，你说。", "nature": "应答（应声）" },
+
+    { "type": "section", "title": "03｜闺蜜 · voice｜\"延禧攻略那个女主角叫什么来着？\"" },
+    { "type": "say", "id": "bq1", "clip": "bq1", "speaker": "user", "text": "延禧攻略那个女主角叫什么来着？", "to": "对助手说", "kind": "指令（查询）", "emotion": "疑惑", "pause_after": "点名要你答",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（查询：人名）；情绪｜疑惑；这句之后的停顿｜点名要你答", "【世界信息】场景/状态｜环境音：咖啡厅多人交谈；信号来源｜手机感知·麦克风阵列环境声检测；值不值得打扰｜值得打扰（被叫到了）"] },
+
+    { "type": "section", "title": "04｜模型 · 垫场｜战术性安抚\"让我想想,我帮你查查\",同时后台搜索" },
+    { "type": "say", "id": "ba1", "clip": "ba1", "speaker": "assistant", "text": "嗯——让我想想啊，你等我一下下，我帮你查查。", "nature": "回执（承接·简短）", "parallel": true,
+      "log": ["【语音·助手】助手句性质｜回执（承接·简短：先应一声再去查）", "【决策点】该不该开口｜开口；开多大｜一句话；多快回｜马上；依据｜被叫到了；决策类型｜分级（快）"] },
+    { "type": "tool", "name": "web_search", "args": "延禧攻略 女主角", "result": "吴谨言，饰 魏璎珞", "elapsed_ms": 2800, "delay_ms": 900, "parallel": true, "task_type": "联网搜索", "speed": "查一下再答（快）",
+      "ui": { "icon": "search", "doing": "正在搜索「延禧攻略 女主角」…", "done": "找到了 · 吴谨言，饰 魏璎珞", "ms": 2800 },
+      "log": ["【任务】任务类型｜联网搜索（查一下再答（快））：web_search(延禧攻略 女主角)→结果 吴谨言，饰 魏璎珞（耗时 2.8s）"] },
+    { "type": "join" },
+    { "type": "log", "label": "工具调用返回", "detail": "search 返回 · 垫场话争取到查询时间" },
+
+    { "type": "section", "title": "05｜模型 · 被打断｜\"你说的是吴谨言吧…\"话没说完,闺蜜追问\"她最近那部叫什么\",双声重叠" },
+    { "type": "say", "id": "ba2", "clip": "ba2", "speaker": "assistant", "text": "你说的是吴谨言吧，延禧攻略里演魏璎珞的那个。对了，她有部新戏刚刚上线，口碑还不错，要不要帮你看看在哪儿能看？", "nature": "应答（讲解）", "overlap": "竞争打断（被用户叠上）·完成度｜中途被断",
+      "log": ["【语音·助手】助手句性质｜应答（讲解）；是否重叠｜竞争打断（被闺蜜叠上）·完成度｜中途被断", "【对话互动】接话方式｜正常接话；原说话人的话轮结果｜被打断"] },
+    { "type": "card", "id": "person", "icon": "person", "title": "Wu Jinyan 吴谨言", "sub": "Wei Yingluo · Story of Yanxi Palace", "meta": ["Searching her latest title…"], "parallel": true, "delay_ms": 2400, "log_label": "人物卡落地" },
+    { "type": "say", "id": "bq2", "clip": "bq2", "speaker": "user", "text": "她最近刚上映的那个电影叫什么来着？", "barge_in": true, "at_ms": 5200, "to": "对助手说", "kind": "指令（追问）", "emotion": "兴奋", "overlap": "竞争打断（叠在助手上）",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（追问）；情绪｜兴奋；是否重叠｜竞争打断（叠在助手上）", "【决策点】该不该开口｜闭嘴（≤200ms收口）；打断语义｜改参数（人名→作品）；依据｜用户在纠正；禁止｜接着说旧答案；决策类型｜打断处理"] },
+
+    { "type": "section", "title": "06｜模型｜接话并纠正\"是剧不是电影\"——《江山为聘》,提议加追剧清单" },
+    { "type": "say", "id": "ba3", "clip": "ba3", "speaker": "assistant", "text": "那部其实是剧啦——叫《江山为聘》，和陈哲远一起演的，她演女官孟廷辉，刚上线口碑不错。要不要帮你加进追剧清单？", "nature": "应答（收敛：语义承接 + 顺手纠正）", "parallel": true,
+      "log": ["【语音·助手】助手句性质｜应答（收敛：顺手纠正\"是剧不是电影\"，不重复已说过的部分）", "【对话互动】接话方式｜正常接话（打断落点后 400ms）；回应是否及时｜及时", "【决策点】该不该开口｜开口；开多大｜完整说；依据｜被叫到了；决策类型｜主动（提议：加追剧清单，先征询）"] },
+    { "type": "card", "update": "person", "meta": ["《江山为聘》 · Now streaming", "Add to watchlist →"], "parallel": true, "delay_ms": 3200 },
+    { "type": "join" },
+    { "type": "log", "label": "回答完成", "detail": "《江山为聘》· 人物卡更新 · 提议加追剧清单" }
+  ]
+}

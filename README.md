@@ -1,1 +1,103 @@
-# hola
+# Duplex Studio · 全双工语音 demo 平台
+
+输入 **脚本 + 八轨日志**，生成 **高保真手机 case 演示**，并同步导出 **Live Interaction 规范化 JSON（Draft v5）**。
+
+```
+剧本 (script.dsl / script.json)
+   ├─▶ 语音生成 (OpenAI TTS · gpt-4o-mini-tts, 逐句 wav + 缓存)
+   ├─▶ 手机演示 (living edge · 双工打断 · 卡片 / 任务卡 / 来电 / 转写 · 八轨日志面板)
+   └─▶ 规范化 JSON + 双声道母带 (utterances / events / world_signal / fdx & emotion annotation)
+```
+
+演示逻辑复刻自 `duplex-preview.html`（Step 全双工 preview）：嘚嘚建连、模型垫场、开口打断双声重叠后 fade out、执行等待音、Apple-Intelligence 式下拉面板、灵动岛任务卡、来电界面、会议转写……但全部改成 **数据驱动**：任何 case 只是一份剧本。
+
+## 快速开始
+
+```bash
+npm install
+cp .env.example .env        # 填入 OPENAI_API_KEY（语音生成用；不配也能跑，缺语音的台词按语速上屏）
+npm start                   # http://localhost:5173
+```
+
+工作台三个页签：
+
+| 页签 | 做什么 |
+| --- | --- |
+| 演示 | 选 case → 播放。左：段落 beats + story clock；中：手机舞台（点 living edge 也能开始）；右：八轨日志（可按轨过滤）。授权麦克风后可以**亲口打断**模型，点手机屏幕同样有效 |
+| 脚本 · 语音 | 编辑剧本（DSL 或 script.json）→ 解析预览 → 保存；一键生成缺失语音（SSE 进度）；查看说话人音色 |
+| 导出 JSON | 生成 Draft v5 规范化 JSON 预览 / 下载；时间轴条；下载双声道 WAV（服务端只混 WAV 片段；导入的 m4a / mp3 用「浏览器混音」） |
+
+命令行：
+
+```bash
+npm run parse -- cases/morning/script.dsl          # 剧本 → script.json
+npm run validate -- morning
+npm run tts -- morning [--force] [--only u001,u002] # OpenAI 生成语音（需 .env）
+npm run export -- morning                          # → cases/morning/export/{json,audio}/synthetic/1_s01.*
+node server/cli.js list
+```
+
+## 内置 case
+
+| 编号 | case | 看点 |
+| --- | --- | --- |
+| Golden | `morning` 工作日早上 · 起晚出门 | Golden Case 文档全链路 12 段：抢话计时、双平台叫车、门锁回执、brief 打断、长任务承接、朗读零反馈、司机改线核验、最高优预授权穿透、低语零语音、办公室轻震归档。**含完整八轨日志**，剧本即 `cases/morning/script.dsl` |
+| 01 | `commute` 出门上班 | 垫场 + 后台查天气 → 开口打断改打车 → CoT 比价 → 一键叫车 → 任务卡 |
+| 02 | `bestie` 闺蜜聊天 | 安抚 + 搜索 → 人物卡 → 追问打断 → 纠正"是剧不是电影" |
+| 03 | `english` 临时学英语 | 双语示范 + 短语卡 → 选版本打断 → 跟读打断 → 点评 |
+| 04 | `ktv` KTV 脱身电话 | 定时任务卡倒计时 → "老妈"来电 → 第三方音色 |
+| 05 | `home` 回家开空调 | 设备逐台点亮 → 汇报中被追加 → Home Ready 卡 |
+| 06 | `landlord` 房东来电 | 电话助攻：红闪微震 → Memory 命中合同 → 证据卡 + 话术 |
+| 07 | `idiom` 成语接龙 | 抢着定规则 → 对局卡 + 30s 倒计时 |
+| 08 | `meeting` 会议纪要 | 绿灯静默记录 → 三人分离转写 + 抢话双路 → 纪要卡 |
+| 09 | `order` 会议点外卖 | 连摸两下悄悄话模式 → 模型只打字 → 外卖卡 |
+| 10 | `read` 伴读 | 文章页 → 读屏卡 → 追问打断 |
+| 11 | `stock` 股票查询 | 四次连续抢话 → 行情卡 → "你退下吧" |
+
+01‒11 的语音沿用参考包里的定妆音色片段（m4a）；`morning` 没有随仓库附带音频，配好 `.env` 后 `npm run tts -- morning` 即可生成（约 60 句）。
+
+## 剧本怎么写
+
+看 [docs/SCRIPT_FORMAT.md](docs/SCRIPT_FORMAT.md)。核心思路：**台词照 Golden Case 表格写，日志照八轨口径写，UI 靠 `@指令`**。
+
+```text
+## 段2｜08:04:20‒08:05:41｜厨房·煮蛋
+[08:04:26.4‒08:04:38.0] 助手: 六分钟，捞出来过一下凉水就是溏心。火候上水保持小滚就行，太大了容易——
+  【语音·助手】助手句性质｜应答（讲解）；是否重叠｜竞争打断（被用户叠上）
+★ [08:04:36.0‒08:04:39.5] 用户（抢话，与 AI 语音重叠）: 行了行了，六分钟就行，你帮我计时！
+  【语音·用户】对谁说的｜对助手说；情绪｜不耐烦；是否重叠｜竞争打断（叠在助手上 2.0s）
+  【决策点】该不该开口｜闭嘴（≤200ms收口）；打断语义｜改参数；禁止｜接着说旧答案
+[08:05:32.3‒08:05:35.3] 助手: 计上了，六分钟，八点十一分半叫你。
+  【任务】任务类型｜设闹钟·计时（当场就做）：timer.create(6:00)→结果 到点 08:11:32（耗时 0.3s）
+@card id=timer icon=timer title="Egg Timer" eta="6:00" timer={"from":360,"unit":"","format":"mm:ss"}
+```
+
+日志里的 `tool(args)→结果…（耗时…）`、`key=value` 记忆引用、世界信息、硬件反馈会**自动**变成演示里的执行卡片 / 震动 / 卡片，和 JSON 里的 `events` / `world_signal` / `annotation`。
+
+## 规范化 JSON
+
+严格按 Draft v5 骨架：`meta_data / static_context / dynamic_context / utterances / events / annotation{fdx_annotation, emotion_annotation, paralinguistic_annotation}`，另加 `annotation.track_annotation` 保留八轨日志原文。JSON Schema 见 [schema/normalized.schema.json](schema/normalized.schema.json)。时间戳与母带 `audio/synthetic/{case_id}_{sample_id}.wav`（Channel 1 用户/第三方，Channel 2 助手，被打断的句子按 0.7s/1.75s 让位包络混入）对齐。
+
+## 语音生成
+
+- 模型默认 `gpt-4o-mini-tts`，每个说话人的 `instructions`（定妆音色描述）+ `voice` 决定音色；台词的舞台提示（急促 / 轻缓 / 低语）会附加到 instructions。
+- 输出 24kHz wav，按 `sha1(model|voice|speed|instructions|text)` 缓存在 `cases/<id>/audio/manifest.json`，改了文本只重生成那一句。
+- 走代理时用 `NODE_USE_ENV_PROXY=1 npm run tts -- <id>`（Node 自带 fetch 默认不读 HTTPS_PROXY）。
+- `.env` 不会被提交；不要把 key 写进任何脚本。
+
+## 目录
+
+```
+server/    index.js (Express API) · tts.js (OpenAI) · audio.js (wav 混音) · cases.js (存储/清单) · cli.js
+shared/    script.js (格式/校验) · dsl.js (剧本编译) · tracks.js (八轨日志解析) · schedule.js (时间轴) · normalize.js (Draft v5)
+public/    index.html · css/platform.css · js/engine.js (演示引擎) · js/app.js (工作台) · assets/{icons,fonts,img,fx}
+cases/<id>/ script.dsl? · script.json · audio/{clips, manifest.json} · export/ (gitignored)
+schema/    normalized.schema.json
+docs/      SCRIPT_FORMAT.md
+```
+
+## 已知边界
+
+- 浏览器需要能解码片段格式：wav 任何浏览器都行；参考包的 m4a（AAC）在 Chrome / Safari / Edge 正常，纯开源 Chromium 无 AAC 解码器会退化为按语速上屏。
+- 服务端混音只处理 wav 片段（OpenAI 生成的即是）；其它格式请用工作台的「浏览器混音 WAV」。
+- 场景环境音（scene_*.m4a）来自参考包；新 case 的环境音需自行准备后放入 `audio/` 并在剧本里 `ambience:` 指定。

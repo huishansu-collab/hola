@@ -1,0 +1,103 @@
+{
+  "clips": {
+    "ia0": {
+      "file": "ia0.m4a",
+      "size": 19475,
+      "mtime": 1788607867035.9087,
+      "duration_ms": 1728,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "iq1": {
+      "file": "iq1.m4a",
+      "size": 34343,
+      "mtime": 1788607867036.0737,
+      "duration_ms": 3221,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "ia1": {
+      "file": "ia1.m4a",
+      "size": 80651,
+      "mtime": 1788607867036.2966,
+      "duration_ms": 7445,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "iq2": {
+      "file": "iq2.m4a",
+      "size": 104501,
+      "mtime": 1788607867036.546,
+      "duration_ms": 9920,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "ia2": {
+      "file": "ia2.m4a",
+      "size": 57340,
+      "mtime": 1788607867036.766,
+      "duration_ms": 5461,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "iq3": {
+      "file": "iq3.m4a",
+      "size": 66903,
+      "mtime": 1788607867036.9614,
+      "duration_ms": 6720,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "ia3": {
+      "file": "ia3.m4a",
+      "size": 63359,
+      "mtime": 1788607867037.1345,
+      "duration_ms": 6059,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "iq4": {
+      "file": "iq4.m4a",
+      "size": 33173,
+      "mtime": 1788607867037.3308,
+      "duration_ms": 3115,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "ia4": {
+      "file": "ia4.m4a",
+      "size": 87803,
+      "mtime": 1788607867037.595,
+      "duration_ms": 8213,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "iq5": {
+      "file": "iq5.m4a",
+      "size": 64446,
+      "mtime": 1788607867037.8215,
+      "duration_ms": 6293,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "scene_idiom": {
+      "file": "scene_idiom.m4a",
+      "size": 111650,
+      "mtime": 1788607867038.1028,
+      "duration_ms": 8085,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "id": "home",
+  "case_id": "05",
+  "name": "回家开空调",
+  "group": "B · Aha features",
+  "order": 5,
+  "summary": "上车下指令 → 设备逐台点亮 → 汇报中被追加卧室空调 → 到家即舒适",
+  "scene": { "title": "商场门口上车", "desc": "和朋友在商场告别,上车关门,车里安静下来", "ambience": "scene_home.m4a", "clock": "18:05:00" },
+  "speakers": { "user": { "name": "你" }, "assistant": { "name": "Step" } },
+  "context": {
+    "memory": { "home": { "devices": ["客厅空调", "卧室空调", "卧室加湿器"], "comfort": { "ac_cool": 26, "humidity": 50 } } },
+    "tools": [ { "type": "function", "function": { "name": "device.set", "description": "控制已授权的智能家居设备" } } ]
+  },
+  "timeline": [
+    { "type": "section", "title": "01｜scene｜和朋友在商场告别,上车关门,车里安静下来" },
+    { "type": "section", "title": "02｜living edge｜摸一下 living edge,建连后模型应声" },
+    { "type": "edge", "action": "touch" },
+    { "type": "say", "id": "ha0", "clip": "ha0", "speaker": "assistant", "text": "我在，你说。", "nature": "应答（应声）" },
+
+    { "type": "section", "title": "03｜用户 · voice｜\"二十五分钟后到家,把客厅空调和房间加湿器打开。\"" },
+    { "type": "say", "id": "hq1", "clip": "hq1", "speaker": "user", "text": "我大概二十五分钟后到家，你帮我把客厅的空调打开，房间的加湿器也开一下。", "to": "对助手说", "kind": "指令（控制设备 ×2）", "emotion": "平静", "pause_after": "点名要你答",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（控制设备 ×2 + 到家时间）；情绪｜平静；这句之后的停顿｜点名要你答", "【世界信息】场景/状态｜通勤中·车内；信号来源｜手机系统·大幅运动传感器（乘车）+ LocationFix 持续位移"] },
+
+    { "type": "section", "title": "04｜模型 · 执行｜\"我现在就安排上\",设备逐台点亮：空调 26° / 加湿器 50%" },
+    { "type": "say", "id": "ha1", "clip": "ha1", "speaker": "assistant", "text": "好嘞，我现在就安排上，你稍等我一下下哈。", "nature": "回执（承接·简短）",
+      "log": ["【语音·助手】助手句性质｜回执（承接·简短）", "【决策点】该不该开口｜开口；开多大｜一句话；依据｜被叫到了；决策类型｜分级（慢：设备回执要等）"] },
+    { "type": "agent", "inline": true, "steps": [
+        { "icon": "ac", "doing": "正在开客厅空调…", "done": "客厅空调 · 制冷 26°", "ms": 3400, "tool": "device.set", "args": "客厅空调, 制冷, 26", "result": "on · 26°" },
+        { "icon": "humid", "doing": "正在开加湿器…", "done": "加湿器 · 湿度 50%", "ms": 3200, "tool": "device.set", "args": "卧室加湿器, 湿度, 50%", "result": "on · 50%" } ],
+      "done_log": "设备就绪 · AC(living room) + Humidifier 已开",
+      "log": ["【任务】任务类型｜控制设备（查一下再答（慢））：device.set(客厅空调,制冷,26)→结果 on（耗时 3.4s）∥device.set(加湿器,50%)→结果 on（耗时 3.2s）", "【记忆】Recall类型｜偏好；记忆消费｜直接用（默认温湿度）· home.comfort.ac_cool=26；记忆更新｜不更新", "【硬件交互】用哪种硬件反馈｜生卡片 + 任务等待音；时延档｜常规"] },
+
+    { "type": "section", "title": "05｜用户 · 开口打断｜汇报到一半：\"哦对了,卧室的空调也开一下,温度调低点。\"" },
+    { "type": "say", "id": "ha2", "clip": "ha2", "speaker": "assistant", "gap_ms": 300, "text": "都开好啦——客厅空调二十六度制冷，加湿器也开了，湿度设到百分之五十。差不多你到家的时候，屋里就正正好，不会太闷也不会太干。", "nature": "主动播报（到达：结果 + 到家体验）", "overlap": "竞争打断（被用户叠上）·完成度｜快说完被断",
+      "log": ["【语音·助手】助手句性质｜主动播报（任务完成：先结果后体验）；是否重叠｜竞争打断（被用户叠上）", "【决策点】该不该开口｜开口；开多大｜完整说；多快回｜马上；依据｜有任务进展"] },
+    { "type": "say", "id": "hq2", "clip": "hq2", "speaker": "user", "text": "哦对了，卧室的空调也开一下吧，温度调低一点。", "barge_in": true, "at_ms": 8600, "to": "对助手说", "kind": "指令（追加设备）", "emotion": "平静", "overlap": "竞争打断（叠在助手上）",
+      "log": ["【语音·用户】对谁说的｜对助手说；话语类型｜指令（追加：卧室空调，温度调低）；是否重叠｜竞争打断（叠在助手上）", "【决策点】该不该开口｜闭嘴；打断语义｜改参数（追加设备）；依据｜用户在纠正；禁止｜接着说旧答案；决策类型｜打断处理"] },
+
+    { "type": "section", "title": "06｜模型｜追加卧室空调 24°,Home Ready 卡落地" },
+    { "type": "say", "id": "ha3", "clip": "ha3", "speaker": "assistant", "text": "好嘞，卧室空调也开上了，给你调到二十四度。你到家直接躺就行。", "nature": "应答（收敛：只说追加的部分）", "parallel": true,
+      "log": ["【语音·助手】助手句性质｜应答（收敛：不重复已说过的部分）", "【任务】任务类型｜控制设备（当场就做）：device.set(卧室空调,制冷,24)→结果 on（耗时 0.8s）", "【对话互动】接话方式｜正常接话（打断落点后 400ms）；回应是否及时｜及时"] },
+    { "type": "tool", "name": "device.set", "args": "卧室空调, 制冷, 24", "result": "on · 24°", "elapsed_ms": 800, "silent": true, "parallel": true, "anchor": "prev_start", "delay_ms": 300 },
+    { "type": "card", "icon": "bed", "title": "Home Ready", "sub": "Living 26° · Bedroom 24° · Humidity 50%", "meta": ["3 devices on", "ETA 25 min"], "parallel": true, "delay_ms": 1600, "log_label": "场景卡落地" },
+    { "type": "join" },
+    { "type": "log", "label": "任务完成", "detail": "到家即舒适 · 3 台设备已就位" }
+  ]
+}

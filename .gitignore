@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.*
+!.env.example
+dist/
+cases/*/export/
+cases/*/audio/*.wav.tmp
+*.log
+.DS_Store

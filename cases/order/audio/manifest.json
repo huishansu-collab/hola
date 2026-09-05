@@ -1,0 +1,22 @@
+{
+  "clips": {
+    "oq1": {
+      "file": "oq1.m4a",
+      "size": 80417,
+      "mtime": 1788607867038.4646,
+      "duration_ms": 6741,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    },
+    "scene_training": {
+      "file": "scene_training.m4a",
+      "size": 111477,
+      "mtime": 1788607867038.691,
+      "duration_ms": 8085,
+      "format": "MPEG-4/AAC",
+      "sample_rate": 48000,
+      "source": "import"
+    }
+  }
+}
