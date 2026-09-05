@@ -12,6 +12,7 @@
     "export": "node server/cli.js export",
     "parse": "node server/cli.js parse",
     "validate": "node server/cli.js validate",
+    "build:static": "node tools/build-static.mjs",
     "test": "node --test"
   },
   "dependencies": {

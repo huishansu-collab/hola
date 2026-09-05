@@ -12,7 +12,8 @@ const SPHERE = (cls = '') => `<span class="sphere ${cls}"><i></i><i></i><i></i><
 const EXPAND_ICON = `<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#F2F4F5" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M7.2 1.5H10.5V4.8M10.5 1.5L6.9 5.1M4.8 10.5H1.5V7.2M1.5 10.5L5.1 6.9"/></svg>`;
 const COLLAPSE_ICON = `<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#F2F4F5" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10.2 4.8H7.2V1.8M7.2 4.8L10.8 1.2M1.8 7.2H4.8V10.2M4.8 7.2L1.2 10.8"/></svg>`;
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const icon = (name) => `/assets/icons/${name || 'sparkles'}.png`;
+/* 静态打包(tools/build-static.mjs)时图标以 data URI 挂在 window.__ASSETS__.icons 上 */
+const icon = (name) => (window.__ASSETS__?.icons?.[name || 'sparkles']) || `/assets/icons/${name || 'sparkles'}.png`;
 
 export class DemoEngine {
   constructor(opts = {}) {
