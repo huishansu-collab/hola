@@ -121,18 +121,27 @@ function generatePRD(req) {
 
 /* ---------- 上传自动分析：把物料映射进当前阶段文档 ---------- */
 function analyzeUpload(req) {
-  // 重新生成当前阶段（保留用户已手改的非空字段）
   const stage = req.stage;
-  if (stage === 'smoke') mergeSmoke(req);
-  else if (stage === 'draft') mergeDraft(req);
-  else if (stage === 'prd') mergePRD(req);
+  const hasDemo = (req.attachments || []).some(a => a.kind === 'html' || a.kind === 'code');
+  if (hasDemo) {
+    // 有 demo / 工程文件 → 直接拆解并生成内容（只填空字段，不覆盖手改）
+    const ana = analyzeDemo(req);
+    if (!req.smoke) req.smoke = generateSmoke(req);
+    decomposeToSmoke(req, ana);
+    if (stage === 'draft' || stage === 'prd') { if (!req.draft) req.draft = generateDraft(req); decomposeToDraft(req, ana); }
+  } else {
+    if (stage === 'smoke') mergeSmoke(req);
+    else if (stage === 'draft') mergeDraft(req);
+    else mergePRD(req);
+  }
   const imgs = attachmentsByKind(req, 'image').length;
   const vids = attachmentsByKind(req, 'video').length;
   const htmls = attachmentsByKind(req, 'html').length;
+  const codes = attachmentsByKind(req, 'code').length;
   const bits = [];
-  if (htmls) bits.push(`${htmls} 个 HTML 已抽取正文关键信息填入字段`);
-  if (imgs) bits.push(`${imgs} 张图片已作为线框图 / 截图挂载`);
-  if (vids) bits.push(`${vids} 段视频已作为 demo 证据挂载`);
+  if (htmls || codes) bits.push(`已拆解 ${htmls} 个 demo${codes ? ` / ${codes} 个工程文件` : ''} 并生成文档内容`);
+  if (imgs) bits.push(`${imgs} 张图片作为线框图 / 截图`);
+  if (vids) bits.push(`${vids} 段视频作为演示证据`);
   return bits.length ? bits.join('；') : '未识别到可分析的物料';
 }
 
@@ -333,41 +342,117 @@ function analyzeDemo(req) {
     htmlCount: htmls.length, fileCount: (req.attachments || []).length, previewId: htmls[0] && htmls[0].id };
 }
 
-/* 拆成冒烟 */
+/* ---------- 内容推断（把结构映射成完整文案，尽量少留待补充） ---------- */
+const ROLE_HINTS = [
+  [/(坐席|客服|话务)/, '一线客服坐席'], [/(创客|maker)/i, '创客 / Maker'],
+  [/(开发者|工程师|developer|coder)/i, '开发者'], [/(运营)/, '运营同学'],
+  [/(商家|卖家|merchant|店铺)/i, '商家'], [/(学生|老师|教师|家长)/, '教育场景用户'],
+  [/(医生|患者|就诊)/, '医疗场景用户'], [/(用户|会员|访客)/, '终端用户'],
+];
+function inferUser(text) { for (const [re, u] of ROLE_HINTS) if (re.test(text || '')) return u; return '目标用户'; }
+
+/* 交互动词 → 系统行为 + 验收，用于把按钮拆成「怎么做」 */
+const ACTION_SYS = [
+  [/(采纳|接受|应用|采用)/, '把该内容写入并回写记录', '采纳可回写、采纳率可统计'],
+  [/(搜索|查询|检索|查找|筛选)/, '按关键词检索并按相关度返回', '检索结果相关、响应 < 1s'],
+  [/(提交|保存|发布|上架|确认)/, '校验后保存 / 提交审核', '提交成功并可追踪状态'],
+  [/(删除|移除|清除|撤销)/, '二次确认后删除并即时生效', '删除即时生效、有撤销窗口'],
+  [/(创建|新建|添加|新增|录入)/, '打开编辑器并初始化模板', '可创建并保存草稿'],
+  [/(登录|注册|授权|绑定)/, '校验身份并建立会话', '登录成功率与失败提示达标'],
+  [/(忽略|取消|跳过|关闭|返回)/, '关闭当前项且不打断主线', '操作后不影响主流程'],
+  [/(编辑|修改|更新|调整)/, '进入可编辑态并保存变更', '修改可保存、可回看'],
+  [/(查看|详情|预览|打开|展开)/, '展开对应详情 / 预览', '详情完整、加载 < 1s'],
+  [/(上传|导入|附件)/, '接收文件并解析 / 挂载', '上传成功并可预览'],
+  [/(分享|转发|导出|下载)/, '生成可分享内容 / 文件', '导出内容完整可用'],
+];
+function actionBehavior(name) {
+  for (const [re, sys, acc] of ACTION_SYS) if (re.test(name)) return { sys, acc };
+  return { sys: `处理「${name}」并给出反馈`, acc: `「${name}」在主场景可用、响应及时` };
+}
+function composeOneLiner(ana, user) {
+  const acts = (ana.actions.length ? ana.actions : ana.featureCands).slice(0, 3).join('、');
+  const path = ana.pages.length ? `覆盖 ${ana.pages.slice(0, 4).join(' → ')} 的闭环` : '跑通主路径闭环';
+  return `面向${user}，通过「${ana.title || '该 demo'}」让用户能${acts ? `完成 ${acts}` : '完成主路径操作'}——${path}。`;
+}
+
+/* 拆成冒烟（尽量填满） */
 function decomposeToSmoke(req, ana) {
   if (!req.smoke) req.smoke = generateSmoke(req);
   const s = req.smoke;
-  if (isTodo(s.conclusion)) s.conclusion = ana.title ? `做一个「${ana.title}」：${TODO}（补「为什么现在做」）` : s.conclusion;
-  if (isTodo(s.background) && ana.texts[0]) s.background = ana.texts[0];
-  if (ana.pages.length) s.approach = '主路径：' + ana.pages.slice(0, 6).join(' → ') + (ana.actions.length ? `；关键操作：${ana.actions.slice(0, 4).join(' / ')}` : '');
-  if ((!s.goals || s.goals.every(isTodo)) && ana.actions.length) s.goals = [`让用户完成：${ana.actions.slice(0, 4).join(' / ')}`];
-  s.complexity = (s.complexity || []).map(c => {
-    if (c.dim === '研发') return { dim: '研发', level: ana.codeN > 12 ? '大' : ana.codeN > 4 ? '中' : '小', basis: `demo 含 ${ana.codeN} 个源码文件、${ana.forms} 个表单` };
-    if (c.dim === '设计') return { dim: '设计', level: ana.pages.length > 6 ? '大' : ana.pages.length > 2 ? '中' : '小', basis: `约 ${ana.pages.length} 个页面 / 区块` };
-    return c;
-  });
+  const ctx = [ana.texts.join(' '), ana.title, ana.actions.join(' '), req.input || ''].join(' ');
+  const user = inferUser(ctx);
+  const acts = ana.actions.length ? ana.actions : ana.featureCands;
+  const fill = (k, v) => { if (isTodo(s[k])) s[k] = v; };
+
+  fill('conclusion', composeOneLiner(ana, user));
+  fill('background', ana.texts.length ? ana.texts.slice(0, 2).join(' ')
+    : `需求来自 demo「${ana.title || req.name}」，已示范主路径：${ana.pages.join(' → ') || '（见 demo）'}。`);
+  if (!s.goals || s.goals.every(isTodo)) s.goals = [
+    acts.length ? `让${user}能完成：${acts.slice(0, 4).join(' / ')}` : '在产品内跑通主路径闭环',
+    ana.texts[1] || '把上述操作在产品内闭环，减少人工与工具间跳转',
+  ];
+  if (!s.nonGoals || s.nonGoals.every(isTodo)) s.nonGoals = [
+    acts.length > 2 ? `本期不做非主路径能力：${acts.slice(2, 5).join(' / ')}` : '本期不做权限 / 管理 / 历史版本等非核心能力',
+    '不做资源计费与复杂配置，先跑通闭环',
+  ];
+  s.approach = '主路径：' + (ana.pages.slice(0, 6).join(' → ') || '（见 demo）') + (acts.length ? `；关键操作：${acts.slice(0, 4).join(' / ')}` : '');
+  s.assumptions = [...new Set([
+    `${user}确实需要在此场景完成「${acts[0] || ana.title || '主操作'}」`,
+    ana.forms ? '表单 / 输入环节的数据可获取且可校验' : '主路径能在本期资源内实现',
+    ...(s.assumptions || []).filter(v => !isTodo(v)),
+  ])].slice(0, 3);
+  s.complexity = [
+    { dim: '研发', level: ana.codeN > 12 ? '大' : ana.codeN > 4 ? '中' : '小', basis: `demo 含 ${ana.codeN} 个源码文件、${ana.forms} 表单、${ana.pages.length} 页面` },
+    { dim: '设计', level: ana.pages.length > 6 ? '大' : ana.pages.length > 2 ? '中' : '小', basis: `约 ${ana.pages.length} 个页面 / 区块、${acts.length} 个交互` },
+    { dim: '依赖方', level: (ana.forms || ana.imgs) ? '有：数据 / 内容源' : '无', basis: ana.forms ? '需数据 / 接口支撑表单' : '以前端交互为主' },
+  ];
+  s.openQuestions = [
+    acts.length ? `「${acts[0]}」的成功标准与失败兜底是什么？` : '主路径的成功标准是什么？',
+    ana.pages.length > 1 ? `${ana.pages.slice(0, 3).join(' / ')} 里哪个是 P0 必须先做？` : '哪个环节是 P0 必须先做？',
+    '最小验证怎么做、成功信号是什么？',
+  ];
   s.wireframeCount = attachmentsByKind(req, 'image').length + attachmentsByKind(req, 'video').length + attachmentsByKind(req, 'html').length;
   req.smoke = s;
 }
 
-/* 拆成 Draft（每个功能用 demo 预览作为线框图） */
+/* 拆成 Draft（尽量填满，每个功能用 demo 预览作为线框图） */
 function decomposeToDraft(req, ana) {
   if (!req.draft) req.draft = generateDraft(req);
   const d = req.draft;
-  d.basic['所属团队/模块'] = isTodo(d.basic['所属团队/模块']) ? (DIRECTIONS[req.direction] || DIRECTIONS.general).label : d.basic['所属团队/模块'];
-  if (isTodo(d.conclusion)) d.conclusion = ana.title ? `面向 [目标用户]，通过 [${ana.title}]，让用户获得 [可衡量结果]（${TODO}）` : d.conclusion;
-  if (isTodo(d.bg_now) && ana.texts[0]) d.bg_now = ana.texts[0];
-  if (isTodo(d.uv_better) && ana.texts[1]) d.uv_better = ana.texts[1];
+  const ctx = [ana.texts.join(' '), ana.title, req.input || ''].join(' ');
+  const user = inferUser(ctx);
+  const acts = ana.featureCands.length ? ana.featureCands : ana.actions;
   const img = attachmentsByKind(req, 'image')[0];
   const wireId = ana.previewId || (img && img.id) || '';
-  if (ana.featureCands.length) {
-    d.features = ana.featureCands.map((name, i) => ({
-      name, pri: i < 2 ? 'P0' : 'P1',
-      scenario: `用户在 demo${ana.pages[i] ? `「${ana.pages[i]}」` : ''} 中完成「${name}」`,
-      how: '1. 用户……\n2. 系统……\n3. ……',
-      wire: wireId,
-      note: '来自 demo 拆解，待补充触发/依赖',
-    }));
+  const fill = (k, v) => { if (isTodo(d[k])) d[k] = v; };
+
+  if (isTodo(d.basic['所属团队/模块'])) d.basic['所属团队/模块'] = (DIRECTIONS[req.direction] || DIRECTIONS.general).label;
+  fill('conclusion', `面向 ${user}，通过「${ana.title || '该能力'}」，让用户能${acts.length ? `完成 ${acts.slice(0, 3).join('、')}` : '完成主路径'}${ana.pages.length ? `，覆盖 ${ana.pages.slice(0, 4).join(' → ')} 的闭环` : ''}。`);
+  fill('bg_from', req.source ? req.source : `来自 demo「${ana.title || req.name}」`);
+  fill('bg_now', ana.texts[0] || `现状缺少「${ana.title || req.name}」这样的一站式能力，${user}需人工或多处跳转完成。`);
+  fill('bg_ifnot', `不做则 ${user} 仍需人工完成${acts.length ? `「${acts[0]}」等` : ''}操作，效率与体验受限、也无法在发布上稳定展示。`);
+  if (isTodo(d.uv_who) || d.uv_who.length > 16) d.uv_who = user; // 覆盖粗匹配到的冗长文本，回填干净的用户角色
+  fill('uv_better', ana.texts[1] || `从 ${ana.pages[0] || '入口'} 到结果一站式完成，减少跳转与等待。`);
+  fill('uv_why', `一处完成${acts.length ? `「${acts.slice(0, 2).join(' / ')}」` : '主路径'}，${ana.forms ? '表单即填即用' : '即用即得'}。`);
+  if (!d.competitors || d.competitors.every(c => isTodo(c.name))) {
+    d.competitors = [{ name: '现有做法 / 人工方式', approach: `${user}目前手工完成上述操作，或在多个工具间切换`, shot: wireId,
+      compare: `本方案把「${acts[0] || ana.title || '主操作'}」在产品内${ana.pages.length > 1 ? '串成闭环并' : ''}自动化 / 前置` }];
+  }
+  if (acts.length) {
+    d.features = acts.slice(0, 8).map((name, i) => {
+      const beh = actionBehavior(name); const page = ana.pages[i] || ana.pages[0] || '';
+      return { name, pri: i < 2 ? 'P0' : 'P1',
+        scenario: `${user}在${page ? `「${page}」` : '主路径'}中需要${name}`,
+        how: `1. 用户点击「${name}」\n2. 系统${beh.sys}\n3. 反馈结果并可继续下一步`,
+        wire: wireId,
+        note: `验收：${beh.acc}${ana.forms ? '；依赖表单 / 数据' : ''}` };
+    });
+  }
+  if (!d.notInScope || d.notInScope.every(n => isTodo(n.feature))) {
+    d.notInScope = [
+      { feature: acts.length > 2 ? acts.slice(2, 5).join(' / ') : '权限 / 管理 / 历史版本', reason: '非主路径，本期先跑通 P0 闭环' },
+      { feature: '资源计费与复杂配置', reason: '首版按限免 / 默认处理，加速交付' },
+    ];
   }
   req.draft = d;
 }
