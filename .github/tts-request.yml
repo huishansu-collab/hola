@@ -4,4 +4,4 @@ case: morning
 force: true
 only:
 model: gpt-4o-mini-tts
-run: 3
+run: 4
