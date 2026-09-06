@@ -202,13 +202,21 @@ async function qwenOnce(item, { apiKey, baseUrl, fetchImpl, signal }) {
 }
 
 /* 火山 seed-audio:一次整段生成,返回 mp3(或 wav)的 ArrayBuffer;429/5xx/网络错误重试。单次 30~120 秒 */
-export async function volcCreate(prompt, { apiKey, baseUrl = VOLC_BASE_URL, model = 'seed-audio-1.0', fetchImpl = globalThis.fetch, signal, retries = 3, sleepMs = 3000 } = {}) {
-  if (!apiKey) throw new Error('缺少 VOLC_TTS_API_KEY');
+/* 鉴权两种写法:X-Api-Key(参考包用的);或控制台「应用管理」给的 APP ID + Access Token(X-Api-App-Id / X-Api-Access-Key / X-Api-Resource-Id) */
+export function volcHeaders({ apiKey, appId, accessToken, resourceId } = {}) {
+  const h = { 'Content-Type': 'application/json' };
+  if (apiKey) h['X-Api-Key'] = apiKey;
+  else if (appId && accessToken) { h['X-Api-App-Id'] = String(appId); h['X-Api-Access-Key'] = accessToken; if (resourceId) h['X-Api-Resource-Id'] = resourceId; }
+  return h;
+}
+
+export async function volcCreate(prompt, { apiKey, appId, accessToken, resourceId, baseUrl = VOLC_BASE_URL, model = 'seed-audio-1.0', fetchImpl = globalThis.fetch, signal, retries = 3, sleepMs = 3000 } = {}) {
+  if (!apiKey && !(appId && accessToken)) throw new Error('缺少 VOLC_TTS_API_KEY(或 VOLC_APP_ID + VOLC_ACCESS_TOKEN)');
   let lastErr;
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const r = await fetchImpl(`${String(baseUrl).replace(/\/$/, '')}/api/v3/tts/create`, {
-        method: 'POST', signal, headers: { 'X-Api-Key': apiKey, 'Content-Type': 'application/json' },
+        method: 'POST', signal, headers: volcHeaders({ apiKey, appId, accessToken, resourceId }),
         body: JSON.stringify(buildVolcRequest(prompt, { model })),
       });
       const txt = await r.text().catch(() => '');

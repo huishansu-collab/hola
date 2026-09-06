@@ -76,9 +76,12 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
           VOLC_TTS_API_KEY: ${{ secrets.VOLC_TTS_API_KEY }}
+          VOLC_APP_ID: ${{ secrets.VOLC_APP_ID }}
+          VOLC_ACCESS_TOKEN: ${{ secrets.VOLC_ACCESS_TOKEN }}
           SECRET: ${{ steps.req.outputs.secret }}
         run: |
           KEY="${!SECRET}"
+          if [ "$SECRET" = VOLC_TTS_API_KEY ] && [ -z "$KEY" ] && [ -n "$VOLC_APP_ID" ] && [ -n "$VOLC_ACCESS_TOKEN" ]; then KEY="$VOLC_APP_ID:$VOLC_ACCESS_TOKEN"; echo "用 VOLC_APP_ID + VOLC_ACCESS_TOKEN 鉴权"; fi
           if [ -z "$KEY" ]; then
             echo "::error::没有找到 $SECRET。到 https://github.com/${{ github.repository }}/settings/secrets/actions 新建 repository secret(Name = $SECRET),再重新运行这个工作流。"
             exit 1
@@ -97,6 +100,9 @@ jobs:
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
           DASHSCOPE_BASE_URL: ${{ vars.DASHSCOPE_BASE_URL }}
           VOLC_TTS_API_KEY: ${{ secrets.VOLC_TTS_API_KEY }}
+          VOLC_APP_ID: ${{ secrets.VOLC_APP_ID }}
+          VOLC_ACCESS_TOKEN: ${{ secrets.VOLC_ACCESS_TOKEN }}
+          VOLC_RESOURCE_ID: ${{ vars.VOLC_RESOURCE_ID }}
         run: |
           args="${{ steps.req.outputs.case }} --provider ${{ steps.req.outputs.provider }} --model ${{ steps.req.outputs.model }}"
           if [ "${{ steps.req.outputs.force }}" = "true" ]; then args="$args --force"; fi

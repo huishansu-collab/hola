@@ -24,7 +24,8 @@ export function ttsConfig(env = process.env, provider) {
   const proxyHint = !!(env.HTTPS_PROXY || env.https_proxy) && !env.NODE_USE_ENV_PROXY;
   if (prov === 'volc') return {
     provider: 'volc', name: PROVIDERS.volc.name, envKey: 'VOLC_TTS_API_KEY',
-    apiKey: env.VOLC_TTS_API_KEY || '',
+    apiKey: env.VOLC_TTS_API_KEY || ((env.VOLC_APP_ID && env.VOLC_ACCESS_TOKEN) ? 'app-token' : ''),   // 占位:没有 API key 但有 APP ID + Token 也算配置了
+    appId: env.VOLC_APP_ID || '', accessToken: env.VOLC_ACCESS_TOKEN || '', resourceId: env.VOLC_RESOURCE_ID || '',
     model: env.VOLC_TTS_MODEL || PROVIDERS.volc.defaultModel,
     baseUrl: (env.VOLC_BASE_URL || PROVIDERS.volc.baseUrl).replace(/\/$/, ''),
     proxyHint,
@@ -186,7 +187,7 @@ async function synthesizeGroup(id, dir, manifest, cfg, persona, items, ctx) {
   for (let attempt = 1; attempt <= 3; attempt++) {
     let audio;
     try {
-      audio = Buffer.from(await volcCreate(prompt, { apiKey: cfg.apiKey, baseUrl: cfg.baseUrl, model: cfg.model, signal: ctx.signal, ...(ctx.fetchImpl ? { fetchImpl: ctx.fetchImpl } : {}) }));
+      audio = Buffer.from(await volcCreate(prompt, { apiKey: cfg.apiKey === 'app-token' ? '' : cfg.apiKey, appId: cfg.appId, accessToken: cfg.accessToken, resourceId: cfg.resourceId, baseUrl: cfg.baseUrl, model: cfg.model, signal: ctx.signal, ...(ctx.fetchImpl ? { fetchImpl: ctx.fetchImpl } : {}) }));
     } catch (e) {
       /* 文本太长之类的 4xx:对半拆开各自整段生成(音色会重抽一次,但至少能出) */
       if (e.status && e.status < 500 && e.status !== 429 && e.status !== 401 && e.status !== 403 && n >= 4 && ctx.depth < 3) {
