@@ -114,6 +114,19 @@ def enroll(case_id, speaker, url, model, prefix, local_path=None):
     return voice_id
 
 
+def fix_wav_header(data: bytes) -> bytes:
+    """SDK 流式返回的 wav 头里 RIFF / data 的长度是占位值,按实际字节数改正,否则时长会算错"""
+    import struct
+    if len(data) < 44 or data[:4] != b'RIFF' or data[8:12] != b'WAVE': return data
+    i = data.find(b'data', 12)
+    if i < 0: return data
+    payload = len(data) - i - 8
+    out = bytearray(data)
+    struct.pack_into('<I', out, 4, len(data) - 8)
+    struct.pack_into('<I', out, i + 4, payload)
+    return bytes(out)
+
+
 def plan(case_id):
     return json.loads(subprocess.check_output(['node', 'server/cli.js', 'plan', case_id, '--compact'], cwd=ROOT, text=True))
 
@@ -151,7 +164,7 @@ def synth(case_id, only, force, model, rate, pitch):
                 err = e; time.sleep(2 * (attempt + 1))
         if not wav:
             fails += 1; print(f'✗ {it["id"]} {err}', file=sys.stderr); continue
-        path = audio_dir / (it['clip'] + '.wav'); path.write_bytes(wav)
+        path = audio_dir / (it['clip'] + '.wav'); path.write_bytes(fix_wav_header(wav))
         for ext in ('.mp3', '.m4a'): (audio_dir / (it['clip'] + ext)).unlink(missing_ok=True)
         with wave.open(str(path), 'rb') as w: dur = round(w.getnframes() / w.getframerate() * 1000); sr = w.getframerate()
         total_ms += dur
@@ -170,7 +183,18 @@ def main():
     e = sub.add_parser('enroll'); e.add_argument('case_id'); e.add_argument('speaker'); e.add_argument('--url', required=True); e.add_argument('--model', default=DEFAULT_MODEL); e.add_argument('--prefix', default=None)
     s = sub.add_parser('synth'); s.add_argument('case_id'); s.add_argument('--only', default=''); s.add_argument('--force', action='store_true'); s.add_argument('--model', default=DEFAULT_MODEL); s.add_argument('--rate', type=float, default=1.0); s.add_argument('--pitch', type=float, default=1.0)
     a = sub.add_parser('auto', help='CI 用:有 ref_<speaker>.wav 而没音色的先复刻,再合成'); a.add_argument('case_id'); a.add_argument('--only', default=''); a.add_argument('--force', action='store_true'); a.add_argument('--model', default=DEFAULT_MODEL); a.add_argument('--rate', type=float, default=1.0); a.add_argument('--pitch', type=float, default=1.0); a.add_argument('--url-base', default=None, help='样本的公网地址前缀,默认按 GITHUB_REPOSITORY / GITHUB_REF_NAME 拼 raw.githubusercontent.com')
+    f = sub.add_parser('fixwav', help='修正已落盘 wav 的流式头并重算 manifest 时长'); f.add_argument('case_id')
     args = ap.parse_args()
+    if args.cmd == 'fixwav':
+        audio_dir = ROOT / 'cases' / args.case_id / 'audio'; mp = audio_dir / 'manifest.json'
+        manifest = json.loads(mp.read_text('utf-8')); n = 0
+        for clip, ent in manifest['clips'].items():
+            if not str(ent.get('source', '')).startswith('cosy:') or not str(ent.get('file', '')).endswith('.wav'): continue
+            path = audio_dir / ent['file']; raw = path.read_bytes(); fixed = fix_wav_header(raw)
+            if fixed != raw: path.write_bytes(fixed)
+            with wave.open(str(path), 'rb') as w: ent['duration_ms'] = round(w.getnframes() / w.getframerate() * 1000); ent['sample_rate'] = w.getframerate()
+            st = path.stat(); ent['size'] = st.st_size; ent['mtime'] = st.st_mtime * 1000; n += 1
+        mp.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', 'utf-8'); print(f'修正 {n} 句', file=sys.stderr); return
     if args.cmd == 'enroll':
         enroll(args.case_id, args.speaker, args.url, args.model, args.prefix or ''.join(c for c in args.speaker if c.isalnum())[:10] or 'voice', local_path=ROOT / 'cases' / args.case_id / 'audio' / f'ref_{args.speaker}.wav')
     elif args.cmd == 'synth':
