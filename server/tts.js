@@ -13,7 +13,7 @@ import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { ttsPlan, synthesizeSpeech, volcCreate, volcPersona, buildVolcPrompt, estimateVolcSeconds, chunkVolcLines, TTS_VOICES, DEFAULT_TTS_MODEL, OPENAI_BASE_URL, PROVIDERS, DEFAULT_PROVIDER } from '../shared/tts.js';
 import { audioDir, loadManifest, saveManifest } from './cases.js';
-import { parseWav, writeWav, toMono, resampleMono, silenceRegions, slicePcm } from './audio.js';
+import { parseWav, writeWav, toMono, resampleMono, silenceRegions, alignRegions, slicePcm } from './audio.js';
 
 export { TTS_VOICES };
 
@@ -138,13 +138,53 @@ export async function decodeAudio(buf, { sampleRate = 48000 } = {}) {
   } finally { await fs.rm(tmp, { force: true }); }
 }
 
-/* 切段:先按默认参数,段数不对再试几档 merge_gap */
-function splitMaster(pcm, sampleRate, n) {
+export const speechChars = (t) => String(t || '').replace(/[\s，。！？、：；“”…—「」·,.!?:;"'()（）]/g, '').length;
+
+/* 切段:先按字数对齐(动态规划选静音间隙),对不齐再退回参考包的纯静音计数 */
+export function splitMaster(pcm, sampleRate, items) {
+  const n = items.length;
+  const al = alignRegions(pcm, sampleRate, items.map(it => speechChars(it.text)));
+  if (al.regs.length === n) return { regs: al.regs, quality: al.quality, how: `对齐(语速 ${(1 / al.rate).toFixed(1)} 字/s)` };
   for (const mergeGap of [1.0, 0.8, 1.3, 0.6, 1.6]) {
     const regs = silenceRegions(pcm, sampleRate, { mergeGap });
-    if (regs.length === n) return { regs, mergeGap };
+    if (regs.length === n) return { regs, quality: 1, how: `静音计数 merge_gap ${mergeGap}` };
   }
-  return { regs: silenceRegions(pcm, sampleRate), mergeGap: 1.0 };
+  return { regs: al.regs.length ? al.regs : silenceRegions(pcm, sampleRate), quality: Infinity, how: '失败' };
+}
+
+/* 用已存的母带重新切段(不再调 API):master_<speaker>[_<首句id>].mp3 → 每句 wav。改了切段算法或想微调时用 */
+export async function recutCase(id, rawScript, { onProgress = () => {} } = {}) {
+  const s = normalizeScript(rawScript);
+  const dir = audioDir(id);
+  const manifest = await loadManifest(id); manifest.clips = manifest.clips || {};
+  const plan = ttsPlan(s, { provider: 'volc' });
+  const files = (await fs.readdir(dir)).filter(f => /^master_.+\.mp3$/.test(f));
+  const align = await fs.readFile(path.join(dir, 'master_align.json'), 'utf8').then(JSON.parse).catch(() => null);   // tools/align_clips.py 的识别对齐结果,优先
+  const result = { cut: [], failed: [], chunks: 0, aligned: 0 };
+  const speakers = [...new Set(plan.map(it => it.speaker))];
+  for (const sp of speakers) {
+    const items = plan.filter(it => it.speaker === sp);
+    const masters = files.filter(f => f === `master_${sp}.mp3` || f.startsWith(`master_${sp}_`)).map(f => { const m = f.match(/_(u\d+)\.mp3$/); return { f, idx: m ? items.findIndex(it => it.id === m[1]) : 0 }; }).filter(m => m.idx >= 0).sort((a, b) => a.idx - b.idx);
+    for (let k = 0; k < masters.length; k++) {
+      const chunk = items.slice(masters[k].idx, k + 1 < masters.length ? masters[k + 1].idx : items.length);
+      if (!chunk.length) continue;
+      result.chunks++;
+      const { pcm, sampleRate } = await decodeAudio(await fs.readFile(path.join(dir, masters[k].f)));
+      let { regs, quality, how } = splitMaster(pcm, sampleRate, chunk);
+      const al = align?.[masters[k].f];
+      if (al && al.ids.length === chunk.length && al.ids.every((x, i) => x === chunk[i].id)) { regs = al.regs; quality = 1 - Math.min(...al.sim); how = `识别对齐(最低匹配率 ${Math.min(...al.sim).toFixed(2)})`; result.aligned += chunk.length; }
+      if (regs.length !== chunk.length) { for (const it of chunk) result.failed.push({ id: it.id, error: `${masters[k].f} 切不出 ${chunk.length} 段` }); continue; }
+      onProgress({ phase: 'start', clip: sp, id: sp, index: 0, total: plan.length, status: 'generating', message: `${masters[k].f}: ${chunk.length} 句,${how},最差偏差 ${(quality * 100).toFixed(0)}%` });
+      for (let i = 0; i < chunk.length; i++) {
+        const it = chunk[i]; const [a, b] = regs[i];
+        const wav = writeWav({ sampleRate: 24000, channels: 1, samples: resampleMono(slicePcm(pcm, sampleRate, a, b), sampleRate, 24000) });
+        const saved = await saveClip(id, it.clip, wav, { hash: it.hash, source: `volc:seed-audio-1.0:${it.speaker}`, text: it.text });
+        manifest.clips[it.clip] = saved; result.cut.push(it.id);
+        onProgress({ phase: 'done', clip: it.clip, id: it.id, index: 0, total: plan.length, status: 'ok', message: `${(saved.duration_ms / 1000).toFixed(1)}s`, duration_ms: saved.duration_ms });
+      }
+    }
+  }
+  return result;
 }
 
 /**
@@ -208,12 +248,13 @@ async function synthesizeGroup(id, dir, manifest, cfg, persona, items, ctx) {
       throw e;
     }
     const { pcm, sampleRate } = await decodeAudio(audio);
-    const { regs, mergeGap } = splitMaster(pcm, sampleRate, n);
-    if (regs.length !== n) {
-      last = new Error(`母带切出 ${regs.length} 段,期望 ${n} 段(第 ${attempt} 次)`);
+    const { regs, quality, how } = splitMaster(pcm, sampleRate, items);
+    if (regs.length !== n || quality > 1.5) {
+      last = new Error(regs.length !== n ? `母带切出 ${regs.length} 段,期望 ${n} 段(第 ${attempt} 次)` : `切段对不准(最差偏差 ${(quality * 100).toFixed(0)}%,第 ${attempt} 次)`);
       ctx.onProgress({ phase: 'start', clip: items[0].speaker, id: items[0].speaker, index: 0, total: 0, status: 'generating', message: last.message + (attempt < 3 ? ',重新生成' : '') });
       continue;
     }
+    ctx.onProgress({ phase: 'start', clip: items[0].speaker, id: items[0].speaker, index: 0, total: 0, status: 'generating', message: `${items[0].speaker_name} ${n} 句:${how},最差偏差 ${(quality * 100).toFixed(0)}%` });
     const masterName = `master_${items[0].speaker}${ctx.depth ? '_' + items[0].id : ''}.mp3`;
     if (!ctx.depth) for (const f of await fs.readdir(dir)) if (f.startsWith(`master_${items[0].speaker}_`)) await fs.rm(path.join(dir, f), { force: true });
     await fs.writeFile(path.join(dir, masterName), audio);
@@ -225,7 +266,7 @@ async function synthesizeGroup(id, dir, manifest, cfg, persona, items, ctx) {
       const saved = await saveClip(id, it.clip, wav, { hash: it.hash, source: `${cfg.provider}:${cfg.model}:${it.speaker}`, text: it.text });
       manifest.clips[it.clip] = saved;
       ctx.result.generated.push(it.id);
-      ctx.onProgress({ phase: 'done', clip: it.clip, id: it.id, index: 0, total: 0, status: 'ok', message: `${(saved.duration_ms / 1000).toFixed(1)}s(母带 ${a.toFixed(1)}‒${b.toFixed(1)}s,merge_gap ${mergeGap})`, duration_ms: saved.duration_ms });
+      ctx.onProgress({ phase: 'done', clip: it.clip, id: it.id, index: 0, total: 0, status: 'ok', message: `${(saved.duration_ms / 1000).toFixed(1)}s(母带 ${a.toFixed(1)}‒${b.toFixed(1)}s)`, duration_ms: saved.duration_ms });
     }
     return;
   }

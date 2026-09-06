@@ -6,13 +6,14 @@
  *   node server/cli.js validate <caseId|script.json>
  *   node server/cli.js plan <caseId>                                  逐句语音计划 JSON(离线引擎 tools/offline_tts.py 用)
  *   node server/cli.js tts <caseId> [--provider openai|qwen] [--model …] [--force] [--only u001,u002]   生成语音
+ *   node server/cli.js recut <caseId>                                 用已存的火山母带重新切段(不调 API)
  *   node server/cli.js export <caseId> [--out dir] [--sample s01]    规范化 JSON + 双声道 WAV
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { existsSync } from 'node:fs';
 import { ROOT, listCases, loadCase, audioDir } from './cases.js';
-import { generateCaseAudio, ttsConfig } from './tts.js';
+import { generateCaseAudio, ttsConfig, recutCase } from './tts.js';
 import { ttsPlan, PROVIDERS } from '../shared/tts.js';
 import { mixSchedule } from './audio.js';
 import { parseDSL } from '../shared/dsl.js';
@@ -81,6 +82,15 @@ async function main() {
       const only = flags.only ? String(flags.only).split(',') : null;
       const r = await generateCaseAudio(id, c.script, { force: !!flags.force, only, provider: flags.provider, model: flags.model, onProgress: p => console.log(`[${p.index}/${p.total}] ${p.id} ${p.status} ${p.message || ''}`) });
       console.log(`生成 ${r.generated.length} · 缓存 ${r.skipped.length} · 失败 ${r.failed.length}`);
+      r.failed.forEach(f => console.error('✗', f.id, f.error));
+      if (r.failed.length) process.exit(1);
+      break;
+    }
+    case 'recut': {
+      const id = args[0]; if (!id) throw new Error('用法:recut <caseId>');
+      const c = await loadCase(id);
+      const r = await recutCase(id, c.script, { onProgress: p => { if (p.phase !== 'done') console.log(p.message); } });
+      console.log(`重切 ${r.cut.length} 句(${r.chunks} 条母带)· 失败 ${r.failed.length}`);
       r.failed.forEach(f => console.error('✗', f.id, f.error));
       if (r.failed.length) process.exit(1);
       break;

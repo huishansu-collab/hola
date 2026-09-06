@@ -102,7 +102,8 @@ npm run tts -- morning --provider volc [--force] [--only 司机]
 - 人物描述固定在 `shared/tts.js` 的 `VOLC_PERSONAS`（用户 = cozy 男声，助手 = chill 女声，措辞与参考包一字不差；改了就不是同一个人）。其它说话人自动套模板：`安静的室内，没有背景音乐，没有旁白。男子（<剧本里的 instructions>）`，也可在剧本里写 `volc_persona="…"` 整段覆盖。
 - 台词的舞台提示会变成句前一小截语气说明（抢话 → 用打断对方、略带决断的语气；低语 → 压低声音、贴近麦克风地；叹气 / 笑 / 急促 / 轻缓 …），人物描述本身不动。
 - 母带存为 `cases/<id>/audio/master_<speaker>.mp3`（48kHz），切段参数沿用参考包：静音阈值 = 峰值 RMS × 0.06、静音 ≥ 0.55s、段间隔 < 1.0s 合并、头尾各留 0.18s；段数对不上先换几档 merge_gap，再重新生成，最多三次；文本太长被拒时对半拆开。
-- 单次生成 30‒120 秒；`--only` 按说话人重做（整段重生成才能保持同一个人）。GitHub Actions 工作流里选 provider = volc（secret 名 `VOLC_TTS_API_KEY`）。
+- 单次能生成的音频有时长上限（超过报 DurationOutOfRange），所以按估算时长分成 ≤100s 的几段各自整段生成（段数越少音色越连贯，被拒自动减半重切）；`--only` 按说话人重做。GitHub Actions 工作流里选 provider = volc（secret 名 `VOLC_TTS_API_KEY`，或 `VOLC_APP_ID` + `VOLC_ACCESS_TOKEN`）。
+- 切段两道保险：先按字数对齐（动态规划在静音间隙里选切点，语速用整条母带自校准），再用 `tools/align_clips.py` 拿 SenseVoice 逐字识别母带、和剧本做编辑距离对齐，把切点放到相邻两句之间能量最低处，写成 `master_align.json`；`node server/cli.js recut <id>` 按它重切（不调 API）。工作流里这一步自动跑（识别模型 ≈1GB，Actions 缓存只下一次）。
 
 ### 千问 TTS(阿里云百炼 DashScope)
 

@@ -76,6 +76,46 @@ export function silenceRegions(pcm, sampleRate, { minSil = 0.55, threshRatio = 0
   return merged.map(([a, b]) => [Math.max(0, a - pad), Math.min(dur, b + pad)]);
 }
 
+/* 按台词长度对齐切段:先找出所有语音片段(被 ≥ minGap 的静音隔开),再用动态规划选 N-1 个间隙做边界,
+ * 让每段时长最接近"按字数估算的时长"(语速用整条母带自校准)。比单纯数静音段稳:句内换气、句间没停顿都能兜住。
+ * 返回 { regs: [[起,止]], quality: 最差一段的相对误差, rate: 秒/字 } */
+export function alignRegions(pcm, sampleRate, expectedChars, { minGap = 0.22, threshRatio = 0.06, pad = 0.18 } = {}) {
+  const n = expectedChars.length;
+  const frame = Math.round(sampleRate * 0.02);
+  const total = Math.floor(pcm.length / frame);
+  const rms = new Float64Array(total); let peak = 0;
+  for (let i = 0; i < total; i++) { let acc = 0; const o = i * frame; for (let j = 0; j < frame; j++) { const v = pcm[o + j]; acc += v * v; } rms[i] = Math.sqrt(acc / frame); if (rms[i] > peak) peak = rms[i]; }
+  const th = peak * threshRatio; const minGapF = Math.round(minGap / 0.02);
+  /* 语音片段:短于 minGap 的静音并入片段 */
+  const spans = []; let start = null, sil = 0;
+  for (let i = 0; i < total; i++) {
+    if (rms[i] > th) { if (start === null) start = i; sil = 0; }
+    else if (start !== null) { sil++; if (sil >= minGapF) { spans.push([start * 0.02, (i - sil + 1) * 0.02]); start = null; sil = 0; } }
+  }
+  if (start !== null) spans.push([start * 0.02, total * 0.02]);
+  const S = spans.length;
+  if (!S || n === 0) return { regs: [], quality: Infinity, rate: 0, spans: S };
+  if (n === 1) return { regs: [[Math.max(0, spans[0][0] - pad), Math.min(pcm.length / sampleRate, spans[S - 1][1] + pad)]], quality: 0, rate: 0, spans: S };
+  if (S < n) return { regs: [], quality: Infinity, rate: 0, spans: S };
+  const speech = spans.reduce((a, [x, y]) => a + (y - x), 0);
+  const chars = expectedChars.reduce((a, c) => a + Math.max(1, c), 0);
+  const rate = speech / chars;                                   // 秒/字,整条母带自校准
+  const exp = expectedChars.map(c => Math.max(1, c) * rate);
+  const cost = (i, a, b) => { const d = spans[b][1] - spans[a][0]; const e = exp[i]; return (d - e) * (d - e) / (e + 0.5); };
+  /* dp[i][b]:前 i+1 句用掉片段 0..b 的最小代价 */
+  const INF = 1e18; const dp = Array.from({ length: n }, () => new Float64Array(S).fill(INF)); const from = Array.from({ length: n }, () => new Int32Array(S).fill(-1));
+  for (let b = 0; b < S; b++) dp[0][b] = cost(0, 0, b);
+  for (let i = 1; i < n; i++) for (let b = i; b < S; b++) { let best = INF, arg = -1; for (let a = i; a <= b; a++) { const v = dp[i - 1][a - 1] + cost(i, a, b); if (v < best) { best = v; arg = a; } } dp[i][b] = best; from[i][b] = arg; }
+  const regs = new Array(n); let b = S - 1, quality = 0;
+  for (let i = n - 1; i >= 0; i--) {
+    const a = i === 0 ? 0 : from[i][b];
+    const d = spans[b][1] - spans[a][0]; quality = Math.max(quality, Math.abs(d - exp[i]) / (exp[i] + 0.5));
+    regs[i] = [Math.max(0, spans[a][0] - pad), Math.min(pcm.length / sampleRate, spans[b][1] + pad)];
+    b = a - 1;
+  }
+  return { regs, quality, rate, spans: S };
+}
+
 export function slicePcm(pcm, sampleRate, fromSec, toSec) {
   return pcm.subarray(Math.max(0, Math.round(fromSec * sampleRate)), Math.min(pcm.length, Math.round(toSec * sampleRate)));
 }
