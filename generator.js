@@ -1,230 +1,287 @@
 /* ============================================================
  * generator.js — Demo 版「Principle 一号位助手」
  *
- * 说明：这是一个可离线运行的 Demo。它用规则 + 模板把用户输入结构化为
- * 冒烟卡片 / Draft 骨架，并按「方向」注入必填问题、风险、指标和架构占位。
- * 它不会编造竞品事实；信息不足处一律标记为「待补充 / 待验证」，
- * 与系统 Prompt 的要求一致（区分 已知事实 / 用户假设 / 待验证问题）。
- * 接入真实模型时，只需把这些函数替换为对应阶段的 Prompt 调用即可。
+ * 可离线运行：用规则 + 模板把输入 / 上传物料结构化为
+ * 冒烟 / Draft / PRD 文档，严格对齐范本章节。
+ * 上传的 HTML 抽正文关键信息填字段；图片/视频充当范本里「必填」的线框图/截图/高保真。
+ * 不编造事实，缺内容一律标「待补充」。接真实模型时替换这些函数为 §7 各阶段 Prompt 调用。
  * ============================================================ */
 
 const TODO = '待补充';
+const isTodo = v => v == null || String(v).trim() === '' || String(v).includes('待补充');
 
-/* 从一段文本里抽取第一句 / 关键句，作为回显 */
-function firstSentence(text) {
-  if (!text) return '';
-  const clean = text.replace(/\s+/g, ' ').trim();
-  const m = clean.split(/[。.!?！？\n]/).map(s => s.trim()).filter(Boolean);
-  return m[0] || clean;
+/* ---------- 文本抽取 ---------- */
+function splitSentences(text) {
+  return String(text || '').replace(/\s+/g, ' ').split(/[。.!?！？\n；;]/).map(s => s.trim()).filter(Boolean);
 }
-
+function firstSentence(text) { return splitSentences(text)[0] || ''; }
 function pickAround(text, keywords) {
-  if (!text) return '';
-  const lines = text.split(/[。.!?！？\n]/).map(s => s.trim()).filter(Boolean);
-  for (const line of lines) {
-    if (keywords.some(k => line.includes(k))) return line;
-  }
+  for (const line of splitSentences(text)) if (keywords.some(k => line.includes(k))) return line;
   return '';
 }
 
-/* 生成冒烟卡片骨架 —— 对应「冒烟阶段 Prompt」 */
-function generateSmokeCard(req) {
+/* 从上传的 HTML 抽取标题 / 小标题 / 正文关键句 */
+function extractHtmlText(html) {
+  const strip = s => s.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
+  const grab = re => { const out = []; let m; while ((m = re.exec(html))) out.push(strip(m[1])); return out.filter(Boolean); };
+  const title = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1];
+  const h1 = grab(/<h1[^>]*>([\s\S]*?)<\/h1>/gi);
+  const h = grab(/<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/gi);
+  const p = grab(/<(?:p|li)[^>]*>([\s\S]*?)<\/(?:p|li)>/gi);
+  const bodyText = strip((html.match(/<body[^>]*>([\s\S]*?)<\/body>/i) || [, html])[1]);
+  return { title: title ? strip(title) : (h1[0] || ''), headings: h, paras: p, text: bodyText };
+}
+
+/* 汇总所有附件里可用于分析的文本 */
+function gatheredText(req) {
+  let t = req.input || '';
+  (req.attachments || []).forEach(a => {
+    if (a.kind === 'html' && a.text) { const e = extractHtmlText(a.text); t += '\n' + [e.title, ...e.headings, ...e.paras].join('\n'); }
+    if (a.kind === 'file' && a.text) t += '\n' + a.text;
+    if (a.note) t += '\n' + a.note;
+  });
+  return t;
+}
+function attachmentsByKind(req, kind) { return (req.attachments || []).filter(a => a.kind === kind); }
+
+/* ---------- 冒烟文档 ---------- */
+function generateSmoke(req) {
   const dir = DIRECTIONS[req.direction] || DIRECTIONS.general;
-  const input = req.input || '';
-  const lead = firstSentence(input);
-
-  const targetUser = pickAround(input, ['用户', '客户', '坐席', '同学', '面向', '为']) || TODO;
-  const scene = pickAround(input, ['场景', '通话', '时候', '当', '在']) || TODO;
-  const pain = pickAround(input, ['痛点', '问题', '难', '慢', '不能', '无法', '缺']) || TODO;
-
+  const text = gatheredText(req);
+  const lead = firstSentence(text);
+  const wire = attachmentsByKind(req, 'image').concat(attachmentsByKind(req, 'video'));
   return {
     generatedAt: Date.now(),
-    targetUser,
-    scene,
-    painPoint: pain,
-    valueProp: lead ? `围绕「${lead}」为目标用户创造可衡量的结果（${TODO}：量化指标）` : TODO,
-    conclusion: lead ? `要做成：${lead}` : TODO,
-    p0Path: ['触发', '系统动作', '用户反馈', '结果'],
-    assumptions: [
-      lead ? `用户确实需要「${lead}」并愿意改变现有行为` : `核心价值假设（${TODO}）`,
-      `${dir.label} 方向下的关键不确定性可被最小验证覆盖`,
-    ],
-    evidence: TODO + '（用户原话 / 数据 / 埋点）',
-    notInScope: TODO + '（本期明确不解决的事项）',
-    minValidation: `围绕「${dir.focus}」设计最小验证；成功信号 = ${TODO}`,
-    participants: dir.key === 'general' ? ['产品', '设计', '工程']
-      : dir.key === 'voice-duplex' ? ['产品', '算法', '工程', '数据']
-      : dir.key === 'call-assist' ? ['产品', '设计', '工程', '运营']
-      : dir.key === 'memory' ? ['产品', '算法', '工程', '数据']
-      : ['产品', '算法', '工程'],
+    conclusion: lead ? `${lead}（${TODO}：补「为什么现在做」）` : TODO,
+    background: pickAround(text, ['来自', '反馈', '数据', '战略', '发布会', '老板', '因为']) || TODO,
+    goals: [pickAround(text, ['目标', '做成', '希望', '让用户', '完成']) || TODO],
+    nonGoals: [pickAround(text, ['不做', '非目标', '暂不', '本期不']) || TODO],
+    approach: pickAround(text, ['方案', '怎么做', '通过', '实现', '流程']) || (lead ? `围绕「${lead}」的主路径（${TODO}）` : TODO),
+    assumptions: dir.assume.slice(),
+    complexity: SMOKE_TEMPLATE.complexity.dims.map(d => ({
+      dim: d, level: '', basis: TODO,
+    })),
     openQuestions: dir.questions.slice(),
-    recommendation: 'supplement', // 继续Draft/补证据/暂缓/推翻 → 默认建议补证据
+    wireframeCount: wire.length,
+    decision: '',
   };
 }
 
-/* 基于冒烟卡片生成 Draft 骨架 —— 对应「Draft 阶段 Prompt」 */
+/* ---------- Draft 文档 ---------- */
 function generateDraft(req) {
   const dir = DIRECTIONS[req.direction] || DIRECTIONS.general;
   const s = req.smoke || {};
+  const text = gatheredText(req);
+  const images = attachmentsByKind(req, 'image');
   return {
     generatedAt: Date.now(),
-    basicInfo: {
-      需求登记: req.name || TODO,
-      执行负责人: req.owner || TODO,
-      UED接口人: TODO,
-      研发接口人: TODO,
-      所属模块: dir.label,
-      目标版本: TODO,
-      文档状态: 'Draft 评审中',
+    basic: {
+      '需求登记': req.name || TODO,
+      '执行负责人': req.owner || TODO,
+      'UED 接口人': TODO,
+      '研发接口人': TODO,
+      '所属团队/模块': dir.label,
+      '目标版本/班车': TODO,
+      '冒烟文档': req.smoke ? '已生成（见冒烟阶段）' : TODO,
+      '文档状态': 'Draft 评审中',
     },
-    oneLineConclusion: s.conclusion && s.conclusion !== TODO
-      ? `面向 [${s.targetUser}]，在 [${s.scene}] 下，通过 [核心能力]，让用户获得 [可衡量结果]`
-      : TODO,
-    background: {
-      需求来源: req.source || TODO,
-      现状问题: s.painPoint || TODO,
-      不做的影响: TODO,
-      目标用户: s.targetUser || TODO,
-      前后变化: TODO,
-    },
-    competitors: [
-      { name: TODO, approach: TODO, learn: TODO, diff: TODO, evidence: TODO },
-    ],
-    features: [
-      { name: s.conclusion && s.conclusion !== TODO ? '主路径核心功能' : TODO,
-        pri: 'P0',
-        userGoal: s.valueProp || TODO,
-        system: TODO, dep: dir.label, accept: TODO },
-    ],
-    complexity: [
-      { dim: '客户端 / 服务端', level: TODO, reason: TODO, owner: TODO },
-      { dim: '模型与推理', level: TODO, reason: TODO, owner: TODO },
-      { dim: '数据与标注', level: TODO, reason: TODO, owner: TODO },
-      { dim: '实时性', level: TODO, reason: TODO, owner: TODO },
-      { dim: '权限与隐私', level: TODO, reason: TODO, owner: TODO },
-      { dim: '监控与运营', level: TODO, reason: TODO, owner: TODO },
-    ],
-    risks: dir.risks.map(x => ({ risk: x.r, trigger: TODO, mitig: x.mitig })),
-    metrics: dir.metrics,
-    notInScope: (s.notInScope && s.notInScope !== TODO)
-      ? [{ item: s.notInScope, reason: TODO }]
-      : [{ item: TODO, reason: TODO }],
-    openQuestions: (s.openQuestions || dir.questions).slice(),
+    conclusion: (s.conclusion && !isTodo(s.conclusion)) ? s.conclusion : TODO,
+    bg_from: (s.background && !isTodo(s.background)) ? s.background : (pickAround(text, ['来自', '反馈', '数据', '战略']) || TODO),
+    bg_now: pickAround(text, ['现状', '问题', '目前', '现在', '痛点']) || TODO,
+    bg_ifnot: TODO,
+    uv_who: pickAround(text, ['用户', '面向', '客户', '坐席', 'Maker', '创客']) || TODO,
+    uv_better: (s.goals && s.goals[0] && !isTodo(s.goals[0])) ? s.goals[0] : TODO,
+    uv_why: TODO,
+    competitors: [{ name: TODO, approach: TODO, shot: images[0] ? images[0].id : '', compare: TODO }],
+    features: [{
+      name: TODO, pri: 'P0',
+      scenario: (s.approach && !isTodo(s.approach)) ? s.approach : TODO,
+      how: '1. 用户……\n2. 系统……\n3. ……',
+      wire: images[0] ? images[0].id : '', note: '不触发条件 / 冲突 / 硬依赖：' + TODO,
+    }],
+    notInScope: [{ feature: (s.nonGoals && s.nonGoals[0] && !isTodo(s.nonGoals[0])) ? s.nonGoals[0] : TODO, reason: TODO }],
   };
 }
 
-/* ---------- 缺失项检测（缺失项提示 / 完成标准对照） ---------- */
-
-function isFilled(v) {
-  if (v == null) return false;
-  if (typeof v === 'string') return v.trim() !== '' && !v.includes(TODO) && v !== '待验证';
-  if (Array.isArray(v)) return v.length > 0 && v.some(isFilled);
-  return true;
+/* ---------- PRD 文档 ---------- */
+function generatePRD(req) {
+  const images = attachmentsByKind(req, 'image');
+  const d = req.draft || {};
+  return {
+    generatedAt: Date.now(),
+    mainFlow: (d.features && d.features[0] && !isTodo(d.features[0].scenario)) ? d.features[0].scenario : TODO,
+    visualIds: images.map(i => i.id),
+    copy: [{ pos: TODO, text: TODO, note: TODO }],
+    tracking: [{ event: TODO, when: TODO, params: TODO, use: TODO }],
+    glossary: [{ term: TODO, def: TODO }],
+    changelog: [{ date: new Date().toISOString().slice(0, 10), change: '初稿冻结', impact: '进入排期' }],
+    frozen: false,
+  };
 }
 
-/* 对照「进入排期的完成标准」逐项检查 */
-function evaluateReadiness(req) {
-  const s = req.smoke || {};
-  const d = req.draft || {};
-  const checks = [
-    { key: '一句话结论', ok: isFilled(d.oneLineConclusion) || isFilled(s.conclusion),
-      detail: '面向[用户]在[场景]下通过[能力]获得[结果]' },
-    { key: '目标用户与场景', ok: isFilled(s.targetUser) && isFilled(s.scene),
-      detail: '谁在什么场景遇到什么阻碍' },
-    { key: '核心价值', ok: isFilled(s.valueProp),
-      detail: '解决后用户行为 / 结果如何改变' },
-    { key: '关键流程', ok: Array.isArray(s.p0Path) && s.p0Path.length >= 3,
-      detail: '触发 → 系统动作 → 用户反馈 → 结果' },
-    { key: 'P0 功能及线框图', ok: d.features ? d.features.some(f => isFilled(f.name) && isFilled(f.accept)) : false,
-      detail: '每个 P0 功能附验收标准与线框图' },
-    { key: '技术 / 协作依赖', ok: d.complexity ? d.complexity.some(c => isFilled(c.level)) : false,
-      detail: '模型 / 数据 / 端 / 服务 / 合规 / 协作' },
-    { key: '风险与验证指标', ok: (d.risks && d.risks.some(r => isFilled(r.trigger))) && isFilled(d.metrics),
-      detail: '风险含触发条件；指标覆盖体验/效果/效率/安全' },
-    { key: '本期不做项', ok: (d.notInScope && d.notInScope.some(n => isFilled(n.item))) || isFilled(s.notInScope),
-      detail: '明确不做什么并附原因' },
-    { key: '负责人和下一步', ok: isFilled(req.owner),
-      detail: '责任到人，下一步找谁' },
-  ];
+/* ---------- 上传自动分析：把物料映射进当前阶段文档 ---------- */
+function analyzeUpload(req) {
+  // 重新生成当前阶段（保留用户已手改的非空字段）
+  const stage = req.stage;
+  if (stage === 'smoke') mergeSmoke(req);
+  else if (stage === 'draft') mergeDraft(req);
+  else if (stage === 'prd') mergePRD(req);
+  const imgs = attachmentsByKind(req, 'image').length;
+  const vids = attachmentsByKind(req, 'video').length;
+  const htmls = attachmentsByKind(req, 'html').length;
+  const bits = [];
+  if (htmls) bits.push(`${htmls} 个 HTML 已抽取正文关键信息填入字段`);
+  if (imgs) bits.push(`${imgs} 张图片已作为线框图 / 截图挂载`);
+  if (vids) bits.push(`${vids} 段视频已作为 demo 证据挂载`);
+  return bits.length ? bits.join('；') : '未识别到可分析的物料';
+}
+
+function mergeSmoke(req) {
+  if (!req.smoke) { req.smoke = generateSmoke(req); return; }
+  const fresh = generateSmoke(req);
+  ['conclusion', 'background', 'approach'].forEach(k => { if (isTodo(req.smoke[k])) req.smoke[k] = fresh[k]; });
+  ['goals', 'nonGoals'].forEach(k => { if (!req.smoke[k] || req.smoke[k].every(isTodo)) req.smoke[k] = fresh[k]; });
+}
+function mergeDraft(req) {
+  if (!req.draft) { req.draft = generateDraft(req); return; }
+  const fresh = generateDraft(req);
+  ['conclusion', 'bg_from', 'bg_now', 'uv_who', 'uv_better'].forEach(k => { if (isTodo(req.draft[k])) req.draft[k] = fresh[k]; });
+  // 补挂截图/线框图
+  const imgs = attachmentsByKind(req, 'image');
+  if (imgs[0] && req.draft.competitors[0] && !req.draft.competitors[0].shot) req.draft.competitors[0].shot = imgs[0].id;
+  if (imgs[0] && req.draft.features[0] && !req.draft.features[0].wire) req.draft.features[0].wire = imgs[0].id;
+}
+function mergePRD(req) {
+  if (!req.prd) { req.prd = generatePRD(req); return; }
+  req.prd.visualIds = attachmentsByKind(req, 'image').map(i => i.id);
+}
+
+/* ---------- 完成度 / 缺失项（按阶段范本必填项） ---------- */
+function evaluateReadiness(req, stage) {
+  stage = stage || req.stage;
+  let checks = [];
+  if (stage === 'smoke') {
+    const s = req.smoke || {};
+    checks = [
+      { key: '一句话结论', ok: !isTodo(s.conclusion), detail: '想做什么 + 为什么现在做' },
+      { key: '背景', ok: !isTodo(s.background), detail: '需求来自哪里' },
+      { key: '目标 / 非目标', ok: (s.goals || []).some(v => !isTodo(v)) && (s.nonGoals || []).some(v => !isTodo(v)), detail: '做成了什么变了 + 明确不做' },
+      { key: '方案方向', ok: !isTodo(s.approach), detail: '粗颗粒怎么做' },
+      { key: '尚未验证的假设', ok: (s.assumptions || []).some(v => !isTodo(v)), detail: '要赌的前提' },
+      { key: '复杂度预判', ok: (s.complexity || []).every(c => c.level), detail: '研发/设计/依赖方 量级' },
+      { key: '线框图 / 演示物料', ok: (s.wireframeCount || attachmentsByKind(req, 'image').length + attachmentsByKind(req, 'video').length) > 0, detail: '上传图片/视频/HTML 作为证据' },
+      { key: '开放问题', ok: (s.openQuestions || []).some(v => !isTodo(v)), detail: '评审现场要对齐的问题' },
+    ];
+  } else if (stage === 'draft') {
+    const d = req.draft || {};
+    const b = d.basic || {};
+    checks = [
+      { key: '基本信息', ok: !isTodo(b['执行负责人']) && !isTodo(b['所属团队/模块']), detail: '登记/负责人/接口人/版本' },
+      { key: '一句话结论', ok: !isTodo(d.conclusion), detail: '要做成什么样' },
+      { key: '需求背景', ok: !isTodo(d.bg_from) && !isTodo(d.bg_now), detail: '来自哪里 + 现状问题 + 不做会怎样' },
+      { key: '用户价值', ok: !isTodo(d.uv_who) && !isTodo(d.uv_better), detail: '目标用户 + 变好在哪 + 为什么会用' },
+      { key: '竞品分析（截图必填）', ok: (d.competitors || []).some(c => !isTodo(c.name) && c.shot), detail: '竞品做法 + 截图 + 对比' },
+      { key: '关键功能（线框图必填）', ok: (d.features || []).some(f => !isTodo(f.name) && f.wire), detail: '每个功能附线框图/高保真' },
+      { key: '不在本期', ok: (d.notInScope || []).some(n => !isTodo(n.feature) && !isTodo(n.reason)), detail: '功能 + 原因' },
+    ];
+  } else if (stage === 'prd') {
+    const p = req.prd || {};
+    checks = [
+      { key: '主流程与状态', ok: !isTodo(p.mainFlow), detail: '状态流转 + 异常分支' },
+      { key: '主视觉 / 视觉稿', ok: (p.visualIds || []).length > 0, detail: '定稿高保真' },
+      { key: '文案表', ok: (p.copy || []).some(c => !isTodo(c.text)), detail: '位置 + 文案' },
+      { key: '埋点表', ok: (p.tracking || []).some(t => !isTodo(t.event)), detail: '事件 + 时机 + 参数' },
+      { key: '名词表', ok: (p.glossary || []).some(g => !isTodo(g.term)), detail: '统一口径' },
+      { key: '冻结 / Change Log', ok: !!p.frozen, detail: '定稿即承诺' },
+    ];
+  }
   const done = checks.filter(c => c.ok).length;
-  return { checks, done, total: checks.length, pct: Math.round(done / checks.length * 100) };
+  return { checks, done, total: checks.length, pct: checks.length ? Math.round(done / checks.length * 100) : 0 };
 }
 
-/* ---------- 评审结论导出（Markdown） ---------- */
+/* ---------- 导出 Markdown（严格按范本章节顺序） ---------- */
+function mdLine(label, v) { return `- **${label}**：${isTodo(v) ? TODO : v}`; }
+function attName(req, id) { const a = (req.attachments || []).find(x => x.id === id); return a ? `［${a.kind === 'image' ? '截图' : a.kind}: ${a.name}］` : TODO; }
 
-function line(label, v) { return `- **${label}**：${isFilled(v) ? v : (v || '待补充')}`; }
-
-function exportMarkdown(req) {
+function exportMarkdown(req, stage) {
+  stage = stage || req.stage;
   const dir = DIRECTIONS[req.direction] || DIRECTIONS.general;
-  const s = req.smoke || {};
-  const d = req.draft || {};
-  const r = req.review || {};
-  const rd = evaluateReadiness(req);
-  const dec = r.decision ? DECISIONS[r.decision] : null;
-
+  const rd = evaluateReadiness(req, stage);
+  const gate = (req.gates || {})[stage];
+  const dec = gate && gate.decision ? DECISIONS[gate.decision] : null;
   const out = [];
-  out.push(`# ${req.name || '未命名需求'}`);
-  out.push('');
-  out.push(`> 方向：**${dir.label}** ｜ 阶段：**${(STAGES[STAGE_INDEX[req.stage]] || {}).label || req.stage}** ｜ 完成度：**${rd.pct}%**（${rd.done}/${rd.total}）`);
-  out.push('');
-
-  out.push('## 一句话结论');
-  out.push((isFilled(d.oneLineConclusion) && d.oneLineConclusion) || (isFilled(s.conclusion) && s.conclusion) || '待补充');
+  const st = STAGES[STAGE_INDEX[stage]];
+  out.push(`# 【${st.label}】${req.name || '未命名需求'}`);
+  out.push(`> 方向：**${dir.label}** ｜ 阶段：**${st.label}** ｜ 完成度：**${rd.pct}%**（${rd.done}/${rd.total}）` + (dec ? ` ｜ 评审：**${dec.label}**` : ''));
   out.push('');
 
-  out.push('## 冒烟结论');
-  out.push(line('目标用户', s.targetUser));
-  out.push(line('关键场景', s.scene));
-  out.push(line('当前痛点', s.painPoint));
-  out.push(line('价值主张', s.valueProp));
-  out.push(`- **P0 主路径**：${(s.p0Path || []).join(' → ') || '待补充'}`);
-  out.push(line('核心假设', (s.assumptions || []).join('；')));
-  out.push(line('本期不做', s.notInScope));
-  out.push(line('最小验证', s.minValidation));
-  out.push(`- **需要参与**：${(s.participants || []).join(' / ') || '待补充'}`);
-  out.push('');
-
-  if (d.risks) {
-    out.push('## 风险与指标');
-    d.risks.forEach(rk => out.push(`- 风险：${rk.risk} ｜ 触发：${isFilled(rk.trigger) ? rk.trigger : '待补充'} ｜ 缓解：${rk.mitig}`));
-    if (d.metrics) {
-      out.push('');
-      out.push('指标建议：');
-      Object.entries(d.metrics).forEach(([k, v]) => out.push(`- ${k}：${v.join('、')}`));
-    }
+  if (stage === 'smoke') {
+    const s = req.smoke || {};
+    out.push('## 一句话结论'); out.push(isTodo(s.conclusion) ? TODO : s.conclusion); out.push('');
+    out.push('## 背景'); out.push(isTodo(s.background) ? TODO : s.background); out.push('');
+    out.push('## 目标 / 非目标');
+    (s.goals || []).forEach(g => out.push(`- 目标：${isTodo(g) ? TODO : g}`));
+    (s.nonGoals || []).forEach(g => out.push(`- 非目标：${isTodo(g) ? TODO : g}`)); out.push('');
+    out.push('## 思路 & 线框图');
+    out.push(mdLine('方案方向', s.approach));
+    (s.assumptions || []).forEach((a, i) => out.push(`- 尚未验证的假设 ${i + 1}：${isTodo(a) ? TODO : a}`));
+    attachmentsByKind(req, 'image').concat(attachmentsByKind(req, 'video')).forEach(a => out.push(`- 线框图/演示：${a.kind === 'image' ? '截图' : '视频'} ${a.name}`));
     out.push('');
+    out.push('## 复杂度预判');
+    out.push('| 维度 | 预判 | 依据/不确定处 |'); out.push('|---|---|---|');
+    (s.complexity || []).forEach(c => out.push(`| ${c.dim} | ${c.level || TODO} | ${isTodo(c.basis) ? TODO : c.basis} |`));
+    out.push('');
+    out.push('## 开放问题');
+    (s.openQuestions || []).forEach((q, i) => out.push(`${i + 1}. ${isTodo(q) ? TODO : q}`));
   }
 
-  out.push('## 完成标准对照');
-  rd.checks.forEach(c => out.push(`- [${c.ok ? 'x' : ' '}] ${c.key}`));
-  out.push('');
+  if (stage === 'draft') {
+    const d = req.draft || {};
+    out.push('## 1. 基本信息');
+    Object.entries(d.basic || {}).forEach(([k, v]) => out.push(mdLine(k, v))); out.push('');
+    out.push('## 2. 一句话结论'); out.push(isTodo(d.conclusion) ? TODO : d.conclusion); out.push('');
+    out.push('## 3. 需求背景与用户价值');
+    out.push('**3.1 需求背景**');
+    out.push(mdLine('需求来自哪里', d.bg_from)); out.push(mdLine('现状与问题', d.bg_now)); out.push(mdLine('不做会怎样', d.bg_ifnot));
+    out.push('**3.2 用户价值**');
+    out.push(mdLine('目标用户', d.uv_who)); out.push(mdLine('比现在哪里变好', d.uv_better)); out.push(mdLine('为什么会用', d.uv_why)); out.push('');
+    out.push('## 4. 竞品分析');
+    out.push('| 竞品 | 他们怎么做 | 截图 | 与我们的对比 |'); out.push('|---|---|---|---|');
+    (d.competitors || []).forEach(c => out.push(`| ${isTodo(c.name) ? TODO : c.name} | ${isTodo(c.approach) ? TODO : c.approach} | ${c.shot ? attName(req, c.shot) : TODO} | ${isTodo(c.compare) ? TODO : c.compare} |`));
+    out.push('');
+    out.push('## 5. 关键功能');
+    out.push('| 功能 | 优先级 | 做什么 | 怎么做 | 线框图 | 备注 |'); out.push('|---|---|---|---|---|---|');
+    (d.features || []).forEach(f => out.push(`| ${isTodo(f.name) ? TODO : f.name} | ${f.pri} | ${isTodo(f.scenario) ? TODO : f.scenario} | ${(f.how || '').replace(/\n/g, '<br>')} | ${f.wire ? attName(req, f.wire) : TODO} | ${isTodo(f.note) ? TODO : f.note} |`));
+    out.push('');
+    out.push('## 6. 不在本期');
+    out.push('| 功能 | 原因 |'); out.push('|---|---|');
+    (d.notInScope || []).forEach(n => out.push(`| ${isTodo(n.feature) ? TODO : n.feature} | ${isTodo(n.reason) ? TODO : n.reason} |`));
+  }
 
-  out.push('## 评审结论');
-  out.push(line('结论', dec ? `${dec.label}（${dec.desc}）` : '待评审'));
-  out.push(`- **最值得保留（3 点）**：${isFilled(r.keep3) ? r.keep3 : '待补充'}`);
-  out.push(`- **最大风险（3 点）**：${isFilled(r.risk3) ? r.risk3 : '待补充'}`);
-  out.push(`- **必须补齐**：${isFilled(r.mustAdd) ? r.mustAdd : '待补充'}`);
-  out.push(line('下一步动作', r.nextStep));
-  out.push(line('负责人角色', r.ownerRole || req.owner));
-  out.push(line('时间点', r.timepoint));
+  if (stage === 'prd') {
+    const p = req.prd || {};
+    out.push('## 主流程与状态'); out.push(isTodo(p.mainFlow) ? TODO : p.mainFlow); out.push('');
+    out.push('## 主视觉 / 视觉稿');
+    (p.visualIds || []).forEach(id => out.push(`- ${attName(req, id)}`)); if (!(p.visualIds || []).length) out.push(TODO); out.push('');
+    out.push('## 文案表'); out.push('| 位置 | 文案 | 备注 |'); out.push('|---|---|---|');
+    (p.copy || []).forEach(c => out.push(`| ${isTodo(c.pos) ? TODO : c.pos} | ${isTodo(c.text) ? TODO : c.text} | ${isTodo(c.note) ? TODO : c.note} |`)); out.push('');
+    out.push('## 埋点表'); out.push('| 事件 | 触发时机 | 参数 | 用途 |'); out.push('|---|---|---|---|');
+    (p.tracking || []).forEach(t => out.push(`| ${isTodo(t.event) ? TODO : t.event} | ${isTodo(t.when) ? TODO : t.when} | ${isTodo(t.params) ? TODO : t.params} | ${isTodo(t.use) ? TODO : t.use} |`)); out.push('');
+    out.push('## 名词表'); out.push('| 名词 | 定义 |'); out.push('|---|---|');
+    (p.glossary || []).forEach(g => out.push(`| ${isTodo(g.term) ? TODO : g.term} | ${isTodo(g.def) ? TODO : g.def} |`)); out.push('');
+    out.push('## Change Log'); out.push('| 日期 | 变更 | 影响 |'); out.push('|---|---|---|');
+    (p.changelog || []).forEach(c => out.push(`| ${c.date} | ${c.change} | ${c.impact} |`));
+  }
+
+  out.push('');
+  if (gate) {
+    out.push('## 评审门槛');
+    out.push(mdLine('评审人', st.gate));
+    out.push(mdLine('结论', dec ? `${dec.label}（${dec.desc}）` : '待评审'));
+    out.push(mdLine('评审记录', gate.note));
+  }
   out.push('');
   out.push('---');
-  out.push('_由 Principle 工作台（Demo）导出，结论需引用文档内已有信息，不凭空增加事实。_');
+  out.push('_由 Principle 工作台（Demo）导出 · 结论需引用文档内已有信息，缺内容标「待补充」。_');
   return out.join('\n');
-}
-
-/* 一号位评审视角：自动给出「保留 / 风险 / 必补」的草稿建议（可编辑） */
-function suggestReview(req) {
-  const rd = evaluateReadiness(req);
-  const missing = rd.checks.filter(c => !c.ok).map(c => c.key);
-  const dir = DIRECTIONS[req.direction] || DIRECTIONS.general;
-  return {
-    keep3: '（待一号位填写：最值得保留的 3 点，需引用 Draft 已有信息）',
-    risk3: dir.risks.map(r => r.r).slice(0, 3).join('；'),
-    mustAdd: missing.length ? missing.slice(0, 5).join('、') : '完成标准已齐，可进入排期',
-    nextStep: missing.length ? '补齐上述缺失项后复评' : '进入架构拆解 / 排期',
-    ownerRole: req.owner || '产品负责人',
-    timepoint: '待补充',
-    decision: missing.length > 3 ? 'supplement' : (missing.length ? 'supplement' : 'pass'),
-  };
 }
