@@ -265,7 +265,7 @@ function syncBtProvider() {
 function renderBrowserTts() {
   const psel = $('#btProvider');
   if (!psel.options.length) {
-    Object.entries(PROVIDERS).forEach(([k, P]) => { const o = document.createElement('option'); o.value = k; o.textContent = P.name; psel.appendChild(o); });
+    Object.entries(PROVIDERS).filter(([, P]) => !P.serverOnly).forEach(([k, P]) => { const o = document.createElement('option'); o.value = k; o.textContent = P.name; psel.appendChild(o); });
     try { psel.value = localStorage.getItem('duplex.tts_provider') || 'openai'; } catch { /* ignore */ }
     syncBtProvider();
   }

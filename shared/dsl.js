@@ -237,7 +237,7 @@ export function parseDSL(text) {
       const { key } = mapSpeaker(m[1]); const a = parseArgs(m[2]);
       const sp = script.speakers[key] || (script.speakers[key] = {});
       if (a.name) sp.name = a.name; if (a.role) sp.role = a.role; if (a.id) sp.speaker_id = a.id;
-      const tts = {}; if (a.voice) tts.voice = a.voice; if (a.instructions) tts.instructions = a.instructions; if (a.speed) tts.speed = a.speed; if (a.local_voice) tts.local_voice = a.local_voice; if (a.qwen_voice) tts.qwen_voice = a.qwen_voice;
+      const tts = {}; if (a.voice) tts.voice = a.voice; if (a.instructions) tts.instructions = a.instructions; if (a.speed) tts.speed = a.speed; if (a.local_voice) tts.local_voice = a.local_voice; if (a.qwen_voice) tts.qwen_voice = a.qwen_voice; if (a.volc_persona) tts.volc_persona = a.volc_persona;
       if (Object.keys(tts).length) sp.tts = { ...(sp.tts || {}), ...tts };
       continue;
     }
@@ -393,11 +393,12 @@ export function scriptToDSL(script) {
   if (script.scene?.clock) out.push(`clock: ${script.scene.clock}`);
   if (script.scene?.ambience) out.push(`ambience: ${script.scene.ambience}`);
   for (const [k, sp] of Object.entries(script.speakers || {})) {
-    if (['user', 'assistant', 'system'].includes(k) && !sp.tts?.voice && !sp.tts?.local_voice && !sp.tts?.qwen_voice) continue;
+    if (['user', 'assistant', 'system'].includes(k) && !sp.tts?.voice && !sp.tts?.local_voice && !sp.tts?.qwen_voice && !sp.tts?.volc_persona) continue;
     const parts = [];
     if (sp.name) parts.push(`name="${sp.name}"`); if (sp.role) parts.push(`role=${sp.role}`); if (sp.speaker_id) parts.push(`id=${sp.speaker_id}`);
     if (sp.tts?.voice) parts.push(`voice=${sp.tts.voice}`);
     if (sp.tts?.qwen_voice) parts.push(`qwen_voice=${sp.tts.qwen_voice}`);
+    if (sp.tts?.volc_persona) parts.push(`volc_persona="${sp.tts.volc_persona}"`);
     if (sp.tts?.local_voice) parts.push(`local_voice=${sp.tts.local_voice}`);
     out.push(`speaker ${k}: ${parts.join(' ')}`);
   }

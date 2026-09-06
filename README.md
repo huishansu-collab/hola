@@ -4,7 +4,7 @@
 
 ```
 剧本 (script.dsl / script.json)
-   ├─▶ 语音生成 (OpenAI gpt-4o-mini-tts / 千问 qwen3-tts-flash / 离线 Kokoro v1.1-zh,逐句 wav + 缓存)
+   ├─▶ 语音生成 (火山 seed-audio 整段定妆 / OpenAI gpt-4o-mini-tts / 千问 qwen3-tts-flash / 离线 Kokoro,wav + 缓存)
    ├─▶ 手机演示 (living edge · 双工打断 · 卡片 / 任务卡 / 来电 / 转写 · 八轨日志面板)
    └─▶ 规范化 JSON + 双声道母带 (utterances / events / world_signal / fdx & emotion annotation)
 ```
@@ -90,6 +90,20 @@ python3 tools/offline_tts.py mycase --voice user=zm_010 --voice assistant=zf_001
 
 引擎是 Kokoro v1.1-zh（82M 参数，中文 100 个音色 + 英文），CPU 上约 3× 实时，65 句两分多钟。台词的舞台提示会影响语速（急促 / 抢话加快，轻缓 / 低语放慢），低语句自动压低音量；`--list-voices` 列出全部音色，剧本里也可以按说话人写 `tts.local_voice`。输出 `<clip>.wav`（24kHz 母带，服务端混音用）和同名 `.mp3`（单文件包 / 网页只带这份），manifest 里 `source=local:kokoro-v1.1-zh:<voice>`；之后 `npm run tts` 不会动这些句子，除非 `--force`。
 
+### 火山 seed-audio · 参考包同款定妆音色(推荐)
+
+`duplex.zip` 里 01‒11 的人声是火山引擎 **seed-audio-1.0** 描述式生成的：不选音色 id，而是一段「场景 + 人物 + 情绪」的描述，**同一角色的全部台词一次生成**，再按静音切成每句（分句生成会每次重新抽音色，声音不连贯）。这里把那套流程原样移植进来：
+
+```bash
+# .env 里填 VOLC_TTS_API_KEY(火山语音控制台),需要 ffmpeg(解码母带):
+npm run tts -- morning --provider volc [--force] [--only 司机]
+```
+
+- 人物描述固定在 `shared/tts.js` 的 `VOLC_PERSONAS`（用户 = cozy 男声，助手 = chill 女声，措辞与参考包一字不差；改了就不是同一个人）。其它说话人自动套模板：`安静的室内，没有背景音乐，没有旁白。男子（<剧本里的 instructions>）`，也可在剧本里写 `volc_persona="…"` 整段覆盖。
+- 台词的舞台提示会变成句前一小截语气说明（抢话 → 用打断对方、略带决断的语气；低语 → 压低声音、贴近麦克风地；叹气 / 笑 / 急促 / 轻缓 …），人物描述本身不动。
+- 母带存为 `cases/<id>/audio/master_<speaker>.mp3`（48kHz），切段参数沿用参考包：静音阈值 = 峰值 RMS × 0.06、静音 ≥ 0.55s、段间隔 < 1.0s 合并、头尾各留 0.18s；段数对不上先换几档 merge_gap，再重新生成，最多三次；文本太长被拒时对半拆开。
+- 单次生成 30‒120 秒；`--only` 按说话人重做（整段重生成才能保持同一个人）。GitHub Actions 工作流里选 provider = volc（secret 名 `VOLC_TTS_API_KEY`）。
+
 ### 千问 TTS(阿里云百炼 DashScope)
 
 ```bash
@@ -120,7 +134,7 @@ Claude Code 云端环境默认是 **Trusted** 网络策略，只放行包管理�
 | 路 | 一次性设置 | 之后怎么生成 |
 | --- | --- | --- |
 | **A. 环境 API credential**（推荐，key 不进沙箱） | claude.ai/code 消息框上方的云朵图标（显示当前环境名，如 Default）→ 悬停环境 → 齿轮 → 对话框底部 **API credentials → Add credential**：Name `OpenAI`，Allowed websites `api.openai.com`，Header `Authorization` / Prefix `Bearer` / Value 填 key → Connect。Anthropic 的代理会在请求出沙箱后自动加上 key（Pro / Max 可用） | 在该环境的会话里运行：`OPENAI_API_KEY=proxy-injected NODE_USE_ENV_PROXY=1 npm run tts -- morning --force`（`proxy-injected` 只是占位，真正的 key 由代理注入） |
-| **B. GitHub Actions** | 仓库 **Settings → Secrets and variables → Actions → New repository secret**：OpenAI 填 `OPENAI_API_KEY`，千问填 `DASHSCOPE_API_KEY` | Actions 页签 → **Generate voices (OpenAI / Qwen)** → Run workflow（选 provider、分支、case）；或改一下 `.github/tts-request.yml` 再 push。3‒5 分钟后 wav + mp3 自动提交回分支，并重新发布 Pages |
+| **B. GitHub Actions** | 仓库 **Settings → Secrets and variables → Actions → New repository secret**：OpenAI 填 `OPENAI_API_KEY`，千问填 `DASHSCOPE_API_KEY`，火山填 `VOLC_TTS_API_KEY` | Actions 页签 → **Generate voices (OpenAI / Qwen)** → Run workflow（选 provider、分支、case）；或改一下 `.github/tts-request.yml` 再 push。3‒5 分钟后 wav + mp3 自动提交回分支，并重新发布 Pages |
 
 也可以把环境的 Network access 改成 **Full** 或 **Custom**（加 `api.openai.com`），再按普通方式配 `.env`。
 

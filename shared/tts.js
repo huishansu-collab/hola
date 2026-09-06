@@ -34,6 +34,17 @@ export const PROVIDERS = {
     defaults: { assistant: 'Cherry', user: 'Ethan', third: ['Dylan', 'Ryan', 'Jennifer'] },   // 第三方默认北京话晓东,和用户拉开
   },
 };
+/* 火山引擎 seed-audio-1.0:描述式整段生成(Step 参考包 duplex.zip 的定妆音色就是这么做的)。
+ * 整个角色的台词一次生成再按静音切分——分句生成会每次重新抽音色。人物描述措辞不能改,改了就不是同一个人。 */
+export const VOLC_BASE_URL = 'https://openspeech.bytedance.com';
+export const VOLC_PERSONAS = {
+  user: '安静的清晨室内，没有背景音乐，没有旁白。男子（三十岁上下，声音温和放松，带一点刚起床的松弛惬意，舒服自在，说话自然随意，普通话标准）',
+  assistant: '安静的室内，没有背景音乐，没有旁白。女子（二十七八岁，声音温暖松弛、真人感强，像贴心的朋友在身边说话，语气 chill 自然口语化，普通话标准，正常语速）',
+};
+PROVIDERS.volc = {
+  name: '火山 seed-audio · 整段定妆', models: ['seed-audio-1.0'], defaultModel: 'seed-audio-1.0', baseUrl: VOLC_BASE_URL, voices: [],
+  voiceKey: 'volc_persona', envKey: 'VOLC_TTS_API_KEY', keyHint: '火山语音 API key', defaults: {}, batch: true, serverOnly: true,
+};
 export const DEFAULT_PROVIDER = 'openai';
 export const providerOf = (p) => PROVIDERS[p] || PROVIDERS[DEFAULT_PROVIDER];
 
@@ -64,7 +75,48 @@ export function instructionsFor(script, st) {
   ].filter(Boolean).join('\n');
 }
 
-/* 逐句计划(跳过打字 / 无 clip / 空文本)。openai 的缓存键与旧版完全一致;qwen 的键带 provider 前缀 */
+/* 舞台提示 → 句前的少量语气说明(火山整段生成用;人物描述保持不动,只在句前插一小截) */
+export function moodPrefix(st) {
+  const d = `${st.direction || ''} ${st.tone || ''}`;
+  const out = [];
+  if (st.whisper || /低语|压低|凑近/.test(d)) out.push('压低声音、贴近麦克风地');
+  else if (/抢话|硬插|打断/.test(d)) out.push('用打断对方、略带决断的语气');
+  else if (/软插|借换气/.test(d)) out.push('轻轻插进来、不抢的语气');
+  else if (/附和|伴听/.test(d)) out.push('轻声附和地');
+  else if (/嘟囔|自言自语/.test(d)) out.push('小声嘟囔着');
+  else if (/朗读|念/.test(d)) out.push('照着念、平铺直叙地');
+  if (/急促|着急|急/.test(d) && !/不急/.test(d)) out.push('语速加快、有点急地');
+  if (/轻缓|放松|轻声/.test(d)) out.push('放慢、轻缓地');
+  if (/叹气/.test(d)) out.push('先叹了口气');
+  if (/笑/.test(d)) out.push('带着笑意');
+  return out.length ? out.join('、') + '说' : '';
+}
+
+/* 说话人的定妆描述:剧本 tts.volc_persona > 角色默认(用户 / 助手用参考包原文) > 用 instructions 套模板 */
+export function volcPersona(script, speakerKey) {
+  const sp = script.speakers?.[speakerKey] || {};
+  const tts = sp.tts || {};
+  if (tts.volc_persona) return tts.volc_persona;
+  if (sp.role === 'assistant' || speakerKey === 'assistant') return VOLC_PERSONAS.assistant;
+  if (sp.role === 'user' || speakerKey === 'user') return VOLC_PERSONAS.user;
+  const desc = tts.instructions || `${sp.name || speakerKey}，普通话标准`;
+  const who = /女|姑娘|妈|阿姨|小姐|太太|闺蜜/.test(desc) ? '女子' : '男子';
+  return `安静的室内，没有背景音乐，没有旁白。${who}（${desc.replace(/[。\n]+$/, '')}）`;
+}
+export const volcSubject = (persona) => /女子|女孩|女士|姑娘/.test(persona) ? '她' : '他';
+const NUM_ZH = '零一二三四五六七八九十';
+
+/* 整段 prompt:人物描述 + "依次说了下面 N 句话,每句之间停顿两秒以上,只念引号里的内容:" + 每行一句(可带语气前缀) */
+export function buildVolcPrompt({ persona, lines }) {
+  const n = lines.length;
+  const head = `${persona}${volcSubject(persona)}依次说了下面${n === 2 ? '两' : n <= 10 ? NUM_ZH[n] : n}句话，每句之间停顿两秒以上，只念引号里的内容：`;
+  return head + '\n' + lines.map(l => (l.mood ? `${l.mood}：` : '') + `“${String(l.text).trim()}”`).join('\n');
+}
+export function buildVolcRequest(prompt, { model = 'seed-audio-1.0', sampleRate = 48000 } = {}) {
+  return { model, text_prompt: prompt, audio_config: { format: 'mp3', sample_rate: sampleRate, pitch_rate: 0, speech_rate: 0, loudness_rate: 0 }, watermark: {} };
+}
+
+/* 逐句计划(跳过打字 / 无 clip / 空文本)。openai 的缓存键与旧版完全一致;qwen / volc 的键带 provider 前缀 */
 export function ttsPlan(input, { provider = DEFAULT_PROVIDER, model } = {}) {
   const P = providerOf(provider); const prov = PROVIDERS[provider] ? provider : DEFAULT_PROVIDER;
   model = model || P.defaultModel;
@@ -75,6 +127,7 @@ export function ttsPlan(input, { provider = DEFAULT_PROVIDER, model } = {}) {
     const sp = s.speakers[st.speaker] || {};
     const tts = { ...(sp.tts || {}), ...(st.tts || {}) };
     let voice = tts[P.voiceKey];
+    if (prov === 'volc') voice = st.speaker;                       // 整段生成:音色身份 = 说话人(定妆描述见 volcPersona)
     if (!voice) {
       if (sp.role === 'assistant') voice = P.defaults.assistant;
       else if (sp.role === 'third_party' && P.defaults.third.length > 1) {
@@ -83,11 +136,12 @@ export function ttsPlan(input, { provider = DEFAULT_PROVIDER, model } = {}) {
       } else voice = P.defaults.user;
     }
     const speed = prov === 'openai' ? (tts.speed ?? 1.0) : 1;
-    const instructions = prov === 'openai' ? instructionsFor(s, st) : '';
+    const mood = prov === 'volc' ? moodPrefix(st) : '';
+    const instructions = prov === 'openai' ? instructionsFor(s, st) : prov === 'volc' ? `${volcPersona(s, st.speaker)}|${mood}` : '';
     const hashModel = prov === 'openai' ? model : `${prov}:${model}`;
     items.push({
       id: st.id, clip: st.clip, speaker: st.speaker, speaker_name: sp.name || st.speaker, text: st.text,
-      provider: prov, voice, speed, instructions, model, hash: clipHash({ model: hashModel, voice, speed, instructions, text: st.text }),
+      provider: prov, voice, speed, instructions, mood, model, hash: clipHash({ model: hashModel, voice, speed, instructions, text: st.text }),
     });
   }
   return items;
@@ -147,8 +201,33 @@ async function qwenOnce(item, { apiKey, baseUrl, fetchImpl, signal }) {
   return ab;
 }
 
+/* 火山 seed-audio:一次整段生成,返回 mp3(或 wav)的 ArrayBuffer;429/5xx/网络错误重试。单次 30~120 秒 */
+export async function volcCreate(prompt, { apiKey, baseUrl = VOLC_BASE_URL, model = 'seed-audio-1.0', fetchImpl = globalThis.fetch, signal, retries = 3, sleepMs = 3000 } = {}) {
+  if (!apiKey) throw new Error('缺少 VOLC_TTS_API_KEY');
+  let lastErr;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const r = await fetchImpl(`${String(baseUrl).replace(/\/$/, '')}/api/v3/tts/create`, {
+        method: 'POST', signal, headers: { 'X-Api-Key': apiKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildVolcRequest(prompt, { model })),
+      });
+      const txt = await r.text().catch(() => '');
+      if (!r.ok) { const err = new Error(`火山 TTS ${r.status}: ${txt.slice(0, 300)}`); err.status = r.status; throw err; }
+      let j; try { j = JSON.parse(txt); } catch { throw new Error('火山 TTS 返回不是 JSON: ' + txt.slice(0, 200)); }
+      if (!j.audio) { const err = new Error(`火山 TTS 没有返回音频: ${txt.slice(0, 300)}`); err.status = 502; throw err; }
+      return b64ToBuffer(j.audio);
+    } catch (e) {
+      if (e.name === 'AbortError' || (e.status && e.status < 500 && e.status !== 429)) throw e;
+      if (!e.status) e.network = true;
+      lastErr = e;
+      if (attempt < retries) await sleep(sleepMs * (attempt + 1));
+    }
+  }
+  throw lastErr || new Error('火山 TTS 失败');
+}
+
 /**
- * 合成一句,返回 wav 的 ArrayBuffer。按 item.provider(或 opts.provider)分发到 OpenAI / 千问。
+ * 合成一句,返回 wav 的 ArrayBuffer。按 item.provider(或 opts.provider)分发到 OpenAI / 千问(火山是整段生成,走 server/tts.js 的批处理)。
  * 429 / 5xx / 网络错误按 1.5s·n 退避重试;401/403/4xx 直接抛。
  */
 export async function synthesizeSpeech(item, { apiKey, provider, baseUrl, model, fetchImpl = globalThis.fetch, signal, retries = 3, sleepMs = 1500 } = {}) {

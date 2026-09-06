@@ -38,7 +38,7 @@ speaker 司机: role=third_party voice=onyx instructions="…"   ← 额外说�
 ### 说话人
 
 `用户 / 助手（AI助手、Step）/ 系统` 为内置。其他名字（司机、老李、房东…）自动成为第三方说话人，
-用 `speaker 司机: voice=onyx instructions="…"` 指定音色（`voice` / `instructions` 给 OpenAI TTS；`qwen_voice=Dylan` 给千问 TTS；`local_voice=zm_029` 给离线引擎 `tools/offline_tts.py`。不写则按角色默认：OpenAI 助手 coral / 用户 ash，千问 助手 Cherry / 用户 Ethan / 第三方 Dylan，离线 助手 zf_001 / 用户 zm_010 / 第三方轮换）。导出时主用户是 `user_1`，其他真人依出现顺序 `user_2`、`user_3`…，助手为 `assistant`。
+用 `speaker 司机: voice=onyx instructions="…"` 指定音色（`voice` / `instructions` 给 OpenAI TTS；`qwen_voice=Dylan` 给千问 TTS；`volc_persona="安静的室内，没有背景音乐，没有旁白。男子（…）"` 给火山 seed-audio 整段生成（用户 / 助手默认用参考包的定妆描述，其它说话人默认把 instructions 套进模板）；`local_voice=zm_029` 给离线引擎 `tools/offline_tts.py`。不写则按角色默认：OpenAI 助手 coral / 用户 ash，千问 助手 Cherry / 用户 Ethan / 第三方 Dylan，离线 助手 zf_001 / 用户 zm_010 / 第三方轮换）。导出时主用户是 `user_1`，其他真人依出现顺序 `user_2`、`user_3`…，助手为 `assistant`。
 
 ### 舞台提示（括号）决定双工行为
 

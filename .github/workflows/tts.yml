@@ -1,8 +1,8 @@
-# 用 GitHub 的机器调云端 TTS(OpenAI 或 千问 DashScope)生成语音。
+# 用 GitHub 的机器调云端 TTS(OpenAI / 千问 DashScope / 火山 seed-audio)生成语音。
 # (写这个工作流的原因:Claude 云端沙箱的出网策略连不到这些 API,GitHub Actions 的机器可以。)
 #
 # 一次性准备:仓库 Settings → Secrets and variables → Actions → New repository secret
-#             OpenAI 填 OPENAI_API_KEY,千问填 DASHSCOPE_API_KEY。key 只存在 GitHub 的加密 secret 里,不进仓库、不进日志。
+#             OpenAI 填 OPENAI_API_KEY,千问填 DASHSCOPE_API_KEY,火山 seed-audio 填 VOLC_TTS_API_KEY。key 只存在 GitHub 的加密 secret 里,不进仓库、不进日志。
 # 运行:Actions 页签 → "Generate voices (OpenAI / Qwen)" → Run workflow → 选分支、provider、case → Run;
 #       或改 .github/tts-request.yml 后 push。大约 3‒5 分钟,生成的 wav + mp3 自动提交回该分支,并触发 GitHub Pages 重新发布。
 name: Generate voices (OpenAI / Qwen)
@@ -16,7 +16,7 @@ on:
       provider:
         description: '语音引擎'
         type: choice
-        options: [openai, qwen]
+        options: [openai, qwen, volc]
         default: openai
       case:
         description: 'case id(cases/ 下的目录名)'
@@ -61,8 +61,8 @@ jobs:
           ONLY="${{ inputs.only }}";   [ -n "$ONLY" ]  || ONLY="$(get only)"
           PROVIDER="${{ inputs.provider }}"; [ -n "$PROVIDER" ] || PROVIDER="$(get provider)"; [ -n "$PROVIDER" ] || PROVIDER=openai
           MODEL="${{ inputs.model }}"; [ -n "$MODEL" ] || MODEL="$(get model)"
-          if [ -z "$MODEL" ]; then if [ "$PROVIDER" = qwen ]; then MODEL=qwen3-tts-flash; else MODEL=gpt-4o-mini-tts; fi; fi
-          case "$PROVIDER" in openai) SECRET=OPENAI_API_KEY ;; qwen) SECRET=DASHSCOPE_API_KEY ;; *) echo "::error::provider 只能是 openai 或 qwen(现在是 $PROVIDER)"; exit 1 ;; esac
+          if [ -z "$MODEL" ]; then case "$PROVIDER" in qwen) MODEL=qwen3-tts-flash ;; volc) MODEL=seed-audio-1.0 ;; *) MODEL=gpt-4o-mini-tts ;; esac; fi
+          case "$PROVIDER" in openai) SECRET=OPENAI_API_KEY ;; qwen) SECRET=DASHSCOPE_API_KEY ;; volc) SECRET=VOLC_TTS_API_KEY ;; *) echo "::error::provider 只能是 openai / qwen / volc(现在是 $PROVIDER)"; exit 1 ;; esac
           echo "provider=$PROVIDER" >> "$GITHUB_OUTPUT"
           echo "secret=$SECRET"     >> "$GITHUB_OUTPUT"
           echo "case=$CASE"   >> "$GITHUB_OUTPUT"
@@ -75,6 +75,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
+          VOLC_TTS_API_KEY: ${{ secrets.VOLC_TTS_API_KEY }}
           SECRET: ${{ steps.req.outputs.secret }}
         run: |
           KEY="${!SECRET}"
@@ -84,6 +85,9 @@ jobs:
           fi
           echo "$SECRET 已配置(长度 ${#KEY})"
 
+      - name: ffmpeg(火山母带解码 / mp3 压缩版)
+        run: command -v ffmpeg >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg; }
+
       - name: 生成语音
         id: gen
         continue-on-error: true            # 部分失败也把已生成的句子提交回去;最后一步再把失败报出来
@@ -92,6 +96,7 @@ jobs:
           OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
           DASHSCOPE_BASE_URL: ${{ vars.DASHSCOPE_BASE_URL }}
+          VOLC_TTS_API_KEY: ${{ secrets.VOLC_TTS_API_KEY }}
         run: |
           args="${{ steps.req.outputs.case }} --provider ${{ steps.req.outputs.provider }} --model ${{ steps.req.outputs.model }}"
           if [ "${{ steps.req.outputs.force }}" = "true" ]; then args="$args --force"; fi
@@ -109,7 +114,6 @@ jobs:
       - name: mp3 压缩版(单文件包 / 网页只带这份,wav 留作母带)
         continue-on-error: true
         run: |
-          command -v ffmpeg >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg; }
           for f in cases/${{ steps.req.outputs.case }}/audio/*.wav; do
             [ -e "$f" ] || continue
             [ -e "${f%.wav}.mp3" ] && continue          # 没重做的句子已有 mp3,跳过

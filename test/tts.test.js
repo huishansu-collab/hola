@@ -100,3 +100,82 @@ test('synthesizeSpeech(qwen):POST 拿 url → GET wav;非 wav 报错;429 重试'
   /* DashScope 200 但带错误码 */
   await assert.rejects(() => synthesizeSpeech(item, { apiKey: 'k', sleepMs: 1, fetchImpl: async () => new Response(JSON.stringify({ code: 'InvalidParameter', message: 'voice not found' })) }), /InvalidParameter/);
 });
+
+/* ---------- 火山 seed-audio:整段生成 + 静音切分 ---------- */
+import { buildVolcPrompt, volcPersona, moodPrefix, VOLC_PERSONAS } from '../shared/tts.js';
+import { silenceRegions } from '../server/audio.js';
+import { generateCaseAudio } from '../server/tts.js';
+
+/* 合成母带:n 段 0.9s 的 440Hz 正弦,段间 1.4s 静音(48kHz 单声道 wav) */
+function burstsWav(n, { sr = 48000, tone = 0.9, gap = 1.4 } = {}) {
+  const total = Math.round(sr * (0.5 + n * (tone + gap)));
+  const pcm = new Int16Array(total);
+  for (let k = 0; k < n; k++) {
+    const s0 = Math.round(sr * (0.5 + k * (tone + gap)));
+    for (let i = 0; i < Math.round(sr * tone); i++) pcm[s0 + i] = Math.round(8000 * Math.sin(2 * Math.PI * 440 * i / sr));
+  }
+  const buf = Buffer.alloc(44 + pcm.length * 2);
+  buf.write('RIFF', 0); buf.writeUInt32LE(36 + pcm.length * 2, 4); buf.write('WAVE', 8); buf.write('fmt ', 12); buf.writeUInt32LE(16, 16); buf.writeUInt16LE(1, 20); buf.writeUInt16LE(1, 22); buf.writeUInt32LE(sr, 24); buf.writeUInt32LE(sr * 2, 28); buf.writeUInt16LE(2, 32); buf.writeUInt16LE(16, 34); buf.write('data', 36); buf.writeUInt32LE(pcm.length * 2, 40);
+  for (let i = 0; i < pcm.length; i++) buf.writeInt16LE(pcm[i], 44 + i * 2);
+  return { buf, pcm };
+}
+
+test('volc:定妆描述与整段 prompt', () => {
+  const s = { speakers: { user: { role: 'user' }, assistant: { role: 'assistant' }, 司机: { role: 'third_party', tts: { instructions: '四十多岁的出租车司机，热情健谈' } }, 妈: { role: 'third_party', tts: { instructions: '五十多岁的女性，温柔' } } } };
+  assert.equal(volcPersona(s, 'user'), VOLC_PERSONAS.user);
+  assert.equal(volcPersona(s, 'assistant'), VOLC_PERSONAS.assistant);
+  assert.match(volcPersona(s, '司机'), /^安静的室内，没有背景音乐，没有旁白。男子（四十多岁的出租车司机，热情健谈）$/);
+  assert.match(volcPersona(s, '妈'), /女子（五十多岁的女性，温柔）/);
+  const p = buildVolcPrompt({ persona: VOLC_PERSONAS.assistant, lines: [{ text: '我在，你说。' }, { text: '行了行了！', mood: moodPrefix({ direction: '抢话，与 AI 语音重叠' }) }] });
+  assert.match(p, /她依次说了下面两句话，每句之间停顿两秒以上，只念引号里的内容：\n“我在，你说。”\n用打断对方、略带决断的语气说：“行了行了！”$/);
+  assert.equal(moodPrefix({ whisper: true }), '压低声音、贴近麦克风地说');
+  assert.equal(moodPrefix({ direction: '走进卫生间' }), '');
+});
+
+test('silenceRegions:按参考包参数切出正确段数', () => {
+  const { pcm } = burstsWav(5);
+  const regs = silenceRegions(pcm, 48000);
+  assert.equal(regs.length, 5);
+  for (const [a, b] of regs) assert.ok(b - a > 0.9 && b - a < 1.4, `段长 ${b - a}`);
+});
+
+test('generateCaseAudio(volc):整段生成 → 切段 → 每句 wav;段数不对会重试', async () => {
+  const id = 'zz-volc-test';
+  const dir = path.join(ROOT, 'cases', id);
+  await fs.promises.rm(dir, { recursive: true, force: true });
+  await fs.promises.mkdir(path.join(dir, 'audio'), { recursive: true });
+  const script = { case_id: 'zz', name: 't', speakers: { user: { name: '你' }, assistant: { name: 'Step' } }, timeline: [
+    { type: 'say', speaker: 'user', text: '今天出门要带伞么？' }, { type: 'say', speaker: 'assistant', text: '我在，你说。' },
+    { type: 'say', speaker: 'assistant', text: '下午有雨，带把伞。' }, { type: 'say', speaker: 'user', text: '那打个车吧。' }, { type: 'say', speaker: 'assistant', text: '好，帮你叫。' },
+  ] };
+  await fs.promises.writeFile(path.join(dir, 'script.json'), JSON.stringify(script));
+  const calls = [];
+  const fetchImpl = async (url, init) => {
+    const body = JSON.parse(init.body); calls.push(body);
+    assert.equal(url, 'https://openspeech.bytedance.com/api/v3/tts/create'); assert.equal(init.headers['X-Api-Key'], 'volc-key'); assert.equal(body.model, 'seed-audio-1.0');
+    const n = (body.text_prompt.match(/“/g) || []).length;
+    /* 助手第一次故意少切一段(两句连读),第二次正常 */
+    const bursts = n === 3 && calls.filter(c => c.text_prompt.includes('女子')).length === 1 ? 2 : n;
+    return new Response(JSON.stringify({ audio: burstsWav(bursts).buf.toString('base64') }), { status: 200 });
+  };
+  process.env.VOLC_TTS_API_KEY = 'volc-key';
+  const events = [];
+  const r = await generateCaseAudio(id, script, { provider: 'volc', fetchImpl, onProgress: e => events.push(e) });
+  delete process.env.VOLC_TTS_API_KEY;
+  assert.equal(r.generated.length, 5); assert.equal(r.failed.length, 0);
+  assert.equal(calls.length, 3, '用户 1 次 + 助手 2 次(第一次段数不对重生成)');
+  assert.match(calls[0].text_prompt, /^安静的清晨室内.*他依次说了下面两句话/s);
+  assert.match(calls[1].text_prompt, /^安静的室内.*她依次说了下面三句话/s);
+  const manifest = JSON.parse(await fs.promises.readFile(path.join(dir, 'audio', 'manifest.json'), 'utf8'));
+  assert.equal(Object.keys(manifest.clips).length, 5);
+  assert.equal(manifest.clips.u001.source, 'volc:seed-audio-1.0:user'); assert.equal(manifest.clips.u001.sample_rate, 24000);
+  assert.ok(manifest.clips.u001.duration_ms > 900 && manifest.clips.u001.duration_ms < 1400, `时长 ${manifest.clips.u001.duration_ms}`);
+  assert.ok(fs.existsSync(path.join(dir, 'audio', 'master_user.mp3')) && fs.existsSync(path.join(dir, 'audio', 'master_assistant.mp3')));
+  assert.ok(events.some(e => /切出 2 段,期望 3 段/.test(e.message)), '重试原因有上报');
+  /* 再跑一次:全部沿用缓存 */
+  process.env.VOLC_TTS_API_KEY = 'volc-key';
+  const r2 = await generateCaseAudio(id, script, { provider: 'volc', fetchImpl });
+  delete process.env.VOLC_TTS_API_KEY;
+  assert.equal(r2.skipped.length, 5); assert.equal(calls.length, 3);
+  await fs.promises.rm(dir, { recursive: true, force: true });
+});

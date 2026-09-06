@@ -51,6 +51,35 @@ export function toMono(pcm, channels) {
   return out;
 }
 
+/* 按静音切段(移植自 Step 参考包 gen_dialogue.py):20ms 帧 RMS,阈值 = 峰值 × threshRatio,
+ * 静音 ≥ minSil 秒断开,段间隔 < mergeGap 秒合并(长句换气误切),头尾各留 pad 秒。返回 [[起,止] 秒] */
+export function silenceRegions(pcm, sampleRate, { minSil = 0.55, threshRatio = 0.06, pad = 0.18, mergeGap = 1.0 } = {}) {
+  const frame = Math.round(sampleRate * 0.02);
+  const total = Math.floor(pcm.length / frame);
+  const rms = new Float64Array(total);
+  let peak = 0;
+  for (let i = 0; i < total; i++) {
+    let acc = 0; const o = i * frame;
+    for (let j = 0; j < frame; j++) { const v = pcm[o + j]; acc += v * v; }
+    rms[i] = Math.sqrt(acc / frame); if (rms[i] > peak) peak = rms[i];
+  }
+  const th = peak * threshRatio;
+  const regs = []; let start = null, sil = 0;
+  for (let i = 0; i < total; i++) {
+    if (rms[i] > th) { if (start === null) start = i; sil = 0; }
+    else if (start !== null) { sil++; if (sil * 0.02 >= minSil) { regs.push([start * 0.02, (i - sil + 1) * 0.02]); start = null; sil = 0; } }
+  }
+  if (start !== null) regs.push([start * 0.02, total * 0.02]);
+  const merged = [];
+  for (const r of regs) { if (merged.length && r[0] - merged[merged.length - 1][1] < mergeGap) merged[merged.length - 1][1] = r[1]; else merged.push(r); }
+  const dur = pcm.length / sampleRate;
+  return merged.map(([a, b]) => [Math.max(0, a - pad), Math.min(dur, b + pad)]);
+}
+
+export function slicePcm(pcm, sampleRate, fromSec, toSec) {
+  return pcm.subarray(Math.max(0, Math.round(fromSec * sampleRate)), Math.min(pcm.length, Math.round(toSec * sampleRate)));
+}
+
 /* 线性重采样 */
 export function resampleMono(pcm, from, to) {
   if (from === to) return pcm;
