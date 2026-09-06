@@ -72,6 +72,7 @@ jobs:
           echo "key 已配置(长度 ${#OPENAI_API_KEY})"
 
       - name: 生成语音(OpenAI /v1/audio/speech)
+        id: gen
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_TTS_MODEL: ${{ steps.req.outputs.model }}
@@ -82,8 +83,18 @@ jobs:
           if [ -n "${{ steps.req.outputs.only }}" ]; then args="$args --only ${{ steps.req.outputs.only }}"; fi
           node server/cli.js tts $args
 
+      - name: 保存生成结果(即使后面步骤失败也能从 Artifacts 下载)
+        if: always() && steps.gen.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: audio-${{ steps.req.outputs.case }}
+          path: cases/${{ steps.req.outputs.case }}/audio
+          retention-days: 7
+
       - name: mp3 压缩版(单文件包 / 网页只带这份,wav 留作母带)
+        continue-on-error: true
         run: |
+          command -v ffmpeg >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg; }
           for f in cases/${{ steps.req.outputs.case }}/audio/*.wav; do
             [ -e "$f" ] || continue
             [ -e "${f%.wav}.mp3" ] && continue          # 没重做的句子已有 mp3,跳过
