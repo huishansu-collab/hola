@@ -5,4 +5,4 @@ case: morning
 force: true
 only:
 model:
-run: 5
+run: 6
