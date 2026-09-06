@@ -6,7 +6,7 @@ import { normalizeScript, msToClock, TRACKS, validateScript } from '/shared/scri
 import { schedule } from '/shared/schedule.js';
 import { buildNormalized, checkNormalized } from '/shared/normalize.js';
 import { scriptToDSL } from '/shared/dsl.js';
-import { ttsPlan, synthesizeSpeech, wavDurationMs, TTS_MODELS } from '/shared/tts.js';
+import { ttsPlan, synthesizeSpeech, wavDurationMs, PROVIDERS } from '/shared/tts.js';
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -249,24 +249,41 @@ function mergedDurations() {
   Object.assign(d, engine.durations());
   return d;
 }
+const keyStore = (p) => p === 'openai' ? 'duplex.openai_key' : `duplex.${p}_key`;
+function btProvider() { return PROVIDERS[$('#btProvider').value] ? $('#btProvider').value : 'openai'; }
+/* 切换 provider:刷新模型列表、key 输入框提示,并换成该家保存过的 key */
+function syncBtProvider() {
+  const p = btProvider(); const P = PROVIDERS[p];
+  const sel = $('#btModel'); sel.innerHTML = '';
+  P.models.forEach(m => { const o = document.createElement('option'); o.value = o.textContent = m; sel.appendChild(o); });
+  $('#btKey').placeholder = P.keyHint;
+  try { $('#btKey').value = localStorage.getItem(keyStore(p)) || ''; } catch { /* private mode */ }
+  $('#btHelpProvider').textContent = p === 'qwen'
+    ? '浏览器直接调用阿里云百炼 DashScope 的千问 TTS(qwen3-tts-flash,24kHz wav);DashScope 若不允许浏览器跨域,请改用服务端生成或 GitHub Actions。'
+    : '浏览器直接调用 OpenAI /v1/audio/speech(24kHz wav),每个说话人的定妆描述作 instructions。';
+}
 function renderBrowserTts() {
-  const sel = $('#btModel');
-  if (!sel.options.length) TTS_MODELS.forEach(m => { const o = document.createElement('option'); o.value = o.textContent = m; sel.appendChild(o); });
-  try { const k = localStorage.getItem('duplex.openai_key'); if (k && !$('#btKey').value) $('#btKey').value = k; } catch { /* private mode */ }
+  const psel = $('#btProvider');
+  if (!psel.options.length) {
+    Object.entries(PROVIDERS).forEach(([k, P]) => { const o = document.createElement('option'); o.value = k; o.textContent = P.name; psel.appendChild(o); });
+    try { psel.value = localStorage.getItem('duplex.tts_provider') || 'openai'; } catch { /* ignore */ }
+    syncBtProvider();
+  }
   const n = state.overrides.size;
   $('#btSummary').textContent = n ? `本机已缓存 ${n} 段` : '';
 }
 async function uploadClip(caseId, it, wav) {
-  const r = await fetch(`/api/cases/${caseId}/clips/${it.clip}`, { method: 'PUT', headers: { 'Content-Type': 'audio/wav', 'X-Clip-Hash': it.hash, 'X-Clip-Source': `browser:${it.model}:${it.voice}`, 'X-Clip-Text': encodeURIComponent(it.text) }, body: wav });
+  const r = await fetch(`/api/cases/${caseId}/clips/${it.clip}`, { method: 'PUT', headers: { 'Content-Type': 'audio/wav', 'X-Clip-Hash': it.hash, 'X-Clip-Source': `browser:${it.provider || 'openai'}:${it.model}:${it.voice}`, 'X-Clip-Text': encodeURIComponent(it.text) }, body: wav });
   if (!r.ok) throw new Error('写回失败 ' + r.status);
 }
 async function browserTts(force) {
   if (state.btAbort || !state.data) return;
   const key = $('#btKey').value.trim();
-  if (!key) { showMsg('#btMsg', 'warn', '先填 OpenAI API key。它只保存在这台电脑的浏览器里,不会上传到任何服务器。'); return; }
-  try { localStorage.setItem('duplex.openai_key', key); } catch { /* ignore */ }
-  const model = $('#btModel').value || TTS_MODELS[0];
-  const plan = ttsPlan(state.data.normalized_script, { model });
+  const provider = btProvider(); const P = PROVIDERS[provider];
+  if (!key) { showMsg('#btMsg', 'warn', `先填 ${P.name} 的 API key。它只保存在这台电脑的浏览器里,不会上传到任何服务器。`); return; }
+  try { localStorage.setItem(keyStore(provider), key); localStorage.setItem('duplex.tts_provider', provider); } catch { /* ignore */ }
+  const model = $('#btModel').value || P.defaultModel;
+  const plan = ttsPlan(state.data.normalized_script, { provider, model });
   const ac = new AbortController(); state.btAbort = ac;
   $('#btStop').hidden = false; $('#ttsProgress').hidden = false; $('#ttsProgress i').style.width = '0%';
   $('#btGenMissing').disabled = true; $('#btGenAll').disabled = true;
@@ -280,9 +297,9 @@ async function browserTts(force) {
     if (tr) { tr.className = 'gen'; tr.querySelector('.state').textContent = '生成中…'; }
     showMsg('#btMsg', 'info', `[${i + 1}/${plan.length}] ${it.speaker_name} · ${it.voice} · ${it.text.slice(0, 26)}`);
     try {
-      const wav = await synthesizeSpeech(it, { apiKey: key, model, signal: ac.signal });
+      const wav = await synthesizeSpeech(it, { apiKey: key, provider, model, signal: ac.signal });
       const duration_ms = wavDurationMs(wav) ?? 0;
-      const rec = { wav, hash: it.hash, duration_ms, voice: it.voice, model, text: it.text, at: Date.now() };
+      const rec = { wav, hash: it.hash, duration_ms, voice: it.voice, model, provider, text: it.text, at: Date.now() };
       state.overrides.set(it.clip, rec);
       await idbPut(`${caseId}/${it.clip}`, rec).catch(() => {});
       if (!state.status?.static) await uploadClip(caseId, it, wav).catch(e => console.warn(e.message));
@@ -292,8 +309,8 @@ async function browserTts(force) {
       failed.push({ id: it.id, error: e.message });
       if (tr) { tr.className = 'miss'; tr.querySelector('.state').textContent = '失败'; }
       if (e.name === 'AbortError') break;
-      if (e.network) { fatal = '浏览器连不到 api.openai.com。claude.ai 上的 Artifact 版受内容安全策略限制不能访问外网;请用本地 npm start、dist/duplex-demo.html 或 GitHub Pages 版打开本页再生成。'; break; }
-      if (e.status === 401 || e.status === 403) { fatal = `OpenAI 拒绝了这个 key(${e.status})。请检查 key 是否有效、是否有 audio 权限。`; break; }
+      if (e.network) { fatal = provider === 'qwen' ? '浏览器连不到 DashScope(可能是跨域限制或 Artifact 版无外网)。请用服务端生成、GitHub Actions 工作流,或本地 npm start。' : '浏览器连不到 api.openai.com。claude.ai 上的 Artifact 版受内容安全策略限制不能访问外网;请用本地 npm start、dist/duplex-demo.html 或 GitHub Pages 版打开本页再生成。'; break; }
+      if (e.status === 401 || e.status === 403) { fatal = `${P.name} 拒绝了这个 key(${e.status})。请检查 key 是否有效、是否有语音合成权限。`; break; }
     }
     $('#ttsProgress i').style.width = Math.round((i + 1) / plan.length * 100) + '%';
   }
@@ -457,7 +474,8 @@ async function init() {
   $('#btGenAll').addEventListener('click', () => { if (confirm('用浏览器重新生成这个 case 的全部台词语音?')) browserTts(true); });
   $('#btStop').addEventListener('click', () => state.btAbort?.abort());
   $('#btClear').addEventListener('click', clearBrowserClips);
-  $('#btKey').addEventListener('change', () => { try { localStorage.setItem('duplex.openai_key', $('#btKey').value.trim()); } catch { /* ignore */ } });
+  $('#btKey').addEventListener('change', () => { try { localStorage.setItem(keyStore(btProvider()), $('#btKey').value.trim()); } catch { /* ignore */ } });
+  $('#btProvider').addEventListener('change', () => { try { localStorage.setItem('duplex.tts_provider', btProvider()); } catch { /* ignore */ } syncBtProvider(); });
   $('#btnBuildJson').addEventListener('click', () => buildJson().catch(e => setIssues('生成失败:' + e.message, 'warn')));
   $('#btnMixBrowser').addEventListener('click', () => mixInBrowser().catch(e => setIssues('混音失败:' + e.message, 'warn')));
   window.addEventListener('hashchange', () => { const id = location.hash.slice(1); if (id && id !== state.id) selectCase(id); });

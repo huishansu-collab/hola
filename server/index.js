@@ -7,7 +7,7 @@ import express from 'express';
 import path from 'node:path';
 import { existsSync } from 'node:fs';
 import { ROOT, CASES_DIR, listCases, loadCase, saveCase, createCase, audioDir, refreshManifest, clipDurations, defaultTemplate } from './cases.js';
-import { generateCaseAudio, ttsConfig, TTS_VOICES, saveClip } from './tts.js';
+import { generateCaseAudio, ttsConfig, configuredProviders, TTS_VOICES, saveClip } from './tts.js';
 import { mixSchedule } from './audio.js';
 import { parseDSL, scriptToDSL } from '../shared/dsl.js';
 import { validateScript, normalizeScript } from '../shared/script.js';
@@ -27,7 +27,7 @@ const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch
 
 app.get('/api/status', (req, res) => {
   const cfg = ttsConfig();
-  res.json({ ok: true, openai: !!cfg.apiKey, model: cfg.model, base_url: cfg.baseUrl, proxy_hint: cfg.proxyHint, voices: TTS_VOICES, node: process.version, browser_tts: true, static: false });
+  res.json({ ok: true, openai: !!process.env.OPENAI_API_KEY, qwen: !!process.env.DASHSCOPE_API_KEY, providers: configuredProviders(), provider: cfg.provider, model: cfg.model, base_url: cfg.baseUrl, proxy_hint: cfg.proxyHint, voices: TTS_VOICES, node: process.version, browser_tts: true, static: false });
 });
 
 /* 浏览器直连 OpenAI 生成的片段写回 case(body = wav) */
@@ -92,14 +92,14 @@ app.get('/api/template', (req, res) => res.type('text/plain').send(defaultTempla
 
 /* 语音生成:SSE 进度流 */
 app.post('/api/cases/:id/tts', wrap(async (req, res) => {
-  const { force = false, only = null } = req.body || {};
+  const { force = false, only = null, provider = null, model = null } = req.body || {};
   const c = await loadCase(req.params.id);
   res.writeHead(200, { 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-cache', Connection: 'keep-alive' });
   const send = (ev, data) => res.write(`event: ${ev}\ndata: ${JSON.stringify(data)}\n\n`);
   const ac = new AbortController();
   req.on('close', () => ac.abort());
   try {
-    const r = await generateCaseAudio(req.params.id, c.script, { force, only, signal: ac.signal, onProgress: p => send('progress', p) });
+    const r = await generateCaseAudio(req.params.id, c.script, { force, only, provider, model, signal: ac.signal, onProgress: p => send('progress', p) });
     const manifest = await refreshManifest(req.params.id, c.script);
     send('done', { ...r, manifest, durations: clipDurations(manifest) });
   } catch (e) {
@@ -141,6 +141,7 @@ const PORT = +(process.env.PORT || 5173);
 app.listen(PORT, () => {
   const cfg = ttsConfig();
   console.log(`duplex demo platform → http://localhost:${PORT}`);
-  console.log(`OpenAI TTS: ${cfg.apiKey ? '已配置 (' + cfg.model + ')' : '未配置 — 在 .env 里设置 OPENAI_API_KEY 后可生成语音'}`);
+  const have = configuredProviders();
+  console.log(`云端 TTS: ${have.length ? '已配置 ' + have.join(' + ') + ',默认 ' + cfg.name + ' (' + cfg.model + ')' : '未配置 — 在 .env 里设置 OPENAI_API_KEY 或 DASHSCOPE_API_KEY 后可生成语音'}`);
   if (cfg.proxyHint) console.log('提示:检测到 HTTPS_PROXY,Node fetch 需要 NODE_USE_ENV_PROXY=1 才会走代理');
 });

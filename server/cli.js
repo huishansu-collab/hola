@@ -5,7 +5,7 @@
  *   node server/cli.js parse <script.dsl> [--out script.json]        剧本 → script.json
  *   node server/cli.js validate <caseId|script.json>
  *   node server/cli.js plan <caseId>                                  逐句语音计划 JSON(离线引擎 tools/offline_tts.py 用)
- *   node server/cli.js tts <caseId> [--force] [--only u001,u002]     生成语音(OpenAI)
+ *   node server/cli.js tts <caseId> [--provider openai|qwen] [--model …] [--force] [--only u001,u002]   生成语音
  *   node server/cli.js export <caseId> [--out dir] [--sample s01]    规范化 JSON + 双声道 WAV
  */
 import fs from 'node:fs/promises';
@@ -13,7 +13,7 @@ import path from 'node:path';
 import { existsSync } from 'node:fs';
 import { ROOT, listCases, loadCase, audioDir } from './cases.js';
 import { generateCaseAudio, ttsConfig } from './tts.js';
-import { ttsPlan } from '../shared/tts.js';
+import { ttsPlan, PROVIDERS } from '../shared/tts.js';
 import { mixSchedule } from './audio.js';
 import { parseDSL } from '../shared/dsl.js';
 import { validateScript, normalizeScript } from '../shared/script.js';
@@ -60,7 +60,7 @@ async function main() {
       const c = await loadCase(id);
       const s = normalizeScript(c.script);
       const steps = Object.fromEntries(s.timeline.filter(x => x.type === 'say').map(x => [x.id, x]));
-      const items = ttsPlan(s).map(it => {
+      const items = ttsPlan(s, { provider: flags.provider, model: flags.model }).map(it => {
         const st = steps[it.id] || {}; const sp = s.speakers[it.speaker] || {};
         const have = c.manifest.clips?.[it.clip] || null;
         return { ...it, role: sp.role || (it.speaker === 'assistant' ? 'assistant' : 'user'), local_voice: sp.tts?.local_voice || st.tts?.local_voice || null,
@@ -72,12 +72,14 @@ async function main() {
     }
     case 'tts': {
       const id = args[0]; if (!id) throw new Error('用法:tts <caseId> [--force] [--only u001,u002]');
-      const cfg = ttsConfig();
-      if (!cfg.apiKey) throw new Error('缺少 OPENAI_API_KEY(复制 .env.example 为 .env 并填入)');
+      const cfg = ttsConfig(process.env, flags.provider);
+      if (flags.provider && !PROVIDERS[flags.provider]) throw new Error(`未知 provider ${flags.provider}(可选:${Object.keys(PROVIDERS).join(' / ')})`);
+      if (!cfg.apiKey) throw new Error(`缺少 ${cfg.envKey}(复制 .env.example 为 .env 并填入)`);
+      console.log(`引擎:${cfg.name} · ${flags.model || cfg.model}`);
       if (cfg.proxyHint) console.warn('提示:检测到 HTTPS_PROXY,如需走代理请用 NODE_USE_ENV_PROXY=1 运行');
       const c = await loadCase(id);
       const only = flags.only ? String(flags.only).split(',') : null;
-      const r = await generateCaseAudio(id, c.script, { force: !!flags.force, only, onProgress: p => console.log(`[${p.index}/${p.total}] ${p.id} ${p.status} ${p.message || ''}`) });
+      const r = await generateCaseAudio(id, c.script, { force: !!flags.force, only, provider: flags.provider, model: flags.model, onProgress: p => console.log(`[${p.index}/${p.total}] ${p.id} ${p.status} ${p.message || ''}`) });
       console.log(`生成 ${r.generated.length} · 缓存 ${r.skipped.length} · 失败 ${r.failed.length}`);
       r.failed.forEach(f => console.error('✗', f.id, f.error));
       if (r.failed.length) process.exit(1);

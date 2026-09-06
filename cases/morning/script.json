@@ -13,14 +13,16 @@
       "name": "你",
       "tts": {
         "voice": "ash",
-        "instructions": "三十岁上下的中国男性，起晚了很着急，语速偏快，边做事边说话，普通话标准。安静的室内，没有背景音乐。"
+        "instructions": "三十岁上下的中国男性，起晚了很着急，语速偏快，边做事边说话，普通话标准。安静的室内，没有背景音乐。",
+        "qwen_voice": "Ethan"
       }
     },
     "assistant": {
       "name": "Step",
       "tts": {
         "voice": "coral",
-        "instructions": "二十七八岁的中国女性助理，声音沉稳温暖、真人感强，高压场景下结论先行、语速略快但不慌，普通话标准。"
+        "instructions": "二十七八岁的中国女性助理，声音沉稳温暖、真人感强，高压场景下结论先行、语速略快但不慌，普通话标准。",
+        "qwen_voice": "Cherry"
       }
     },
     "司机": {
@@ -28,7 +30,8 @@
       "role": "third_party",
       "tts": {
         "voice": "onyx",
-        "instructions": "四十多岁的中国男性出租车司机，热情健谈，带北方口音的普通话，车厢里的说话声。"
+        "instructions": "四十多岁的中国男性出租车司机，热情健谈，带北方口音的普通话，车厢里的说话声。",
+        "qwen_voice": "Dylan"
       }
     }
   },

@@ -1,11 +1,11 @@
-# 用 GitHub 的机器调 OpenAI 生成语音。
-# (写这个工作流的原因:Claude 云端沙箱的出网策略连不到 api.openai.com,GitHub Actions 的机器可以。)
+# 用 GitHub 的机器调云端 TTS(OpenAI 或 千问 DashScope)生成语音。
+# (写这个工作流的原因:Claude 云端沙箱的出网策略连不到这些 API,GitHub Actions 的机器可以。)
 #
 # 一次性准备:仓库 Settings → Secrets and variables → Actions → New repository secret
-#             Name 填 OPENAI_API_KEY,Secret 填你的 key。key 只存在 GitHub 的加密 secret 里,不进仓库、不进日志。
-# 运行:Actions 页签 → "Generate voices with OpenAI" → Run workflow → 选分支、填 case → Run。
-#       大约 3‒5 分钟,生成的 wav + mp3 自动提交回该分支,并触发 GitHub Pages 重新发布。
-name: Generate voices with OpenAI
+#             OpenAI 填 OPENAI_API_KEY,千问填 DASHSCOPE_API_KEY。key 只存在 GitHub 的加密 secret 里,不进仓库、不进日志。
+# 运行:Actions 页签 → "Generate voices (OpenAI / Qwen)" → Run workflow → 选分支、provider、case → Run;
+#       或改 .github/tts-request.yml 后 push。大约 3‒5 分钟,生成的 wav + mp3 自动提交回该分支,并触发 GitHub Pages 重新发布。
+name: Generate voices (OpenAI / Qwen)
 
 on:
   # 两种启动方式:Actions 页签手动 Run workflow;或改动 .github/tts-request.yml 后 push(Claude 会话里 push 也能启动)
@@ -13,6 +13,11 @@ on:
     paths: ['.github/tts-request.yml']
   workflow_dispatch:
     inputs:
+      provider:
+        description: '语音引擎'
+        type: choice
+        options: [openai, qwen]
+        default: openai
       case:
         description: 'case id(cases/ 下的目录名)'
         default: morning
@@ -25,8 +30,8 @@ on:
         description: '只生成这些台词 id,逗号分隔;留空 = 全部'
         default: ''
       model:
-        description: 'TTS 模型(gpt-4o-mini-tts 支持音色描述;tts-1 / tts-1-hd 不支持)'
-        default: gpt-4o-mini-tts
+        description: 'TTS 模型;留空按引擎默认(OpenAI gpt-4o-mini-tts,千问 qwen3-tts-flash)'
+        default: ''
 
 permissions:
   contents: write
@@ -54,31 +59,41 @@ jobs:
           CASE="${{ inputs.case }}";   [ -n "$CASE" ]  || CASE="$(get case)";   [ -n "$CASE" ] || CASE=morning
           FORCE="${{ inputs.force }}"; [ -n "$FORCE" ] || FORCE="$(get force)"
           ONLY="${{ inputs.only }}";   [ -n "$ONLY" ]  || ONLY="$(get only)"
-          MODEL="${{ inputs.model }}"; [ -n "$MODEL" ] || MODEL="$(get model)"; [ -n "$MODEL" ] || MODEL=gpt-4o-mini-tts
+          PROVIDER="${{ inputs.provider }}"; [ -n "$PROVIDER" ] || PROVIDER="$(get provider)"; [ -n "$PROVIDER" ] || PROVIDER=openai
+          MODEL="${{ inputs.model }}"; [ -n "$MODEL" ] || MODEL="$(get model)"
+          if [ -z "$MODEL" ]; then if [ "$PROVIDER" = qwen ]; then MODEL=qwen3-tts-flash; else MODEL=gpt-4o-mini-tts; fi; fi
+          case "$PROVIDER" in openai) SECRET=OPENAI_API_KEY ;; qwen) SECRET=DASHSCOPE_API_KEY ;; *) echo "::error::provider 只能是 openai 或 qwen(现在是 $PROVIDER)"; exit 1 ;; esac
+          echo "provider=$PROVIDER" >> "$GITHUB_OUTPUT"
+          echo "secret=$SECRET"     >> "$GITHUB_OUTPUT"
           echo "case=$CASE"   >> "$GITHUB_OUTPUT"
           echo "force=$FORCE" >> "$GITHUB_OUTPUT"
           echo "only=$ONLY"   >> "$GITHUB_OUTPUT"
           echo "model=$MODEL" >> "$GITHUB_OUTPUT"
-          echo "case=$CASE force=$FORCE only=$ONLY model=$MODEL"
+          echo "provider=$PROVIDER case=$CASE force=$FORCE only=$ONLY model=$MODEL"
 
-      - name: 检查 OPENAI_API_KEY secret
+      - name: 检查 API key secret
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
+          SECRET: ${{ steps.req.outputs.secret }}
         run: |
-          if [ -z "$OPENAI_API_KEY" ]; then
-            echo "::error::没有找到 OPENAI_API_KEY。到 https://github.com/${{ github.repository }}/settings/secrets/actions 新建 repository secret(Name = OPENAI_API_KEY),再重新运行这个工作流。"
+          KEY="${!SECRET}"
+          if [ -z "$KEY" ]; then
+            echo "::error::没有找到 $SECRET。到 https://github.com/${{ github.repository }}/settings/secrets/actions 新建 repository secret(Name = $SECRET),再重新运行这个工作流。"
             exit 1
           fi
-          echo "key 已配置(长度 ${#OPENAI_API_KEY})"
+          echo "$SECRET 已配置(长度 ${#KEY})"
 
-      - name: 生成语音(OpenAI /v1/audio/speech)
+      - name: 生成语音
         id: gen
+        continue-on-error: true            # 部分失败也把已生成的句子提交回去;最后一步再把失败报出来
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_TTS_MODEL: ${{ steps.req.outputs.model }}
           OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
+          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
+          DASHSCOPE_BASE_URL: ${{ vars.DASHSCOPE_BASE_URL }}
         run: |
-          args="${{ steps.req.outputs.case }}"
+          args="${{ steps.req.outputs.case }} --provider ${{ steps.req.outputs.provider }} --model ${{ steps.req.outputs.model }}"
           if [ "${{ steps.req.outputs.force }}" = "true" ]; then args="$args --force"; fi
           if [ -n "${{ steps.req.outputs.only }}" ]; then args="$args --only ${{ steps.req.outputs.only }}"; fi
           node server/cli.js tts $args
@@ -108,7 +123,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add cases/${{ steps.req.outputs.case }}/audio
           if git diff --cached --quiet; then echo "没有变化,不提交"; exit 0; fi
-          git commit -m "语音:OpenAI ${{ steps.req.outputs.model }} 生成 ${{ steps.req.outputs.case }}(GitHub Actions 运行 ${{ github.run_number }})"
+          git commit -m "语音:${{ steps.req.outputs.provider }} ${{ steps.req.outputs.model }} 生成 ${{ steps.req.outputs.case }}(GitHub Actions 运行 ${{ github.run_number }})"
           git checkout -- . && git clean -fdq              # 丢掉其它 case 清单因 mtime 变化被重写的噪音,否则 rebase 拒绝
           git pull --rebase --autostash origin "${{ github.ref_name }}"
           git push origin "HEAD:${{ github.ref_name }}"
@@ -119,3 +134,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run pages.yml --ref "${{ github.ref_name }}"
+
+      - name: 生成步骤有失败的句子
+        if: steps.gen.outcome == 'failure'
+        run: |
+          echo "::error::有句子没生成成功(看上面「生成语音」一步的日志);已生成的部分已经提交。修好后用 only 参数只重跑失败的句子。"
+          exit 1

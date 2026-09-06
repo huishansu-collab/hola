@@ -1,7 +1,8 @@
-# 改这个文件再 push,就会启动 .github/workflows/tts.yml 用 OpenAI 生成语音(前提:仓库 secret OPENAI_API_KEY 已配置)。
+# 改这个文件再 push,就会启动 .github/workflows/tts.yml 生成语音(前提:对应的仓库 secret 已配置:OpenAI → OPENAI_API_KEY,千问 → DASHSCOPE_API_KEY)。
 # 生成结果由工作流自动提交回当前分支。
+provider: openai
 case: morning
 force: true
 only:
-model: gpt-4o-mini-tts
+model:
 run: 4

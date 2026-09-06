@@ -111,7 +111,7 @@
       </aside>
     </div>
     <div class="footnote">
-      <span id="footLeft">语音由 OpenAI TTS 合成 · 人声打断依赖麦克风 VAD · 缺语音的台词按语速上屏</span>
+      <span id="footLeft">语音由 OpenAI / 千问 TTS 合成 · 人声打断依赖麦克风 VAD · 缺语音的台词按语速上屏</span>
       <span class="mono">duplex studio · v0.1</span>
     </div>
   </section>
@@ -138,9 +138,10 @@
           <div class="tbl-wrap"><table class="tbl" id="clipTable"></table></div>
         </div>
         <div class="side-card" id="browserTts">
-          <h3>浏览器直连 OpenAI 生成 <span class="sub" id="btSummary"></span></h3>
+          <h3>浏览器直连生成 <span class="sub" id="btSummary"></span></h3>
           <div class="toolbar">
-            <input class="field" id="btKey" type="password" placeholder="sk-…  OpenAI API key(只留在本机)" autocomplete="off" spellcheck="false" style="flex:1;min-width:200px">
+            <select class="field" id="btProvider" title="语音引擎"></select>
+            <input class="field" id="btKey" type="password" placeholder="sk-…  API key(只留在本机)" autocomplete="off" spellcheck="false" style="flex:1;min-width:180px">
             <select class="field" id="btModel"></select>
           </div>
           <div class="toolbar">
@@ -150,10 +151,10 @@
             <button class="btn sm ghost" id="btStop" hidden>停止</button>
           </div>
           <div id="btMsg"></div>
-          <p class="help" style="margin-top:8px">浏览器直接调用 OpenAI <code>/v1/audio/speech</code>(24kHz wav),每个说话人的定妆描述作 <code>instructions</code>;结果缓存在本机 IndexedDB,演示与 JSON 导出立即使用,本地运行时还会写回 <code>cases/&lt;id&gt;/audio/</code>。claude.ai 上的 Artifact 版受内容安全策略限制无法访问外网,请用 <code>dist/duplex-demo.html</code>、GitHub Pages 版或本地 <code>npm start</code>。</p>
+          <p class="help" style="margin-top:8px"><span id="btHelpProvider"></span> 结果缓存在本机 IndexedDB,演示与 JSON 导出立即使用,本地运行时还会写回 <code>cases/&lt;id&gt;/audio/</code>。claude.ai 上的 Artifact 版受内容安全策略限制无法访问外网,请用 <code>dist/duplex-demo.html</code>、GitHub Pages 版或本地 <code>npm start</code>。</p>
         </div>
         <div class="side-card server-only">
-          <h3>服务端生成 <span class="sub">.env 里的 OPENAI_API_KEY</span></h3>
+          <h3>服务端生成 <span class="sub">.env 里的 OPENAI_API_KEY / DASHSCOPE_API_KEY</span></h3>
           <div class="toolbar">
             <button class="btn sm warm" id="btnTtsMissing">生成缺失语音</button>
             <button class="btn sm ghost" id="btnTtsAll">全部重新生成</button>
@@ -164,7 +165,7 @@
         <div class="side-card">
           <h3>说话人与音色</h3>
           <div id="speakerList"></div>
-          <p class="help" style="margin-top:8px">改音色:在剧本里写 <code>speaker assistant: voice=nova instructions="…"</code>;可选 voice 见 OpenAI TTS 列表(alloy · ash · ballad · coral · echo · fable · nova · onyx · sage · shimmer · verse · marin · cedar)。</p>
+          <p class="help" style="margin-top:8px">改音色:在剧本里写 <code>speaker assistant: voice=nova qwen_voice=Cherry instructions="…"</code>。OpenAI 的 voice:alloy · ash · ballad · coral · echo · fable · nova · onyx · sage · shimmer · verse · marin · cedar;千问的 qwen_voice:Cherry · Ethan · Nofish · Jennifer · Ryan · Katerina · Elias,方言 Dylan(北京)· Jada(上海)· Sunny(四川)· Li(南京)· Marcus(陕西)· Roy(闽南)· Peter(天津)· Rocky / Kiki(粤语)· Eric(四川)。不写则按角色默认(助手 coral / Cherry,用户 ash / Ethan,第三方 Dylan)。</p>
         </div>
         <div class="side-card">
           <h3>剧本速查</h3>

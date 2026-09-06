@@ -8,9 +8,9 @@ sample_name: 工作日起床典型用例
 summary: 08:03 起晚 → 厨房煮蛋抢话计时 → 玄关双平台叫车 → 车上长任务 / brief / 司机改线 → 最高优穿透 → 低语零语音 → 办公室轻震归档
 scene: 工作日早晨高压场景｜08:03 起晚，跨家庭、通勤与办公场景完成准时到达和工作准备
 clock: 08:03:00
-speaker 用户: name="你" voice=ash instructions="三十岁上下的中国男性，起晚了很着急，语速偏快，边做事边说话，普通话标准。安静的室内，没有背景音乐。"
-speaker 助手: name="Step" voice=coral instructions="二十七八岁的中国女性助理，声音沉稳温暖、真人感强，高压场景下结论先行、语速略快但不慌，普通话标准。"
-speaker 司机: name="司机" role=third_party voice=onyx instructions="四十多岁的中国男性出租车司机，热情健谈，带北方口音的普通话，车厢里的说话声。"
+speaker 用户: name="你" voice=ash qwen_voice=Ethan instructions="三十岁上下的中国男性，起晚了很着急，语速偏快，边做事边说话，普通话标准。安静的室内，没有背景音乐。"
+speaker 助手: name="Step" voice=coral qwen_voice=Cherry instructions="二十七八岁的中国女性助理，声音沉稳温暖、真人感强，高压场景下结论先行、语速略快但不慌，普通话标准。"
+speaker 司机: name="司机" role=third_party voice=onyx qwen_voice=Dylan instructions="四十多岁的中国男性出租车司机，热情健谈，带北方口音的普通话，车厢里的说话声。"
 
 ```context
 {
