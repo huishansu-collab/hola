@@ -104,6 +104,17 @@ python3 tools/offline_tts.py mycase --voice user=zm_010 --voice assistant=zf_001
 - claude.ai 上的 Artifact 版受内容安全策略限制无法访问外网，浏览器直连在那里不可用；用 GitHub Pages 版（仓库 Settings → Pages → Source 选 GitHub Actions，`.github/workflows/pages.yml` 会自动发布）或本地运行。
 - `.env` 不会被提交；不要把 key 写进任何脚本。
 
+### 在 Claude 云端会话里用 OpenAI（沙箱默认连不到 api.openai.com）
+
+Claude Code 云端环境默认是 **Trusted** 网络策略，只放行包管理源和 GitHub，`api.openai.com` 会被拒。两条路，都只要在你这边做一次设置：
+
+| 路 | 一次性设置 | 之后怎么生成 |
+| --- | --- | --- |
+| **A. 环境 API credential**（推荐，key 不进沙箱） | claude.ai/code 消息框上方的云朵图标（显示当前环境名，如 Default）→ 悬停环境 → 齿轮 → 对话框底部 **API credentials → Add credential**：Name `OpenAI`，Allowed websites `api.openai.com`，Header `Authorization` / Prefix `Bearer` / Value 填 key → Connect。Anthropic 的代理会在请求出沙箱后自动加上 key（Pro / Max 可用） | 在该环境的会话里运行：`OPENAI_API_KEY=proxy-injected NODE_USE_ENV_PROXY=1 npm run tts -- morning --force`（`proxy-injected` 只是占位，真正的 key 由代理注入） |
+| **B. GitHub Actions** | 仓库 **Settings → Secrets and variables → Actions → New repository secret**：Name `OPENAI_API_KEY`，Secret 填 key | Actions 页签 → **Generate voices with OpenAI** → Run workflow（选分支、填 case）；或改一下 `.github/tts-request.yml` 再 push。3‒5 分钟后 wav + mp3 自动提交回分支，并重新发布 Pages |
+
+也可以把环境的 Network access 改成 **Full** 或 **Custom**（加 `api.openai.com`），再按普通方式配 `.env`。
+
 ## 目录
 
 ```

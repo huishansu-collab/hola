@@ -8,6 +8,9 @@
 name: Generate voices with OpenAI
 
 on:
+  # 两种启动方式:Actions 页签手动 Run workflow;或改动 .github/tts-request.yml 后 push(Claude 会话里 push 也能启动)
+  push:
+    paths: ['.github/tts-request.yml']
   workflow_dispatch:
     inputs:
       case:
@@ -44,6 +47,20 @@ jobs:
           cache: npm
       - run: npm ci
 
+      - name: 读取参数(手动运行用 inputs;push 触发读 .github/tts-request.yml)
+        id: req
+        run: |
+          get() { sed -n "s/^$1:[[:space:]]*//p" .github/tts-request.yml | head -1 | tr -d '\r"'; }
+          CASE="${{ inputs.case }}";   [ -n "$CASE" ]  || CASE="$(get case)";   [ -n "$CASE" ] || CASE=morning
+          FORCE="${{ inputs.force }}"; [ -n "$FORCE" ] || FORCE="$(get force)"
+          ONLY="${{ inputs.only }}";   [ -n "$ONLY" ]  || ONLY="$(get only)"
+          MODEL="${{ inputs.model }}"; [ -n "$MODEL" ] || MODEL="$(get model)"; [ -n "$MODEL" ] || MODEL=gpt-4o-mini-tts
+          echo "case=$CASE"   >> "$GITHUB_OUTPUT"
+          echo "force=$FORCE" >> "$GITHUB_OUTPUT"
+          echo "only=$ONLY"   >> "$GITHUB_OUTPUT"
+          echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+          echo "case=$CASE force=$FORCE only=$ONLY model=$MODEL"
+
       - name: 检查 OPENAI_API_KEY secret
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -57,17 +74,17 @@ jobs:
       - name: 生成语音(OpenAI /v1/audio/speech)
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_TTS_MODEL: ${{ inputs.model }}
+          OPENAI_TTS_MODEL: ${{ steps.req.outputs.model }}
           OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
         run: |
-          args="${{ inputs.case }}"
-          if [ "${{ inputs.force }}" = "true" ]; then args="$args --force"; fi
-          if [ -n "${{ inputs.only }}" ]; then args="$args --only ${{ inputs.only }}"; fi
+          args="${{ steps.req.outputs.case }}"
+          if [ "${{ steps.req.outputs.force }}" = "true" ]; then args="$args --force"; fi
+          if [ -n "${{ steps.req.outputs.only }}" ]; then args="$args --only ${{ steps.req.outputs.only }}"; fi
           node server/cli.js tts $args
 
       - name: mp3 压缩版(单文件包 / 网页只带这份,wav 留作母带)
         run: |
-          for f in cases/${{ inputs.case }}/audio/*.wav; do
+          for f in cases/${{ steps.req.outputs.case }}/audio/*.wav; do
             [ -e "$f" ] || continue
             [ -e "${f%.wav}.mp3" ] && continue          # 没重做的句子已有 mp3,跳过
             ffmpeg -y -loglevel error -i "$f" -codec:a libmp3lame -b:a 64k "${f%.wav}.mp3"
@@ -78,9 +95,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add cases/${{ inputs.case }}/audio
+          git add cases/${{ steps.req.outputs.case }}/audio
           if git diff --cached --quiet; then echo "没有变化,不提交"; exit 0; fi
-          git commit -m "语音:OpenAI ${{ inputs.model }} 生成 ${{ inputs.case }}(GitHub Actions 运行 ${{ github.run_number }})"
+          git commit -m "语音:OpenAI ${{ steps.req.outputs.model }} 生成 ${{ steps.req.outputs.case }}(GitHub Actions 运行 ${{ github.run_number }})"
           git pull --rebase origin "${{ github.ref_name }}"
           git push origin "HEAD:${{ github.ref_name }}"
 
