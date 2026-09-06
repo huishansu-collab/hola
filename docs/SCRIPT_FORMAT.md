@@ -163,3 +163,7 @@ speaker 司机: role=third_party voice=onyx instructions="…"   ← 额外说�
 | `annotation.track_annotation`（扩展） | 八轨日志原文 + 结构化字段 + 时间，供数据检索；模型不消费 |
 
 时间戳全部以混音母带（`audio/synthetic/*.wav`）为准，与演示引擎的实际播放对齐（±0.5s 内）。
+
+## 环境音
+
+`ambience:` / `ambience_prompt:`（头部，开场带入）；正文里 `@ambience file=scene_x.mp3 vol=0.3 fade=1.5 label="…" prompt="纯环境音效，没有旁白和音乐：…"` 在该处切换循环环境音。`prompt` 给火山 seed-audio 生成文件用（`--only ambience`）。

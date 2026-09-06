@@ -224,6 +224,24 @@ export class DemoEngine {
   releaseAmb() { this.ambWanted = Math.max(0, this.ambWanted - 1); }
   startBuzz() { if (!this.fx.ring) return; const src = this.ctx.createBufferSource(); src.buffer = this.fx.ring; src.loop = true; const g = this.ctx.createGain(); g.gain.value = 0.55; src.connect(g); g.connect(this.ctx.destination); src.start(); this.buzz = { src }; }
   stopBuzz() { if (this.buzz) { try { this.buzz.src.stop(); } catch { /* noop */ } this.buzz = null; } }
+  /* 场景环境音切换:旧的淡出、新的循环淡入(@ambience file=... vol=0.3 fade=1.5) */
+  setAmbience(file, vol = 0.3, fade = 1.5, label) {
+    if (!this.ctx) return;
+    const stem = file ? String(file).replace(/\.[^.]+$/, '') : null;
+    const t = this.ctx.currentTime;
+    if (this.sceneLoop) {
+      const g = this.sceneLoop.gain.gain; g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0, t + fade);
+      try { this.sceneLoop.src.stop(t + fade + 0.05); } catch { /* noop */ }
+      this.sceneLoop = null;
+    }
+    const buf = stem ? this.buffers[stem] : null;
+    if (!buf) { if (stem) this.log('环境音', `${stem} 没有音频文件,跳过`, { track: '引擎' }); return; }
+    const src = this.ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+    const gain = this.ctx.createGain(); gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(vol, t + fade);
+    src.connect(gain); gain.connect(this.ctx.destination); src.start();
+    this.sceneLoop = { src, gain };
+    this.log('环境音', `${label || stem} · 淡入 ${fade}s · 音量 ${vol}`, { track: '引擎' });
+  }
   playScene(clip) {
     const buf = this.buffers[clip]; if (!buf) return Promise.resolve();
     const src = this.ctx.createBufferSource(); src.buffer = buf;
@@ -544,6 +562,7 @@ export class DemoEngine {
         return;
       }
       case 'fx': return this.playFx(st.name || 'ding', st.vol ?? 0.5);
+      case 'ambience': return this.setAmbience(st.file, st.vol ?? 0.3, st.fade ?? 1.5, st.label);
       case 'log': this.log(st.label || '', st.detail || '', { cut: !!st.cut, track: '引擎' }); return;
       case 'end': this.log(st.label || '结束', '', { track: '引擎' }); return;
       default: return;
@@ -890,6 +909,7 @@ export class DemoEngine {
   /* ---------------- 重置 ---------------- */
   reset() {
     this.aborted = true; this.playing = false;
+    if (this.sceneLoop) { try { this.sceneLoop.src.stop(); } catch { /* noop */ } this.sceneLoop = null; }
     cancelAnimationFrame(this.raf);
     for (const t of this.timers) { clearTimeout(t); clearInterval(t); } this.timers.clear();
     for (const t of this.pillTimers) clearInterval(t); this.pillTimers = [];

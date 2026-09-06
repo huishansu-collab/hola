@@ -117,6 +117,7 @@ function directiveStep(name, argStr) {
     case 'skip': return { type: 'skip', to: a.to || pos[0], label: a.label || pos[1], ...strip(a) };
     case 'join': return { type: 'join' };
     case 'fx': return { type: 'fx', name: a.name || pos[0] || 'ding', vol: a.vol, ...strip(a) };
+    case 'ambience': return { type: 'ambience', file: a.file || pos[0], vol: a.vol ?? 0.3, fade: a.fade ?? 1.5, prompt: a.prompt, ...strip(a) };   // 场景环境音切换(file 放 audio/,prompt 给 seed-audio 生成)
     case 'agent': {
       const st = { type: 'agent', ...strip(a), steps: [] };
       if (pos.length >= 2) st.steps.push({ icon: pos[0], doing: pos[1], done: pos[2] || pos[1], ms: +pos[3] || 2400 });

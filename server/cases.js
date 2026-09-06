@@ -134,6 +134,7 @@ export async function refreshManifest(id, script) {
   const s = normalizeScript(script);
   const wanted = new Set(s.timeline.filter(x => x.type === 'say' && x.clip).map(x => x.clip));
   if (s.scene?.ambience) wanted.add(s.scene.ambience.replace(/\.[^.]+$/, ''));
+  for (const st of s.timeline) if (st.type === 'ambience' && st.file) wanted.add(String(st.file).replace(/\.[^.]+$/, ''));
   const files = await fs.readdir(dir);
   const byStem = new Map();
   for (const f of files) {

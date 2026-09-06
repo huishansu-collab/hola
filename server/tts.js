@@ -199,9 +199,11 @@ export async function generateCaseAudioBatch(id, s, cfg, { force = false, only =
   const plan = ttsPlan(s, { provider: cfg.provider, model: cfg.model });
   const groups = new Map();
   for (const it of plan) { if (!groups.has(it.speaker)) groups.set(it.speaker, []); groups.get(it.speaker).push(it); }
-  const result = { generated: [], skipped: [], failed: [], total: plan.length, masters: [] };
+  const result = { generated: [], skipped: [], failed: [], total: plan.length, masters: [], ambience: [] };
   let index = 0;
+  const ambOnly = only && only.length === 1 && only[0] === 'ambience';
   for (const [speaker, items] of groups) {
+    if (ambOnly) { result.skipped.push(...items.map(i => i.id)); index += items.length; continue; }
     if (only && only.length && !items.some(it => only.includes(it.id) || only.includes(it.clip) || only.includes(speaker))) { result.skipped.push(...items.map(i => i.id)); index += items.length; continue; }
     const current = items.every(it => manifest.clips[it.clip]?.hash === it.hash && manifest.clips[it.clip]?.file === it.clip + '.wav');
     if (!force && current) { result.skipped.push(...items.map(i => i.id)); index += items.length; onProgress({ phase: 'skip', clip: speaker, id: speaker, index, total: plan.length, status: 'cached', message: `${items[0].speaker_name} ${items.length} 句未变化,沿用` }); continue; }
@@ -215,6 +217,29 @@ export async function generateCaseAudioBatch(id, s, cfg, { force = false, only =
       if (e.status === 401 || e.status === 403 || e.name === 'AbortError') break;
     }
     index += items.length;
+  }
+  /* 场景环境音:剧本里 @ambience file=… prompt="纯环境音效,没有旁白和音乐:…" 的,缺文件(或 --force / --only ambience)时用 seed-audio 生成 */
+  const ambSteps = s.timeline.filter(st => st.type === 'ambience' && st.file && st.prompt);
+  if (s.scene?.ambience && s.scene.ambience_prompt) ambSteps.unshift({ file: s.scene.ambience, prompt: s.scene.ambience_prompt });
+  const seen = new Set();
+  for (const st of ambSteps) {
+    const file = String(st.file).replace(/\.[^.]+$/, '') + '.mp3';
+    if (seen.has(file)) continue; seen.add(file);
+    const exists = await fs.stat(path.join(dir, file)).then(() => true).catch(() => false);
+    if (exists && !(force || ambOnly)) continue;
+    if (only && only.length && !ambOnly && !only.includes(file.replace(/\.mp3$/, ''))) continue;
+    onProgress({ phase: 'start', clip: file, id: file, index, total: plan.length, status: 'generating', message: `环境音 ${file} · ${String(st.prompt).slice(0, 30)}…` });
+    try {
+      const audio = Buffer.from(await volcCreate(String(st.prompt), { apiKey: cfg.apiKey === 'app-token' ? '' : cfg.apiKey, appId: cfg.appId, accessToken: cfg.accessToken, resourceId: cfg.resourceId, baseUrl: cfg.baseUrl, model: cfg.model, signal, ...(fetchImpl ? { fetchImpl } : {}) }));
+      await fs.writeFile(path.join(dir, file), audio);
+      delete manifest.clips[file.replace(/\.mp3$/, '')];                         // 让 refreshManifest 重新算时长
+      await saveManifest(id, manifest);
+      result.ambience.push(file);
+      onProgress({ phase: 'done', clip: file, id: file, index, total: plan.length, status: 'ok', message: `${(audio.length / 1024).toFixed(0)}KB` });
+    } catch (e) {
+      result.failed.push({ id: file, error: e.message });
+      onProgress({ phase: 'error', clip: file, id: file, index, total: plan.length, status: 'error', message: e.message });
+    }
   }
   return result;
 }

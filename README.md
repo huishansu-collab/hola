@@ -105,6 +105,31 @@ npm run tts -- morning --provider volc [--force] [--only 司机]
 - 单次能生成的音频有时长上限（超过报 DurationOutOfRange），所以按估算时长分成 ≤100s 的几段各自整段生成（段数越少音色越连贯，被拒自动减半重切）；`--only` 按说话人重做。GitHub Actions 工作流里选 provider = volc（secret 名 `VOLC_TTS_API_KEY`，或 `VOLC_APP_ID` + `VOLC_ACCESS_TOKEN`）。
 - 切段两道保险：先按字数对齐（动态规划在静音间隙里选切点，语速用整条母带自校准），再用 `tools/align_clips.py` 拿 SenseVoice 逐字识别母带、和剧本做编辑距离对齐，把切点放到相邻两句之间能量最低处，写成 `master_align.json`；`node server/cli.js recut <id>` 按它重切（不调 API）。工作流里这一步自动跑（识别模型 ≈1GB，Actions 缓存只下一次）。
 
+### 声音复刻 · 让助手用指定样本的音色说话(阿里云百炼 CosyVoice)
+
+想让 AI 的声音像某段真人录音：把 10‒20 秒的干净单人样本放到 `cases/<id>/audio/ref_<speaker>.wav`（比如 `ref_assistant.wav`），然后：
+
+```bash
+pip install dashscope          # DASHSCOPE_API_KEY 同千问
+python3 tools/cosyvoice_tts.py enroll morning assistant --url https://raw.githubusercontent.com/<owner>/<repo>/<branch>/cases/morning/audio/ref_assistant.wav
+python3 tools/cosyvoice_tts.py synth morning --only assistant       # 逐句 24kHz wav,source=cosy:cosyvoice-v2:<voice_id>
+```
+
+复刻好的音色 id 记在 `cases/<id>/audio/voices.json`，样本必须能被公网访问（公开仓库的 raw 链接即可）。CosyVoice 支持跨语言复刻：英文样本也能说中文。GitHub Actions 里选 provider = cosy（secret 名 `DASHSCOPE_API_KEY`），`auto` 子命令会先把还没复刻的 `ref_*.wav` 复刻好再合成；`only` 填说话人只做那一位，其它说话人保留原引擎的声音。
+
+### 场景环境音与音效
+
+参考包的做法原样保留：living edge 触碰「嘚嘚」建连音、任务执行中的五声音阶等待循环、卡片「叮」、震动「嗡」、来电铃声都在 `public/assets/fx/`；场景环境音按段切换，剧本里写：
+
+```text
+ambience: scene_morning_bath.mp3                 ← 开场带入用
+ambience_prompt: 纯环境音效，没有旁白和音乐：清晨的卫生间……
+## 段2｜…｜厨房·煮蛋
+@ambience file=scene_morning_kitchen.mp3 vol=0.26 label="厨房·煮蛋" prompt="纯环境音效，没有旁白和音乐：清晨的厨房，小火煮水的咕嘟声……"
+```
+
+`@ambience` 在演示里把上一段环境音淡出、新的循环淡入（`fade` 秒）；文件缺失时 `npm run tts -- <id> --provider volc --only ambience` 会用 seed-audio 按 `prompt` 生成（和参考包 `scene_*.mp3` 同一来源）。
+
 ### 千问 TTS(阿里云百炼 DashScope)
 
 ```bash

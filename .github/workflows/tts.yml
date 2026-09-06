@@ -1,4 +1,4 @@
-# 用 GitHub 的机器调云端 TTS(OpenAI / 千问 DashScope / 火山 seed-audio)生成语音。
+# 用 GitHub 的机器调云端 TTS(OpenAI / 千问 DashScope / 火山 seed-audio / 百炼 CosyVoice 声音复刻)生成语音。
 # (写这个工作流的原因:Claude 云端沙箱的出网策略连不到这些 API,GitHub Actions 的机器可以。)
 #
 # 一次性准备:仓库 Settings → Secrets and variables → Actions → New repository secret
@@ -16,7 +16,7 @@ on:
       provider:
         description: '语音引擎'
         type: choice
-        options: [openai, qwen, volc]
+        options: [openai, qwen, volc, cosy]
         default: openai
       case:
         description: 'case id(cases/ 下的目录名)'
@@ -61,8 +61,8 @@ jobs:
           ONLY="${{ inputs.only }}";   [ -n "$ONLY" ]  || ONLY="$(get only)"
           PROVIDER="${{ inputs.provider }}"; [ -n "$PROVIDER" ] || PROVIDER="$(get provider)"; [ -n "$PROVIDER" ] || PROVIDER=openai
           MODEL="${{ inputs.model }}"; [ -n "$MODEL" ] || MODEL="$(get model)"
-          if [ -z "$MODEL" ]; then case "$PROVIDER" in qwen) MODEL=qwen3-tts-flash ;; volc) MODEL=seed-audio-1.0 ;; *) MODEL=gpt-4o-mini-tts ;; esac; fi
-          case "$PROVIDER" in openai) SECRET=OPENAI_API_KEY ;; qwen) SECRET=DASHSCOPE_API_KEY ;; volc) SECRET=VOLC_TTS_API_KEY ;; *) echo "::error::provider 只能是 openai / qwen / volc(现在是 $PROVIDER)"; exit 1 ;; esac
+          if [ -z "$MODEL" ]; then case "$PROVIDER" in qwen) MODEL=qwen3-tts-flash ;; volc) MODEL=seed-audio-1.0 ;; cosy) MODEL=cosyvoice-v2 ;; *) MODEL=gpt-4o-mini-tts ;; esac; fi
+          case "$PROVIDER" in openai) SECRET=OPENAI_API_KEY ;; qwen|cosy) SECRET=DASHSCOPE_API_KEY ;; volc) SECRET=VOLC_TTS_API_KEY ;; *) echo "::error::provider 只能是 openai / qwen / volc / cosy(现在是 $PROVIDER)"; exit 1 ;; esac
           echo "provider=$PROVIDER" >> "$GITHUB_OUTPUT"
           echo "secret=$SECRET"     >> "$GITHUB_OUTPUT"
           echo "case=$CASE"   >> "$GITHUB_OUTPUT"
@@ -111,13 +111,22 @@ jobs:
           VOLC_ACCESS_TOKEN: ${{ secrets.VOLC_ACCESS_TOKEN }}
           VOLC_RESOURCE_ID: ${{ vars.VOLC_RESOURCE_ID }}
         run: |
-          args="${{ steps.req.outputs.case }} --provider ${{ steps.req.outputs.provider }} --model ${{ steps.req.outputs.model }}"
-          if [ "${{ steps.req.outputs.force }}" = "true" ]; then args="$args --force"; fi
-          if [ -n "${{ steps.req.outputs.only }}" ]; then args="$args --only ${{ steps.req.outputs.only }}"; fi
-          node server/cli.js tts $args
+          if [ "${{ steps.req.outputs.provider }}" = cosy ]; then
+            # 声音复刻(阿里云百炼 CosyVoice):cases/<case>/audio/ref_<speaker>.wav 先复刻成音色,再逐句合成
+            pip install -q dashscope
+            args="${{ steps.req.outputs.case }} --model ${{ steps.req.outputs.model }}"
+            if [ "${{ steps.req.outputs.force }}" = "true" ]; then args="$args --force"; fi
+            if [ -n "${{ steps.req.outputs.only }}" ]; then args="$args --only ${{ steps.req.outputs.only }}"; fi
+            python3 tools/cosyvoice_tts.py auto $args
+          else
+            args="${{ steps.req.outputs.case }} --provider ${{ steps.req.outputs.provider }} --model ${{ steps.req.outputs.model }}"
+            if [ "${{ steps.req.outputs.force }}" = "true" ]; then args="$args --force"; fi
+            if [ -n "${{ steps.req.outputs.only }}" ]; then args="$args --only ${{ steps.req.outputs.only }}"; fi
+            node server/cli.js tts $args
+          fi
 
       - name: 识别对齐重切(火山整段母带:SenseVoice 逐字对齐剧本,修正纯静音切分的错切)
-        if: steps.req.outputs.provider == 'volc' && steps.gen.outcome == 'success'
+        if: steps.req.outputs.provider == 'volc' && steps.gen.outcome == 'success' && steps.req.outputs.only != 'ambience'
         continue-on-error: true
         env:
           SENSEVOICE_DIR: ${{ github.workspace }}/.cache/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17

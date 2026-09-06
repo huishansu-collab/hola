@@ -200,7 +200,7 @@ export function schedule(input, durations = {}) {
         break;
       }
       case 'join': join(); rec.start = rec.end = cursor; break;
-      case 'hardware': case 'rec': case 'transcript': case 'fx': case 'log': case 'world': case 'end': default: {
+      case 'hardware': case 'rec': case 'transcript': case 'fx': case 'ambience': case 'log': case 'world': case 'end': default: {
         rec.start = rec.end = Math.max(0, baseOf(st));
         if (st.type === 'world') {
           pushEvent({ event_id: evId(), event_type: 'world_signal', time_at_ms: rec.start, signal: worldSignalOf(st), step: st.i });

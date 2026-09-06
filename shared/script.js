@@ -57,7 +57,7 @@ export const DEFAULT_VOICES = {
 export const STEP_TYPES = [
   'section', 'edge', 'say', 'tool', 'agent', 'memory', 'backend', 'world', 'card', 'pill', 'call',
   'hardware', 'overlay', 'rec', 'banner', 'transcript', 'article', 'wait', 'skip', 'system', 'join',
-  'fx', 'log', 'end',
+  'fx', 'log', 'end', 'ambience',
 ];
 
 export function isCJK(ch) { return /[㐀-鿿豈-﫿　-〿＀-￯]/.test(ch); }
