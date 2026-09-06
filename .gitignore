@@ -1,0 +1,6 @@
+node_modules/
+package.json
+package-lock.json
+scratch_*
+*.log
+.DS_Store
