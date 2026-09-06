@@ -139,3 +139,63 @@ const UPLOAD_KINDS = {
   html:  { label: 'HTML / 网页', use: '抽取正文关键信息填入文档', accept: '.html,.htm,text/html' },
   file:  { label: '文本 / 其他', use: '作为附件与证据', accept: '.txt,.md' },
 };
+
+/* ============================================================
+ * 团队手册 · 大部门规定（Intelligence Works Team Handbook）
+ * 忠实呈现手册的章节与规则，作为部门级规范只读展示。
+ * ============================================================ */
+const HANDBOOK = {
+  name: 'Intelligence Works Team Handbook',
+  owner: 'Kaysaith',
+  about: {
+    title: '1. About Intelligence Works',
+    paras: [
+      '2005 年，Apple 在 iPhone 发布现场演示的多点触控源自 FingerWorks——这家公司的手势交互专利，后来成为 iPhone 多点触控交互的重要基础。',
+      '对我们来说，Works 有一层含义：从下一代交互，走到下一代产品。团队从 Model、Tools、System Infra 做起，优先推进 Interaction 与 Product，最终目标是让 Intelligence 成为新的计算基础。',
+    ],
+    quote: '这件事不会靠我一个人写完——就像 FingerWorks，一项技术就能改变整个交互方式。这一代要真正让 Intelligence 成为核心，成为大家的基础。',
+    lineage: ['FingerWorks', 'Apple', 'iPhone', '智能手机', '移动互联网'],
+    layers: ['Model', 'Tools', 'System Infra', 'Interaction', 'Product'],
+  },
+  guidelines: [
+    { no: '2.1', title: '文档与写作', intro: '文档是对外交流的一环，读者是同事；不同类型的文档尽量维护统一的阅读习惯。', items: [
+      { no: '2.1.1', title: '中英大写规则，英文别用驼峰与空格', body: '中文与英文 / 数字之间留一个空格；产品专有名词按官方大小写书写；正式文档遵循《中文文案排版指北》。',
+        bad: 'IntelligenceWorks团队为Agent做Interaction相关工作', good: 'Intelligence Works 团队为 Agent 做 Interaction 相关工作' },
+      { no: '2.1.2', title: '慎用加重表达', body: '加粗、变色、大字号会稀释重点；到处加重等于没有重点。把"加重"留给真正重要的表达。' },
+      { no: '2.1.3', title: '列表的巧思', body: '没有先后关系时优先用无序列表；数字列表只用于真正有顺序或步骤的内容。',
+        bad: '1. 介绍 A 　2. 介绍 B 　3. 介绍 C（其实无先后）', good: '• 介绍 A 　• 介绍 B 　• 介绍 C' },
+      { no: '2.1.4', title: '数字简写用 K，不用「w」', body: '统一用 K 表示千（如 20K），不用「w / 万」混写，避免中英混排不一致。' },
+      { no: '2.1.5', title: '文档形体规则', body: '能用图、线框图、Demo 链接说清的，不要只堆文字；结构先于文字。' },
+    ] },
+    { no: '2.2', title: '会议', items: [
+      { no: '2.2.1', title: '小型线上会议（少于 5 人）默认打开摄像头', body: '开摄像头对齐 Social Presence（社会临在感），让讨论更聚焦、更有在场感。' },
+      { no: '2.2.2', title: '飞阅会', body: '把要对齐的材料先写进飞书文档，与会者先读后议，用异步阅读替代同步宣读。',
+        steps: [['开发 Brief', '由会议 Owner 写清背景、材料与要对齐的问题'], ['阅读 + 提异议', '与会者先读，逐条提出异议与疑问'], ['讨论收敛', '只讨论有异议处，快速收敛'], ['结论回写', '把结论与负责人回写文档']] },
+      { no: '2.2.3', title: '会议纪要用 Book 汇合', body: '纪要统一沉淀到 Book，便于检索与追溯，避免散落各处。' },
+      { no: '2.2.4', title: '严格控制会议时长', body: '默认 30 分钟；会前在会议 Description 写清目标与材料，超时另约。' },
+    ] },
+    { no: '2.3', title: '沟通', items: [
+      { no: '2.3.1', title: '工作场合要求实名', body: '头像、姓名统一为实名，减少 Power Distance（权力距离），让信息更直接。' },
+      { no: '2.3.2', title: '结论优先', body: '先给结论，再给理由与过程；必要时用 highlight 标出结论。',
+        bad: '（长篇铺垫后才给出结论）', good: '结论：建议发行。理由：……' },
+    ] },
+    { no: '2.4', title: '产品', items: [
+      { no: '2.4.1', title: '产品迭代流程', body: '冒烟 → Draft → PRD（与本工作台一致）：小改动直接写 PRD，中型需求从 Draft 起步，豁免须在需求登记注明。' },
+    ] },
+  ],
+};
+
+/* 我的团队工作范式（可编辑草稿，参考大部门规定来写） */
+function defaultParadigm() {
+  return {
+    team: '（我的团队）', owner: '（负责人）', updated: Date.now(),
+    mission: '一句话说清我们存在的意义与要做成的事（参考 About 的写法：从下一代交互到下一代产品）。',
+    sections: [
+      { title: '我们怎么写文档', items: ['遵循大部门《文档与写作》：中英留空格、慎用加重、列表有巧思、数字用 K', '每个需求走冒烟 / Draft / PRD 范本，结论先行、结构先于文字'] },
+      { title: '我们怎么开会', items: ['少于 5 人的线上会默认开摄像头', '材料先写飞阅会文档，先读后议', '纪要沉淀到 Book，默认 30 分钟'] },
+      { title: '我们怎么沟通', items: ['工作场合实名（头像 + 姓名）', '结论优先：先结论，后理由'] },
+      { title: '我们怎么做产品', items: ['冒烟对齐方向 → Draft 对齐结构 → PRD 对齐细节', '让否决发生在最便宜的时候'] },
+      { title: '新人上手清单', items: ['读一遍大部门规定与本范式', '跑通一个冒烟 → Draft 的示例需求'] },
+    ],
+  };
+}

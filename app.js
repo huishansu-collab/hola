@@ -13,6 +13,8 @@ const State = {
   get(id) { return this.load().reqs.find(r => r.id === id); },
   upsert(req) { const d = this.load(); const i = d.reqs.findIndex(r => r.id === req.id); req.updatedAt = Date.now(); if (i >= 0) d.reqs[i] = req; else d.reqs.unshift(req); this.save(d); },
   remove(id) { const d = this.load(); d.reqs = d.reqs.filter(r => r.id !== id); this.save(d); },
+  getParadigm() { return this.load().paradigm || null; },
+  saveParadigm(p) { const d = this.load(); d.paradigm = p; this.save(d); },
   clear() { localStorage.removeItem(STORE_KEY); },
 };
 
@@ -30,6 +32,7 @@ function copyText(t) { navigator.clipboard?.writeText(t).then(() => toast('已�
 /* editable-cell registry, rebuilt each render */
 let EC = [];
 let CUR = null; // 当前正在编辑的需求，供 ecell 提交后持久化
+let PERSIST = null; // 非需求页（如工作范式）自定义持久化
 function ecell(value, onSave, opts = {}) {
   const idx = EC.push({ onSave, multiline: opts.multiline }) - 1;
   const todo = isTodo(value);
@@ -45,7 +48,7 @@ function wireEcells(root) {
     ta.className = 'ecell-edit'; ta.value = el.classList.contains('todo') ? '' : el.textContent;
     ta.rows = rec.multiline ? 3 : 1;
     el.replaceWith(ta); ta.focus();
-    const commit = () => { rec.onSave(ta.value.trim()); if (CUR) State.upsert(CUR); render(); };
+    const commit = () => { rec.onSave(ta.value.trim()); if (PERSIST) PERSIST(); else if (CUR) State.upsert(CUR); render(); };
     ta.onblur = commit;
     ta.onkeydown = ev => { if (ev.key === 'Enter' && !ev.shiftKey && !rec.multiline) { ev.preventDefault(); ta.blur(); } if (ev.key === 'Escape') { ta.value = '\0'; render(); } };
   });
@@ -62,12 +65,14 @@ const navigate = h => location.hash = h;
 function render() {
   EC = [];
   LIST_REG = [];
+  PERSIST = null;
   const ctx = parseHash();
   const view = $('#view');
   updateNav(ctx);
   if (ctx.route === 'new') { view.innerHTML = ''; view.append(viewNew()); }
   else if (ctx.route === 'principle') view.innerHTML = viewPrinciple();
   else if (ctx.route === 'flow') view.innerHTML = viewFlow();
+  else if (ctx.route === 'handbook') { view.innerHTML = viewHandbook(); bindHandbook(); }
   else if (ctx.route === 'req') {
     const req = State.get(ctx.id); if (!req) return navigate('#/workbench');
     renderReqStage(req, ctx.stage);
@@ -110,11 +115,11 @@ function viewWorkbench() {
     return `<tr class="req-row" data-id="${r.id}">
       <td><div class="req-name">${esc(r.name)}<div class="oneliner">${esc(cc)}</div></div></td>
       <td><span class="badge badge-brand">${dir.label}</span></td>
-      <td><div class="stage-pills">${pills}</div><div class="muted" style="font-size:11.5px;margin-top:5px">${STAGES[si].label}</div></td>
+      <td><div class="stage-pills">${pills}</div><div class="muted" style="font-size:var(--fs-4);margin-top:5px">${STAGES[si].label}</div></td>
       <td>${esc(r.owner || '—')}</td>
       <td>${atn ? `<span class="badge badge-mute">📎 ${atn}</span>` : '<span class="muted">—</span>'}</td>
       <td>${dec ? `<span class="badge ${dec.badge}">${dec.label}</span>` : '<span class="muted">—</span>'}</td>
-      <td class="muted" style="font-size:12px">${fmtDate(r.updatedAt)}</td>
+      <td class="muted" style="font-size:var(--fs-4)">${fmtDate(r.updatedAt)}</td>
     </tr>`;
   }).join('');
   const body = reqs.length === 0
@@ -194,7 +199,7 @@ function fileToAttachment(file) {
 }
 function mountDropzone(host, list, onChange) {
   host.innerHTML = `<div class="dropzone" id="dz"><input type="file" id="dz-input" multiple accept="image/*,video/*,.html,.htm,.txt,.md" hidden>
-      <div class="dz-inner"><span class="dz-ico">⇪</span><div><b>拖拽或点击上传</b><div class="muted" style="font-size:12px">图片/截图 → 线框图 · 视频 → 演示证据 · HTML → 抽正文</div></div></div></div>
+      <div class="dz-inner"><span class="dz-ico">⇪</span><div><b>拖拽或点击上传</b><div class="muted" style="font-size:var(--fs-4)">图片/截图 → 线框图 · 视频 → 演示证据 · HTML → 抽正文</div></div></div></div>
     <div class="attach-list" id="dz-list"></div>`;
   const input = $('#dz-input', host), dz = $('#dz', host);
   dz.onclick = () => input.click();
@@ -234,7 +239,7 @@ function stageStepper(req, stage) {
       return `<a class="step ${cur ? 'cur' : ''} ${reached ? 'reached' : ''}" href="#/req/${req.id}/${s.key}">
         <span class="step-idx">${reached && !cur ? '✓' : s.idx}</span><span class="step-l">${s.label}<small>${s.en}</small></span></a>`;
     }).join('<span class="step-arrow">→</span>')}</div>
-    <div class="muted" style="font-size:12px">Kay：${STAGES[STAGE_INDEX[stage]].kay} ｜ 更新 ${fmtDate(req.updatedAt)}</div></div></div>`;
+    <div class="muted" style="font-size:var(--fs-4)">Kay：${STAGES[STAGE_INDEX[stage]].kay} ｜ 更新 ${fmtDate(req.updatedAt)}</div></div></div>`;
 }
 function renderReqStage(req, stage) {
   CUR = req;
@@ -253,7 +258,7 @@ function rightRail(req, stage) {
   const rd = evaluateReadiness(req, stage);
   const st = STAGES[STAGE_INDEX[stage]];
   const gate = (req.gates || {})[stage] || {};
-  const gallery = (req.attachments || []).map(a => attachGalleryItem(a)).join('') || '<div class="muted" style="font-size:12px;padding:6px 0">暂无物料</div>';
+  const gallery = (req.attachments || []).map(a => attachGalleryItem(a)).join('') || '<div class="muted" style="font-size:var(--fs-4);padding:6px 0">暂无物料</div>';
   const decs = Object.entries(DECISIONS).map(([k, v]) => `<button class="gate-dec ${gate.decision === k ? 'sel' : ''}" data-gate="${k}">${v.label}</button>`).join('');
   return `<div class="rail">
     <div class="panel panel-pad">
@@ -267,7 +272,7 @@ function rightRail(req, stage) {
       <p class="section-hint">图片→线框图/截图 · 视频→演示 · HTML→抽正文</p>
       <div id="rail-drop"></div>
       <div class="spacer-sm"></div>
-      <div class="section-title" style="font-size:13px">已挂载 <span class="muted">(${(req.attachments || []).length})</span></div>
+      <div class="section-title" style="font-size:var(--fs-3)">已挂载 <span class="muted">(${(req.attachments || []).length})</span></div>
       <div class="gallery">${gallery}</div>
     </div>
     <div class="panel panel-pad">
@@ -306,7 +311,7 @@ function attachPicker(req, currentId, onPick) {
   const imgs = (req.attachments || []).filter(a => a.kind === 'image' || a.kind === 'video');
   const cur = imgs.find(a => a.id === currentId);
   if (cur) return `<div class="wire-cell" data-pick="1">${cur.kind === 'image' ? `<img src="${cur.dataUrl}">` : `<video src="${cur.dataUrl}" muted></video>`}<span class="wire-x" data-clear="1">✕</span></div>`;
-  if (!imgs.length) return `<span class="muted" style="font-size:12px">先在右侧上传图片</span>`;
+  if (!imgs.length) return `<span class="muted" style="font-size:var(--fs-4)">先在右侧上传图片</span>`;
   return `<select class="wire-select"><option value="">选择物料…</option>${imgs.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join('')}</select>`;
 }
 
@@ -314,7 +319,7 @@ function attachPicker(req, currentId, onPick) {
 function renderSmoke(req, root) {
   const s = req.smoke;
   root.innerHTML = `<div class="doc-split"><div class="panel panel-pad doc">
-    <div class="doc-title">【冒烟】文档 <span class="muted" style="font-weight:400;font-size:12px">chill 对齐 · 容忍推翻</span></div>
+    <div class="doc-title">【冒烟】文档 <span class="muted" style="font-weight:400;font-size:var(--fs-4)">chill 对齐 · 容忍推翻</span></div>
     <div class="hint-box">范本要求：读完「一句话结论」就该能开始反对。冒烟只要方向与复杂度量级共识，不排期。</div>
 
     <div class="doc-sec"><div class="doc-h">一句话结论</div><div class="doc-hint">${esc(SMOKE_TEMPLATE.conclusion.hint)}</div>
@@ -351,7 +356,7 @@ function renderSmoke(req, root) {
 }
 function smokeWires(req) {
   const w = (req.attachments || []).filter(a => a.kind === 'image' || a.kind === 'video');
-  if (!w.length) return `<div class="col-label" style="margin-top:12px">线框图 / 演示</div><div class="muted" style="font-size:12px">右侧上传图片或视频，自动作为线框图/演示证据</div>`;
+  if (!w.length) return `<div class="col-label" style="margin-top:12px">线框图 / 演示</div><div class="muted" style="font-size:var(--fs-4)">右侧上传图片或视频，自动作为线框图/演示证据</div>`;
   return `<div class="col-label" style="margin-top:12px">线框图 / 演示 <span class="muted">(${w.length})</span></div>
     <div class="wire-row">${w.map(a => a.kind === 'image' ? `<img class="wire-thumb" src="${a.dataUrl}">` : `<video class="wire-thumb" src="${a.dataUrl}" muted controls></video>`).join('')}</div>`;
 }
@@ -360,7 +365,7 @@ function smokeWires(req) {
 function renderDraft(req, root) {
   const d = req.draft;
   root.innerHTML = `<div class="doc-split"><div class="panel panel-pad doc">
-    <div class="doc-title">【Draft】文档 <span class="muted" style="font-weight:400;font-size:12px">收敛 · 只聚焦关键需求</span></div>
+    <div class="doc-title">【Draft】文档 <span class="muted" style="font-weight:400;font-size:var(--fs-4)">收敛 · 只聚焦关键需求</span></div>
 
     <div class="doc-sec"><div class="doc-h">1. 基本信息</div>
       <table class="mini-table kv-table"><tbody>${DRAFT_TEMPLATE.basicFields.map(f =>
@@ -420,14 +425,14 @@ function renderPRD(req, root) {
   const p = req.prd;
   const imgs = (req.attachments || []).filter(a => a.kind === 'image');
   root.innerHTML = `<div class="doc-split"><div class="panel panel-pad doc">
-    <div class="doc-title">【PRD】文档 <span class="muted" style="font-weight:400;font-size:12px">严肃 · 定稿即承诺</span></div>
+    <div class="doc-title">【PRD】文档 <span class="muted" style="font-weight:400;font-size:var(--fs-4)">严肃 · 定稿即承诺</span></div>
     <div class="hint-box">范本要求：细节到可落地——主视觉、文案、埋点、名词表。文档冻结后，变更走 change log。</div>
 
     <div class="doc-sec"><div class="doc-h">主流程与状态</div><div class="doc-hint">${esc(PRD_TEMPLATE.mainFlow.hint)}</div>
       <div class="doc-body">${ecell(p.mainFlow, v => p.mainFlow = v || TODO, { multiline: true })}</div></div>
 
     <div class="doc-sec"><div class="doc-h">主视觉 / 视觉稿</div>
-      ${imgs.length ? `<div class="wire-row">${imgs.map(a => `<img class="wire-thumb lg" src="${a.dataUrl}">`).join('')}</div>` : `<div class="muted" style="font-size:12px">右侧上传高保真图作为定稿视觉</div>`}</div>
+      ${imgs.length ? `<div class="wire-row">${imgs.map(a => `<img class="wire-thumb lg" src="${a.dataUrl}">`).join('')}</div>` : `<div class="muted" style="font-size:var(--fs-4)">右侧上传高保真图作为定稿视觉</div>`}</div>
 
     <div class="doc-sec"><div class="doc-h">文案表</div>
       <table class="mini-table"><thead><tr><th>位置</th><th>文案</th><th>备注</th></tr></thead><tbody>
@@ -505,20 +510,128 @@ function viewFlow() {
       <div class="flow-cards">${cards}</div>
       <div class="spacer"></div>
       <div class="grid cols-2">
-        <div class="mini-panel"><div class="section-title" style="font-size:14px">Kay · 递减介入曲线</div>
+        <div class="mini-panel"><div class="section-title" style="font-size:var(--fs-3)">Kay · 递减介入曲线</div>
           <ul class="kay-curve">${STAGES.map(s => `<li><span class="kay-dot ${s.key === 'prd' ? 'hollow' : ''}"></span><b>${s.label}</b><span>${esc(s.kay)}</span></li>`).join('')}</ul>
-          <p class="muted" style="font-size:12px">推翻 Draft 结论的变更须重新上升 · 三个团队两周</p></div>
-        <div class="mini-panel"><div class="section-title" style="font-size:14px">推翻成本 · Cost of reversal</div>
+          <p class="muted" style="font-size:var(--fs-4)">推翻 Draft 结论的变更须重新上升 · 三个团队两周</p></div>
+        <div class="mini-panel"><div class="section-title" style="font-size:var(--fs-3)">推翻成本 · Cost of reversal</div>
           <div class="cost-bar"><span class="cost-seg s1">冒烟<br><small>一页纸</small></span><span class="cost-seg s2">Draft<br><small>结构返工</small></span><span class="cost-seg s3">PRD<br><small>定稿即承诺</small></span></div>
-          <p class="muted" style="font-size:12px;margin-top:10px">越往后推翻越贵，所以把判断尽量前置到冒烟。</p></div>
+          <p class="muted" style="font-size:var(--fs-4);margin-top:10px">越往后推翻越贵，所以把判断尽量前置到冒烟。</p></div>
       </div>
     </div>`;
+}
+
+/* ============================================================ Team Handbook（大部门规定 + 我的团队工作范式） */
+let hbTab = 'dept';
+let PAR = null; // 当前工作范式对象，handbookMine 与 bindHandbook 共享同一实例
+function viewHandbook() {
+  const tabs = `<div class="hb-tabs">
+    <button class="hb-tab ${hbTab === 'dept' ? 'sel' : ''}" data-tab="dept">大部门规定</button>
+    <button class="hb-tab ${hbTab === 'mine' ? 'sel' : ''}" data-tab="mine">我的团队工作范式</button></div>`;
+  return `<div class="page-head"><h1 class="page-title">团队手册</h1>
+      <p class="page-sub">大部门规定是所有团队的共同规范；在此基础上，用「我的团队工作范式」写清自己团队怎么落地。</p></div>
+    ${tabs}${hbTab === 'dept' ? handbookDept() : handbookMine()}`;
+}
+
+function handbookDept() {
+  const a = HANDBOOK.about;
+  const about = `<div class="hb-about">
+    <div class="hb-h1">${esc(a.title)}</div>
+    ${a.paras.map(p => `<p class="hb-p">${esc(p)}</p>`).join('')}
+    <blockquote class="hb-quote">${esc(a.quote)}</blockquote>
+    <div class="hb-lineage">${a.lineage.map((x, i) => `<span class="hb-node">${esc(x)}</span>${i < a.lineage.length - 1 ? '<span class="hb-arrow">→</span>' : ''}`).join('')}</div>
+    <div class="hb-layers">${a.layers.map(x => `<span class="hb-layer">${esc(x)}</span>`).join('')}</div>
+  </div>`;
+  const sections = HANDBOOK.guidelines.map(g => `<div class="hb-sec">
+    <div class="hb-h2"><span class="hb-no">${g.no}</span>${esc(g.title)}</div>
+    ${g.intro ? `<p class="hb-intro">${esc(g.intro)}</p>` : ''}
+    ${g.items.map(it => `<div class="hb-item">
+      <div class="hb-h3"><span class="hb-no sm">${it.no}</span>${esc(it.title)}</div>
+      <p class="hb-body">${esc(it.body)}</p>
+      ${it.bad || it.good ? `<div class="hb-cases">
+        ${it.bad ? `<div class="hb-case bad"><span class="case-tag">✕ Bad</span><code>${esc(it.bad)}</code></div>` : ''}
+        ${it.good ? `<div class="hb-case good"><span class="case-tag">✓ Good</span><code>${esc(it.good)}</code></div>` : ''}
+      </div>` : ''}
+      ${it.steps ? `<table class="mini-table hb-steps"><thead><tr><th style="width:120px">步骤</th><th>做什么</th></tr></thead>
+        <tbody>${it.steps.map(s => `<tr><td><b>${esc(s[0])}</b></td><td>${esc(s[1])}</td></tr>`).join('')}</tbody></table>` : ''}
+    </div>`).join('')}
+  </div>`).join('');
+  return `<div class="panel panel-pad hb-doc">
+    <div class="hb-meta">${esc(HANDBOOK.name)} · <span class="muted">${esc(HANDBOOK.owner)}</span> <span class="badge badge-mute" style="margin-left:8px">部门级规范 · 只读</span></div>
+    ${about}
+    <div class="hb-h1" style="margin-top:26px">2. Team Guidelines</div>
+    ${sections}
+  </div>`;
+}
+
+function handbookMine() {
+  PAR = State.getParadigm() || defaultParadigm();
+  const par = PAR;
+  const secs = par.sections.map((s, si) => `<div class="doc-sec">
+    <div class="doc-h">${ecell(s.title, v => s.title = v || '（章节）')}</div>
+    ${paradigmList(s.items, si)}
+  </div>`).join('');
+  return `<div class="doc-split"><div class="panel panel-pad doc hb-doc">
+    <div class="flex-between"><div class="doc-title" style="border:none;margin:0;padding:0">我的团队工作范式</div>
+      ${State.getParadigm() ? '' : '<span class="badge badge-warn">未保存 · 编辑即保存</span>'}</div>
+    <div class="hb-intro" style="margin:6px 0 16px">参考左侧「大部门规定」来写：先立使命，再写「怎么写文档 / 怎么开会 / 怎么沟通 / 怎么做产品」。点击任意文字即可编辑。</div>
+    <table class="mini-table kv-table"><tbody>
+      <tr><th>团队</th><td>${ecell(par.team, v => par.team = v || '（我的团队）')}</td></tr>
+      <tr><th>负责人</th><td>${ecell(par.owner, v => par.owner = v || '（负责人）')}</td></tr>
+    </tbody></table>
+    <div class="doc-sec"><div class="doc-h">使命 · 一句话</div><div class="doc-hint">参考 About 的写法：从下一代交互到下一代产品。</div>
+      <div class="doc-body big">${ecell(par.mission, v => par.mission = v || TODO, { multiline: true })}</div></div>
+    ${secs}
+    <button class="btn btn-sm" id="par-add-sec">+ 增加章节</button>
+  </div>
+  <div class="rail"><div class="panel panel-pad">
+    <div class="section-title">导出</div><p class="section-hint">导出为 Markdown，可粘进飞书 / Book。</p>
+    <div class="btn-row"><button class="btn btn-sm" id="par-copy">复制 Markdown</button><button class="btn btn-sm" id="par-reset">重置为范例</button></div>
+  </div>
+  <div class="panel panel-pad"><div class="section-title">写作规范速查</div>
+    <ul class="checklist">
+      <li><span class="check-ico ok">✓</span><span class="check-txt"><span class="t">结论优先</span><span class="d">先结论，后理由</span></span></li>
+      <li><span class="check-ico ok">✓</span><span class="check-txt"><span class="t">慎用加重</span><span class="d">到处加重等于没重点</span></span></li>
+      <li><span class="check-ico ok">✓</span><span class="check-txt"><span class="t">中英留空格</span><span class="d">英文别用驼峰</span></span></li>
+      <li><span class="check-ico ok">✓</span><span class="check-txt"><span class="t">列表巧思</span><span class="d">无先后用无序列表</span></span></li>
+      <li><span class="check-ico ok">✓</span><span class="check-txt"><span class="t">数字用 K</span><span class="d">不用 w / 万混写</span></span></li>
+    </ul></div></div></div>`;
+}
+
+function paradigmList(items, si) {
+  items = items && items.length ? items : ['（写一条）'];
+  const idx = LIST_REG.push({ arr: items }) - 1;
+  return `<div class="list-ed" data-plist="${idx}" data-si="${si}">
+    ${items.map((v, i) => `<div class="list-item"><span class="li-dot">•</span>${ecell(v, nv => items[i] = nv || '（写一条）')}<button class="li-del" data-li="${i}">✕</button></div>`).join('')}
+    <button class="li-add">+ 加一条</button></div>`;
+}
+
+function bindHandbook() {
+  $$('.hb-tab').forEach(b => b.onclick = () => { hbTab = b.dataset.tab; render(); });
+  if (hbTab !== 'mine') return;
+  const par = PAR || (PAR = State.getParadigm() || defaultParadigm());
+  PERSIST = () => State.saveParadigm(par);
+  const persist = () => { State.saveParadigm(par); render(); };
+  $$('.list-ed[data-plist]').forEach(box => {
+    const si = +box.dataset.si;
+    $('.li-add', box).onclick = () => { par.sections[si].items.push('（写一条）'); persist(); };
+    $$('.li-del', box).forEach(b => b.onclick = () => { par.sections[si].items.splice(+b.dataset.li, 1); if (!par.sections[si].items.length) par.sections[si].items.push('（写一条）'); persist(); });
+  });
+  const addSec = $('#par-add-sec'); if (addSec) addSec.onclick = () => { par.sections.push({ title: '（新章节）', items: ['（写一条）'] }); persist(); };
+  const cp = $('#par-copy'); if (cp) cp.onclick = () => copyText(exportParadigm(par));
+  const rs = $('#par-reset'); if (rs) rs.onclick = () => { if (confirm('重置为范例？当前编辑会丢失。')) { State.saveParadigm(defaultParadigm()); render(); toast('已重置'); } };
+}
+
+function exportParadigm(par) {
+  const out = [`# ${par.team} · 团队工作范式`, `> 负责人：${par.owner}`, '', '## 使命', par.mission, ''];
+  par.sections.forEach(s => { out.push(`## ${s.title}`); s.items.forEach(i => out.push(`- ${i}`)); out.push(''); });
+  out.push('---', '_参考大部门规定（Intelligence Works Team Handbook）书写 · 由 Principle 工作台导出。_');
+  return out.join('\n');
 }
 
 /* ============================================================ Principle page */
 function viewPrinciple() {
   const list = PRINCIPLES.map(([t, d], i) => `<li><span class="p-num">${i + 1}</span><div class="p-body"><b>${esc(t)}</b><span>${esc(d)}</span></div></li>`).join('');
-  const tmpl = (title, items) => `<div class="mini-panel"><div class="section-title" style="font-size:14px">${title}</div><ol class="tmpl-list">${items.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>`;
+  const tmpl = (title, items) => `<div class="mini-panel"><div class="section-title" style="font-size:var(--fs-3)">${title}</div><ol class="tmpl-list">${items.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>`;
   return `<div class="page-head"><h1 class="page-title">总原则 · Principle</h1>
       <p class="page-sub">把一号位的判断显性化，让小同学沿同一套路径产出：为什么做、为谁做、做到什么程度、哪些暂时不做、需要谁一起完成。</p></div>
     <div class="split">
