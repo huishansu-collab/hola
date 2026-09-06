@@ -179,3 +179,28 @@ test('generateCaseAudio(volc):整段生成 → 切段 → 每句 wav;段数不�
   assert.equal(r2.skipped.length, 5); assert.equal(calls.length, 3);
   await fs.promises.rm(dir, { recursive: true, force: true });
 });
+
+test('generateCaseAudio(volc):单次太长被拒(500 InvalidPayload)→ 按估算时长切段,不重试', async () => {
+  const id = 'zz-volc-long';
+  const dir = path.join(ROOT, 'cases', id);
+  await fs.promises.rm(dir, { recursive: true, force: true });
+  await fs.promises.mkdir(path.join(dir, 'audio'), { recursive: true });
+  const long = '这是一句比较长的台词，用来把估算的时长撑起来，每一句都差不多有这么长这么长。';
+  const script = { case_id: 'zz', name: 't', speakers: { assistant: { name: 'Step' } }, timeline: Array.from({ length: 12 }, (_, i) => ({ type: 'say', speaker: 'assistant', text: `第${i + 1}句，${long}` })) };
+  await fs.promises.writeFile(path.join(dir, 'script.json'), JSON.stringify(script));
+  const calls = [];
+  const fetchImpl = async (url, init) => {
+    const body = JSON.parse(init.body); const n = (body.text_prompt.match(/“/g) || []).length; calls.push(n);
+    if (n > 4) return new Response(JSON.stringify({ code: 55001309, message: 'downstream error: code=40000020, text=InvalidPayload:DurationOutOfRange' }), { status: 500 });
+    return new Response(JSON.stringify({ audio: burstsWav(n).buf.toString('base64') }), { status: 200 });
+  };
+  process.env.VOLC_TTS_API_KEY = 'k'; process.env.VOLC_MAX_SECONDS = '1000';
+  const r = await generateCaseAudio(id, script, { provider: 'volc', fetchImpl });
+  delete process.env.VOLC_TTS_API_KEY; delete process.env.VOLC_MAX_SECONDS;
+  assert.equal(r.generated.length, 12); assert.equal(r.failed.length, 0);
+  assert.ok(calls[0] === 12 && calls.filter(n => n > 4).length <= 4, `被拒的调用应很少: ${calls.join(',')}`);
+  assert.ok(calls.filter(n => n <= 4).length >= 3, `最后按小段生成: ${calls.join(',')}`);
+  const masters = (await fs.promises.readdir(path.join(dir, 'audio'))).filter(f => f.startsWith('master_'));
+  assert.ok(masters.length >= 3, '每段母带都保留');
+  await fs.promises.rm(dir, { recursive: true, force: true });
+});

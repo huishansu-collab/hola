@@ -112,6 +112,21 @@ export function buildVolcPrompt({ persona, lines }) {
   const head = `${persona}${volcSubject(persona)}依次说了下面${n === 2 ? '两' : n <= 10 ? NUM_ZH[n] : n}句话，每句之间停顿两秒以上，只念引号里的内容：`;
   return head + '\n' + lines.map(l => (l.mood ? `${l.mood}：` : '') + `“${String(l.text).trim()}”`).join('\n');
 }
+/* 估算整段音频时长(秒):中文约 4.1 字/秒(按参考包母带反推)+ 句间停顿 2.2s */
+export function estimateVolcSeconds(lines) {
+  const chars = lines.reduce((a, l) => a + String(l.text || '').replace(/[\s，。！？、：；“”…—]/g, '').length, 0);
+  return chars / 4.1 + Math.max(0, lines.length - 1) * 2.2 + 1.5;
+}
+/* 按估算时长把台词切成连续的几段(每段 ≤ maxSec) */
+export function chunkVolcLines(items, maxSec) {
+  const out = []; let cur = [];
+  for (const it of items) {
+    if (cur.length && estimateVolcSeconds([...cur, it]) > maxSec) { out.push(cur); cur = []; }
+    cur.push(it);
+  }
+  if (cur.length) out.push(cur);
+  return out;
+}
 export function buildVolcRequest(prompt, { model = 'seed-audio-1.0', sampleRate = 48000 } = {}) {
   return { model, text_prompt: prompt, audio_config: { format: 'mp3', sample_rate: sampleRate, pitch_rate: 0, speech_rate: 0, loudness_rate: 0 }, watermark: {} };
 }
@@ -220,7 +235,12 @@ export async function volcCreate(prompt, { apiKey, appId, accessToken, resourceI
         body: JSON.stringify(buildVolcRequest(prompt, { model })),
       });
       const txt = await r.text().catch(() => '');
-      if (!r.ok) { const err = new Error(`火山 TTS ${r.status}: ${txt.slice(0, 300)}`); err.status = r.status; throw err; }
+      if (!r.ok) {
+        const err = new Error(`火山 TTS ${r.status}: ${txt.slice(0, 300)}`); err.status = r.status;
+        /* 网关用 500 包着下游的参数错误(InvalidPayload:DurationOutOfRange = 一次要生成的音频太长):不重试,交给上层拆段 */
+        if (/InvalidPayload|OutOfRange|TextTooLong|too long/i.test(txt)) { err.status = 422; err.tooLong = /Duration|TooLong|too long/i.test(txt); }
+        throw err;
+      }
       let j; try { j = JSON.parse(txt); } catch { throw new Error('火山 TTS 返回不是 JSON: ' + txt.slice(0, 200)); }
       if (!j.audio) { const err = new Error(`火山 TTS 没有返回音频: ${txt.slice(0, 300)}`); err.status = 502; throw err; }
       return b64ToBuffer(j.audio);

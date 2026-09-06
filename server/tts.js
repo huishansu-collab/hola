@@ -11,7 +11,7 @@ import path from 'node:path';
 import { normalizeScript } from '../shared/script.js';
 import os from 'node:os';
 import { spawnSync } from 'node:child_process';
-import { ttsPlan, synthesizeSpeech, volcCreate, volcPersona, buildVolcPrompt, TTS_VOICES, DEFAULT_TTS_MODEL, OPENAI_BASE_URL, PROVIDERS, DEFAULT_PROVIDER } from '../shared/tts.js';
+import { ttsPlan, synthesizeSpeech, volcCreate, volcPersona, buildVolcPrompt, estimateVolcSeconds, chunkVolcLines, TTS_VOICES, DEFAULT_TTS_MODEL, OPENAI_BASE_URL, PROVIDERS, DEFAULT_PROVIDER } from '../shared/tts.js';
 import { audioDir, loadManifest, saveManifest } from './cases.js';
 import { parseWav, writeWav, toMono, resampleMono, silenceRegions, slicePcm } from './audio.js';
 
@@ -168,7 +168,7 @@ export async function generateCaseAudioBatch(id, s, cfg, { force = false, only =
     const persona = volcPersona(s, speaker);
     onProgress({ phase: 'start', clip: speaker, id: speaker, index, total: plan.length, status: 'generating', message: `${items[0].speaker_name} · 整段生成 ${items.length} 句(30~120s)` });
     try {
-      await synthesizeGroup(id, dir, manifest, cfg, persona, items, { onProgress, signal, fetchImpl, result, depth: 0 });
+      await synthesizeGroup(id, dir, manifest, cfg, persona, items, { onProgress, signal, fetchImpl, result, depth: 0, maxSec: +(process.env.VOLC_MAX_SECONDS || 100) });
     } catch (e) {
       for (const it of items) result.failed.push({ id: it.id, error: e.message });
       onProgress({ phase: 'error', clip: speaker, id: speaker, index, total: plan.length, status: 'error', message: e.message });
@@ -179,8 +179,17 @@ export async function generateCaseAudioBatch(id, s, cfg, { force = false, only =
   return result;
 }
 
+/* seed-audio 一次能生成的音频有时长上限(参考包最长一次 55s 通过;超过报 DurationOutOfRange)。
+ * 先按估算时长切成 ≤ maxSec 的连续几段(段数越少音色越连贯);被拒再把上限减半重切 */
 async function synthesizeGroup(id, dir, manifest, cfg, persona, items, ctx) {
   const n = items.length;
+  const est = estimateVolcSeconds(items);
+  if (n > 1 && est > ctx.maxSec) {
+    const chunks = chunkVolcLines(items, ctx.maxSec);
+    ctx.onProgress({ phase: 'start', clip: items[0].speaker, id: items[0].speaker, index: 0, total: 0, status: 'generating', message: `${items[0].speaker_name} 估算 ${est.toFixed(0)}s,超过单次上限 ${ctx.maxSec}s,分 ${chunks.length} 段整段生成` });
+    for (const c of chunks) await synthesizeGroup(id, dir, manifest, cfg, persona, c, { ...ctx, depth: ctx.depth + 1 });
+    return;
+  }
   const lines = items.map(it => ({ text: it.text, mood: it.mood }));
   const prompt = buildVolcPrompt({ persona, lines });
   let last = null;
@@ -189,12 +198,11 @@ async function synthesizeGroup(id, dir, manifest, cfg, persona, items, ctx) {
     try {
       audio = Buffer.from(await volcCreate(prompt, { apiKey: cfg.apiKey === 'app-token' ? '' : cfg.apiKey, appId: cfg.appId, accessToken: cfg.accessToken, resourceId: cfg.resourceId, baseUrl: cfg.baseUrl, model: cfg.model, signal: ctx.signal, ...(ctx.fetchImpl ? { fetchImpl: ctx.fetchImpl } : {}) }));
     } catch (e) {
-      /* 文本太长之类的 4xx:对半拆开各自整段生成(音色会重抽一次,但至少能出) */
-      if (e.status && e.status < 500 && e.status !== 429 && e.status !== 401 && e.status !== 403 && n >= 4 && ctx.depth < 3) {
-        ctx.onProgress({ phase: 'start', clip: items[0].speaker, id: items[0].speaker, index: 0, total: 0, status: 'generating', message: `火山拒绝了整段(${e.status}),拆成两段各自生成` });
-        const mid = Math.ceil(n / 2);
-        await synthesizeGroup(id, dir, manifest, cfg, persona, items.slice(0, mid), { ...ctx, depth: ctx.depth + 1 });
-        await synthesizeGroup(id, dir, manifest, cfg, persona, items.slice(mid), { ...ctx, depth: ctx.depth + 1 });
+      /* 太长 / 参数被拒:把单次上限降到这段估算的一半,重新切开各自生成(音色会重抽,但至少能出) */
+      if (e.status && e.status < 500 && e.status !== 429 && e.status !== 401 && e.status !== 403 && n >= 2 && ctx.depth < 6) {
+        const maxSec = Math.max(20, Math.min(ctx.maxSec, est) * 0.5);
+        ctx.onProgress({ phase: 'start', clip: items[0].speaker, id: items[0].speaker, index: 0, total: 0, status: 'generating', message: `火山拒绝了这段(${e.message.slice(0, 80)}),单次上限降到 ${maxSec.toFixed(0)}s 重切` });
+        for (const c of chunkVolcLines(items, maxSec)) await synthesizeGroup(id, dir, manifest, cfg, persona, c, { ...ctx, depth: ctx.depth + 1, maxSec });
         return;
       }
       throw e;
@@ -207,6 +215,7 @@ async function synthesizeGroup(id, dir, manifest, cfg, persona, items, ctx) {
       continue;
     }
     const masterName = `master_${items[0].speaker}${ctx.depth ? '_' + items[0].id : ''}.mp3`;
+    if (!ctx.depth) for (const f of await fs.readdir(dir)) if (f.startsWith(`master_${items[0].speaker}_`)) await fs.rm(path.join(dir, f), { force: true });
     await fs.writeFile(path.join(dir, masterName), audio);
     ctx.result.masters.push(masterName);
     for (let i = 0; i < n; i++) {
