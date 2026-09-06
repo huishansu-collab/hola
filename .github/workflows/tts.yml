@@ -148,6 +148,7 @@ jobs:
         run: |
           for f in cases/${{ steps.req.outputs.case }}/audio/*.wav; do
             [ -e "$f" ] || continue
+            case "$(basename "$f")" in ref_*|master_*) continue ;; esac     # 参考样本 / 母带不做 mp3
             [ -e "${f%.wav}.mp3" ] && continue          # 没重做的句子已有 mp3,跳过
             ffmpeg -y -loglevel error -i "$f" -codec:a libmp3lame -b:a 64k "${f%.wav}.mp3"
           done

@@ -35,22 +35,80 @@ def load_voices(case_id):
 def save_voices(case_id, v): voices_path(case_id).write_text(json.dumps(v, ensure_ascii=False, indent=2) + '\n', 'utf-8')
 
 
-def enroll(case_id, speaker, url, model, prefix):
-    dashscope = need_key()
+API_BASE = 'https://dashscope.aliyuncs.com/api/v1'
+
+
+def enroll_once(url, model, prefix, extra_headers=None):
+    """调一次复刻接口;返回 voice_id,失败抛异常(带 DashScope 的错误码)"""
+    import urllib.request, urllib.error
+    body = json.dumps({'model': 'voice-enrollment', 'input': {'action': 'create', 'target_model': model, 'prefix': prefix, 'url': url}}).encode()
+    headers = {'Authorization': f'Bearer {os.environ["DASHSCOPE_API_KEY"]}', 'Content-Type': 'application/json', **(extra_headers or {})}
+    req = urllib.request.Request(f'{API_BASE}/services/audio/tts/customization', data=body, method='POST', headers=headers)
     try:
-        from dashscope.audio.tts_v2 import VoiceEnrollmentService
-        svc = VoiceEnrollmentService()
-        voice_id = svc.create_voice(target_model=model, prefix=prefix, url=url)
-        rid = getattr(svc, 'get_last_request_id', lambda: '')()
-    except ImportError:
-        import urllib.request
-        body = json.dumps({'model': 'voice-enrollment', 'input': {'action': 'create', 'target_model': model, 'prefix': prefix, 'url': url}}).encode()
-        req = urllib.request.Request('https://dashscope.aliyuncs.com/api/v1/services/audio/tts/customization', data=body, method='POST',
-                                     headers={'Authorization': f'Bearer {os.environ["DASHSCOPE_API_KEY"]}', 'Content-Type': 'application/json'})
-        with urllib.request.urlopen(req, timeout=120) as r: j = json.loads(r.read())
-        voice_id = j['output']['voice_id']; rid = j.get('request_id', '')
+        with urllib.request.urlopen(req, timeout=180) as r: j = json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        raise RuntimeError(f'{e.code} {e.read().decode("utf-8", "replace")[:300]}')
+    if 'output' not in j or 'voice_id' not in j['output']: raise RuntimeError(json.dumps(j, ensure_ascii=False)[:300])
+    return j['output']['voice_id'], j.get('request_id', '')
+
+
+def oss_upload(local_path, model):
+    """DashScope 临时文件上传(48 小时有效):getPolicy → 表单直传 OSS → 返回 oss:// 链接"""
+    import urllib.request, uuid, mimetypes
+    req = urllib.request.Request(f'{API_BASE}/uploads?action=getPolicy&model={model}', headers={'Authorization': f'Bearer {os.environ["DASHSCOPE_API_KEY"]}'})
+    with urllib.request.urlopen(req, timeout=60) as r: d = json.loads(r.read())['data']
+    key = f"{d['upload_dir']}/{uuid.uuid4().hex}_{Path(local_path).name}"
+    boundary = uuid.uuid4().hex
+    fields = {'OSSAccessKeyId': d['oss_access_key_id'], 'Signature': d['signature'], 'policy': d['policy'], 'x-oss-object-acl': d['x_oss_object_acl'],
+              'x-oss-forbid-overwrite': d['x_oss_forbid_overwrite'], 'key': key, 'success_action_status': '200'}
+    parts = []
+    for k, v in fields.items(): parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode())
+    ctype = mimetypes.guess_type(str(local_path))[0] or 'application/octet-stream'
+    parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="{Path(local_path).name}"\r\nContent-Type: {ctype}\r\n\r\n'.encode() + Path(local_path).read_bytes() + b'\r\n')
+    parts.append(f'--{boundary}--\r\n'.encode())
+    body = b''.join(parts)
+    up = urllib.request.Request(d['upload_host'], data=body, method='POST', headers={'Content-Type': f'multipart/form-data; boundary={boundary}'})
+    with urllib.request.urlopen(up, timeout=180) as r: r.read()
+    return f'oss://{key}'
+
+
+def enroll(case_id, speaker, url, model, prefix, local_path=None):
+    """复刻音色。DashScope 得能下载到样本:依次试 传入的 url、jsDelivr(GitHub 公开仓库的 CDN)、DashScope 临时 OSS 上传、raw.githubusercontent"""
+    need_key()
+    cands = []
+    if url: cands.append((url, None))
+    repo, sha = os.environ.get('GITHUB_REPOSITORY'), os.environ.get('GITHUB_SHA')
+    rel = f'cases/{case_id}/audio/{Path(local_path).name}' if local_path else None
+    if repo and sha and rel:
+        cands.append((f'https://cdn.jsdelivr.net/gh/{repo}@{sha}/{rel}', None))
+    if local_path and Path(local_path).exists():
+        cands.append(('__oss__', None))
+    if repo and rel:
+        cands.append((f'https://raw.githubusercontent.com/{repo}/{os.environ.get("GITHUB_REF_NAME", "main")}/{rel}', None))
+    seen = set(); last = None
+    for cand, _ in cands:
+        if cand in seen: continue
+        seen.add(cand)
+        try:
+            if cand == '__oss__':
+                for m in (model, 'voice-enrollment'):
+                    try: oss = oss_upload(local_path, m); break
+                    except Exception as e: last = e; oss = None
+                if not oss: raise last
+                print(f'  临时 OSS:{oss}', file=sys.stderr)
+                voice_id, rid = enroll_once(oss, model, prefix, {'X-DashScope-OssResourceResolve': 'enable'})
+                used = oss
+            else:
+                print(f'  试 {cand}', file=sys.stderr)
+                voice_id, rid = enroll_once(cand, model, prefix)
+                used = cand
+            break
+        except Exception as e:
+            last = e; print(f'  失败:{str(e)[:200]}', file=sys.stderr)
+    else:
+        raise SystemExit(f'复刻失败:{speaker} — {last}')
     voices = load_voices(case_id)
-    voices[speaker] = {'voice_id': voice_id, 'model': model, 'sample_url': url, 'created_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'request_id': rid}
+    voices[speaker] = {'voice_id': voice_id, 'model': model, 'sample_url': used, 'created_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'request_id': rid}
     save_voices(case_id, voices)
     print(f'复刻完成:{speaker} → {voice_id}', file=sys.stderr)
     return voice_id
@@ -114,7 +172,7 @@ def main():
     a = sub.add_parser('auto', help='CI 用:有 ref_<speaker>.wav 而没音色的先复刻,再合成'); a.add_argument('case_id'); a.add_argument('--only', default=''); a.add_argument('--force', action='store_true'); a.add_argument('--model', default=DEFAULT_MODEL); a.add_argument('--rate', type=float, default=1.0); a.add_argument('--pitch', type=float, default=1.0); a.add_argument('--url-base', default=None, help='样本的公网地址前缀,默认按 GITHUB_REPOSITORY / GITHUB_REF_NAME 拼 raw.githubusercontent.com')
     args = ap.parse_args()
     if args.cmd == 'enroll':
-        enroll(args.case_id, args.speaker, args.url, args.model, args.prefix or ''.join(c for c in args.speaker if c.isalnum())[:10] or 'voice')
+        enroll(args.case_id, args.speaker, args.url, args.model, args.prefix or ''.join(c for c in args.speaker if c.isalnum())[:10] or 'voice', local_path=ROOT / 'cases' / args.case_id / 'audio' / f'ref_{args.speaker}.wav')
     elif args.cmd == 'synth':
         synth(args.case_id, args.only, args.force, args.model, args.rate, args.pitch)
     else:
@@ -124,7 +182,7 @@ def main():
         for f in sorted(audio_dir.glob('ref_*.*')):
             sp = f.stem[4:]
             if sp in voices or f.suffix.lower() not in ('.wav', '.mp3', '.m4a'): continue
-            enroll(args.case_id, sp, f'{base}/{f.name}', args.model, ''.join(c for c in sp if c.isalnum())[:10] or 'voice')
+            enroll(args.case_id, sp, f'{base}/{f.name}' if args.url_base else None, args.model, ''.join(c for c in sp if c.isalnum())[:10] or 'voice', local_path=f)
         synth(args.case_id, args.only, args.force, args.model, args.rate, args.pitch)
 
 
