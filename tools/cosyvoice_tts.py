@@ -41,7 +41,7 @@ API_BASE = 'https://dashscope.aliyuncs.com/api/v1'
 def enroll_once(url, model, prefix, extra_headers=None):
     """调一次复刻接口;返回 voice_id,失败抛异常(带 DashScope 的错误码)"""
     import urllib.request, urllib.error
-    body = json.dumps({'model': 'voice-enrollment', 'input': {'action': 'create', 'target_model': model, 'prefix': prefix, 'url': url}}).encode()
+    body = json.dumps({'model': 'voice-enrollment', 'input': {'action': 'create_voice', 'target_model': model, 'prefix': prefix, 'url': url}}).encode()
     headers = {'Authorization': f'Bearer {os.environ["DASHSCOPE_API_KEY"]}', 'Content-Type': 'application/json', **(extra_headers or {})}
     req = urllib.request.Request(f'{API_BASE}/services/audio/tts/customization', data=body, method='POST', headers=headers)
     try:
