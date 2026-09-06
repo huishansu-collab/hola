@@ -1,0 +1,92 @@
+# 用 GitHub 的机器调 OpenAI 生成语音。
+# (写这个工作流的原因:Claude 云端沙箱的出网策略连不到 api.openai.com,GitHub Actions 的机器可以。)
+#
+# 一次性准备:仓库 Settings → Secrets and variables → Actions → New repository secret
+#             Name 填 OPENAI_API_KEY,Secret 填你的 key。key 只存在 GitHub 的加密 secret 里,不进仓库、不进日志。
+# 运行:Actions 页签 → "Generate voices with OpenAI" → Run workflow → 选分支、填 case → Run。
+#       大约 3‒5 分钟,生成的 wav + mp3 自动提交回该分支,并触发 GitHub Pages 重新发布。
+name: Generate voices with OpenAI
+
+on:
+  workflow_dispatch:
+    inputs:
+      case:
+        description: 'case id(cases/ 下的目录名)'
+        default: morning
+        required: true
+      force:
+        description: '已有语音也重做(用来把离线音色换成 OpenAI 音色)'
+        type: boolean
+        default: true
+      only:
+        description: '只生成这些台词 id,逗号分隔;留空 = 全部'
+        default: ''
+      model:
+        description: 'TTS 模型(gpt-4o-mini-tts 支持音色描述;tts-1 / tts-1-hd 不支持)'
+        default: gpt-4o-mini-tts
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: tts-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  tts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: 检查 OPENAI_API_KEY secret
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::没有找到 OPENAI_API_KEY。到 https://github.com/${{ github.repository }}/settings/secrets/actions 新建 repository secret(Name = OPENAI_API_KEY),再重新运行这个工作流。"
+            exit 1
+          fi
+          echo "key 已配置(长度 ${#OPENAI_API_KEY})"
+
+      - name: 生成语音(OpenAI /v1/audio/speech)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_TTS_MODEL: ${{ inputs.model }}
+          OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
+        run: |
+          args="${{ inputs.case }}"
+          if [ "${{ inputs.force }}" = "true" ]; then args="$args --force"; fi
+          if [ -n "${{ inputs.only }}" ]; then args="$args --only ${{ inputs.only }}"; fi
+          node server/cli.js tts $args
+
+      - name: mp3 压缩版(单文件包 / 网页只带这份,wav 留作母带)
+        run: |
+          for f in cases/${{ inputs.case }}/audio/*.wav; do
+            [ -e "$f" ] || continue
+            [ -e "${f%.wav}.mp3" ] && continue          # 没重做的句子已有 mp3,跳过
+            ffmpeg -y -loglevel error -i "$f" -codec:a libmp3lame -b:a 64k "${f%.wav}.mp3"
+          done
+          node server/cli.js list
+
+      - name: 提交回分支
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cases/${{ inputs.case }}/audio
+          if git diff --cached --quiet; then echo "没有变化,不提交"; exit 0; fi
+          git commit -m "语音:OpenAI ${{ inputs.model }} 生成 ${{ inputs.case }}(GitHub Actions 运行 ${{ github.run_number }})"
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"
+
+      - name: 触发 GitHub Pages 重新发布(GITHUB_TOKEN 的 push 不会自动触发别的工作流)
+        if: success()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref "${{ github.ref_name }}"
