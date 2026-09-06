@@ -100,7 +100,7 @@ jobs:
             [ -e "${f%.wav}.mp3" ] && continue          # 没重做的句子已有 mp3,跳过
             ffmpeg -y -loglevel error -i "$f" -codec:a libmp3lame -b:a 64k "${f%.wav}.mp3"
           done
-          node server/cli.js list
+          ls cases/${{ steps.req.outputs.case }}/audio | wc -l
 
       - name: 提交回分支
         run: |
@@ -109,7 +109,8 @@ jobs:
           git add cases/${{ steps.req.outputs.case }}/audio
           if git diff --cached --quiet; then echo "没有变化,不提交"; exit 0; fi
           git commit -m "语音:OpenAI ${{ steps.req.outputs.model }} 生成 ${{ steps.req.outputs.case }}(GitHub Actions 运行 ${{ github.run_number }})"
-          git pull --rebase origin "${{ github.ref_name }}"
+          git checkout -- . && git clean -fdq              # 丢掉其它 case 清单因 mtime 变化被重写的噪音,否则 rebase 拒绝
+          git pull --rebase --autostash origin "${{ github.ref_name }}"
           git push origin "HEAD:${{ github.ref_name }}"
 
       - name: 触发 GitHub Pages 重新发布(GITHUB_TOKEN 的 push 不会自动触发别的工作流)
