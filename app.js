@@ -72,6 +72,7 @@ function render() {
   if (ctx.route === 'new') { view.innerHTML = ''; view.append(viewNew()); }
   else if (ctx.route === 'principle') view.innerHTML = viewPrinciple();
   else if (ctx.route === 'flow') view.innerHTML = viewFlow();
+  else if (ctx.route === 'skills') { view.innerHTML = viewSkills(); bindSkills(); }
   else if (ctx.route === 'handbook') { view.innerHTML = viewHandbook(); bindHandbook(); }
   else if (ctx.route === 'req') {
     const req = State.get(ctx.id); if (!req) return navigate('#/workbench');
@@ -260,15 +261,18 @@ function rightRail(req, stage) {
   const gate = (req.gates || {})[stage] || {};
   const gallery = (req.attachments || []).map(a => attachGalleryItem(a)).join('') || '<div class="muted" style="font-size:var(--fs-4);padding:6px 0">暂无物料</div>';
   const decs = Object.entries(DECISIONS).map(([k, v]) => `<button class="gate-dec ${gate.decision === k ? 'sel' : ''}" data-gate="${k}">${v.label}</button>`).join('');
+  const skillChips = (STAGE_SKILLS[stage] || []).map(id => { const s = SKILL_BY_ID[id]; return `<a class="skill-chip" href="#/skills" title="${esc(s.summary)}">${s.icon} ${esc(s.cat)}</a>`; }).join('');
   return `<div class="rail">
     <div class="panel panel-pad">
-      <div class="flex-between"><div class="section-title">完成度</div><div class="ring" style="--p:${rd.pct}" data-label="${rd.pct}%"></div></div>
+      <div class="flex-between"><div class="section-title">完成度 <span class="muted" style="font-weight:400">· 框架 Skill</span></div><div class="ring" style="--p:${rd.pct}" data-label="${rd.pct}%"></div></div>
       <p class="section-hint">对照【${st.label}】范本必填项（${rd.done}/${rd.total}）</p>
       <ul class="checklist">${rd.checks.map(c => `<li><span class="check-ico ${c.ok ? 'ok' : 'miss'}">${c.ok ? '✓' : '!'}</span>
         <span class="check-txt"><span class="t">${esc(c.key)}</span><span class="d">${esc(c.detail)}</span></span></li>`).join('')}</ul>
+      <div class="spacer-sm"></div>
+      <div class="flex-between"><div class="skill-row">${skillChips}</div><button class="btn btn-sm" id="lint-btn">写作体检</button></div>
     </div>
     <div class="panel panel-pad">
-      <div class="section-title">上传物料 · 自动分析</div>
+      <div class="section-title">上传物料 · 自动分析 <span class="muted" style="font-weight:400">· 做图 Skill</span></div>
       <p class="section-hint">图片→线框图/截图 · 视频→演示 · HTML→抽正文</p>
       <div id="rail-drop"></div>
       <div class="spacer-sm"></div>
@@ -276,7 +280,7 @@ function rightRail(req, stage) {
       <div class="gallery">${gallery}</div>
     </div>
     <div class="panel panel-pad">
-      <div class="section-title">评审门槛 · GATE</div>
+      <div class="section-title">评审门槛 · GATE <span class="muted" style="font-weight:400">· 评审 Skill</span></div>
       <p class="section-hint">评审人：${st.gate}</p>
       <p class="section-hint" style="color:var(--ink-2)">退出条件：${st.exit}</p>
       <div class="gate-decs">${decs}</div>
@@ -302,6 +306,8 @@ function wireRail(req, stage, root) {
   $$('.gate-dec', root).forEach(b => b.onclick = () => { req.gates = req.gates || {}; const g = req.gates[stage] = req.gates[stage] || {}; g.decision = b.dataset.gate; save(req); render(); });
   const gn = $('#gate-note', root); if (gn) gn.onblur = () => { req.gates = req.gates || {}; (req.gates[stage] = req.gates[stage] || {}).note = gn.value; save(req); };
   $('#exp-copy', root).onclick = () => copyText(exportMarkdown(req, stage));
+  const lb = $('#lint-btn', root);
+  if (lb) lb.onclick = () => { const txt = collectDocText(req, stage); if (!txt) return toast('还没有可校对的正文'); showLintModal('写作体检 · ' + STAGES[STAGE_INDEX[stage]].label, txt, lintText(txt)); };
   const nx = $('#to-next', root);
   if (nx) nx.onclick = () => { const to = STAGES[STAGE_INDEX[stage] + 1].key; if (to === 'draft' && !req.draft) req.draft = generateDraft(req); if (to === 'prd' && !req.prd) req.prd = generatePRD(req); advance(req, to); navigate(`#/req/${req.id}/${to}`); };
 }
@@ -518,6 +524,70 @@ function viewFlow() {
           <p class="muted" style="font-size:var(--fs-4);margin-top:10px">越往后推翻越贵，所以把判断尽量前置到冒烟。</p></div>
       </div>
     </div>`;
+}
+
+/* ============================================================ Skills 技能库 */
+function viewSkills() {
+  const cats = [...new Set(SKILLS.map(s => s.cat))];
+  const cards = SKILLS.map(s => `<div class="skill-card">
+    <div class="skill-top"><span class="skill-ico">${s.icon}</span>
+      <div><div class="skill-name">${esc(s.name)}</div><div class="skill-cat">${esc(s.cat)} Skill</div></div></div>
+    <p class="skill-sum">${esc(s.summary)}</p>
+    <div class="skill-k">能力</div>
+    <ul class="skill-prov">${s.provides.map(p => `<li>${esc(p)}</li>`).join('')}</ul>
+    <div class="skill-k">载荷（沉淀自范本 / 规范）</div>
+    <div class="skill-payload">${s.payload().map(p => `<div class="pl-row"><span class="pl-t">${esc(p.t)}</span><span class="pl-v">${p.v.map(esc).join(' · ')}</span></div>`).join('')}</div>
+    <div class="skill-foot"><span class="badge badge-mute">适用：${esc(s.applies)}</span>
+      ${s.id === 'content' ? '<button class="btn btn-sm" id="try-lint">试跑写作体检</button>' : ''}</div>
+  </div>`).join('');
+
+  const pipe = ['内容进来', '框架定结构', '做图归位物料', '内容校对文字', '设计统一呈现', '评审出结论'];
+  return `<div class="page-head"><h1 class="page-title">技能库</h1>
+      <p class="page-sub">把范式、范本与规范沉淀成可复用的 Skill。任何内容进来，都沿同一套 skill 组合产出——结构、图、文字、视觉、评审各司其职。</p></div>
+    <div class="panel panel-pad" style="margin-bottom:16px">
+      <div class="section-title">组合管道</div>
+      <div class="pipe">${pipe.map((x, i) => `<span class="pipe-node">${esc(x)}</span>${i < pipe.length - 1 ? '<span class="pipe-arrow">→</span>' : ''}`).join('')}</div>
+      <p class="section-hint" style="margin:12px 0 0">共 ${SKILLS.length} 个 skill，分 ${cats.length} 类：${cats.join(' / ')}。每个 skill 独立可复用，也可按阶段组合。</p>
+    </div>
+    <div class="skill-grid">${cards}</div>`;
+}
+function bindSkills() {
+  const b = $('#try-lint');
+  if (b) b.onclick = () => {
+    const demo = 'Intelligence Works团队为Agent做Interaction相关工作，本期目标是把DAU做到2万，先介绍背景再给结论。';
+    showLintModal('写作体检 · 示例文本', demo, lintText(demo));
+  };
+}
+
+/* 写作体检弹窗（内容 Skill 可运行校对） */
+function showLintModal(title, text, issues) {
+  const rows = issues.length
+    ? issues.map(it => { const r = CONTENT_RULES.find(x => x.key === it.rule) || {}; return `<div class="lint-row ${it.level}">
+        <div class="lint-head"><span class="lint-badge ${it.level}">${it.level === 'warn' ? '建议' : '提示'}</span><b>${esc(r.name || it.rule)}</b></div>
+        <div class="lint-msg">${esc(it.msg)}</div>
+        ${it.samples && it.samples.length ? `<div class="lint-samples">${it.samples.map(s => `<code>${esc(s)}</code>`).join('')}</div>` : ''}</div>`; }).join('')
+    : '<div class="lint-ok">✓ 未发现明显问题，符合《文档与写作》规范。</div>';
+  showModal(title, `<p class="muted" style="font-size:var(--fs-4);margin:0 0 12px">被检文本：${esc(text.slice(0, 80))}${text.length > 80 ? '…' : ''}</p>${rows}
+    <p class="section-hint" style="margin-top:14px">校对规则来自「内容 Skill」，同一套规则可作用于任意进来的文字。</p>`);
+}
+function showModal(title, bodyHtml) {
+  const wrap = document.createElement('div');
+  wrap.className = 'modal-wrap';
+  wrap.innerHTML = `<div class="modal"><div class="modal-head"><b>${esc(title)}</b><button class="modal-x">✕</button></div><div class="modal-body">${bodyHtml}</div></div>`;
+  document.body.appendChild(wrap);
+  const close = () => wrap.remove();
+  wrap.onclick = e => { if (e.target === wrap) close(); };
+  $('.modal-x', wrap).onclick = close;
+}
+
+/* 收集当前阶段文档里可校对的文字 */
+function collectDocText(req, stage) {
+  const out = [];
+  const push = v => { if (v && !isTodo(v)) out.push(v); };
+  if (stage === 'smoke' && req.smoke) { const s = req.smoke; push(s.conclusion); push(s.background); (s.goals || []).forEach(push); (s.nonGoals || []).forEach(push); push(s.approach); (s.assumptions || []).forEach(push); (s.openQuestions || []).forEach(push); }
+  else if (stage === 'draft' && req.draft) { const d = req.draft; push(d.conclusion); push(d.bg_from); push(d.bg_now); push(d.bg_ifnot); push(d.uv_who); push(d.uv_better); push(d.uv_why); (d.features || []).forEach(f => { push(f.name); push(f.scenario); push(f.note); }); (d.competitors || []).forEach(c => { push(c.name); push(c.approach); push(c.compare); }); }
+  else if (stage === 'prd' && req.prd) { const p = req.prd; push(p.mainFlow); (p.copy || []).forEach(c => push(c.text)); (p.glossary || []).forEach(g => push(g.def)); }
+  return out.join('\n');
 }
 
 /* ============================================================ Team Handbook（大部门规定 + 我的团队工作范式） */
