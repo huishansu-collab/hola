@@ -140,6 +140,22 @@ export async function decodeAudio(buf, { sampleRate = 48000 } = {}) {
 
 export const speechChars = (t) => String(t || '').replace(/[\s，。！？、：；“”…—「」·,.!?:;"'()（）]/g, '').length;
 
+/* 环境音响度归一:seed-audio 生成的环境音响度差很多(-54 ~ -32 dBFS),统一到 targetDb(RMS),峰值不超过 0.95;需要 ffmpeg */
+export async function normalizeAmbience(file, { targetDb = -24 } = {}) {
+  const ff = ffmpegPath(); if (!ff) throw new Error('没有 ffmpeg');
+  const { pcm } = await decodeAudio(await fs.readFile(file), { sampleRate: 16000 });
+  let acc = 0, peak = 0; for (let i = 0; i < pcm.length; i++) { const v = pcm[i] / 32768; acc += v * v; if (Math.abs(v) > peak) peak = Math.abs(v); }
+  const rms = Math.sqrt(acc / Math.max(1, pcm.length)); if (!rms) return { gainDb: 0 };
+  let gainDb = targetDb - 20 * Math.log10(rms);
+  const maxDb = 20 * Math.log10(0.95 / Math.max(peak, 1e-6)); if (gainDb > maxDb) gainDb = maxDb;
+  if (Math.abs(gainDb) < 1) return { gainDb: 0 };
+  const tmp = file + '.norm.mp3';
+  const r = spawnSync(ff, ['-y', '-loglevel', 'error', '-i', file, '-af', `volume=${gainDb.toFixed(2)}dB`, '-codec:a', 'libmp3lame', '-b:a', '96k', tmp]);
+  if (r.status !== 0) throw new Error('ffmpeg: ' + String(r.stderr || '').slice(0, 160));
+  await fs.rename(tmp, file);
+  return { gainDb };
+}
+
 /* 切段:先按字数对齐(动态规划选静音间隙),对不齐再退回参考包的纯静音计数 */
 export function splitMaster(pcm, sampleRate, items) {
   const n = items.length;
@@ -232,6 +248,7 @@ export async function generateCaseAudioBatch(id, s, cfg, { force = false, only =
     try {
       const audio = Buffer.from(await volcCreate(String(st.prompt), { apiKey: cfg.apiKey === 'app-token' ? '' : cfg.apiKey, appId: cfg.appId, accessToken: cfg.accessToken, resourceId: cfg.resourceId, baseUrl: cfg.baseUrl, model: cfg.model, signal, ...(fetchImpl ? { fetchImpl } : {}) }));
       await fs.writeFile(path.join(dir, file), audio);
+      await normalizeAmbience(path.join(dir, file)).catch(e => onProgress({ phase: 'start', clip: file, id: file, index, total: plan.length, status: 'generating', message: `响度归一失败,按原样保留:${e.message}` }));
       delete manifest.clips[file.replace(/\.mp3$/, '')];                         // 让 refreshManifest 重新算时长
       await saveManifest(id, manifest);
       result.ambience.push(file);
