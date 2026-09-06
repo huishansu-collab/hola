@@ -62,9 +62,9 @@ const SKILLS = [
   },
   {
     id: 'diagram', cat: '做图', name: '做图 Skill', icon: '◫',
-    summary: '把上传的截图 / 录屏 / HTML 归位成范本必填的线框图 / 高保真 / 竞品截图，并抽 HTML 正文。',
-    provides: ['物料 → 线框图 / 截图 自动归位', 'HTML 正文抽取', '演示证据挂载'],
-    applies: '上传物料时自动分析',
+    summary: '把上传的 demo（HTML / 工程 .zip）解析成结构，拆成冒烟 / Draft；截图 / 录屏归位成必填的线框图 / 高保真，demo 用 iframe 预览当线框图。',
+    provides: ['demo / 工程文件 → 冒烟 / Draft 拆解', 'HTML 结构解析（页面 / 功能 / 主路径）', '物料 → 线框图 / 截图 自动归位'],
+    applies: '上传 demo / 工程时解析并拆解',
     payload: () => Object.values(UPLOAD_KINDS).map(k => ({ t: k.label, v: [k.use] })),
   },
   {

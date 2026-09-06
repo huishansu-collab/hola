@@ -182,25 +182,69 @@ function viewNew() {
     if (stage === 'smoke') req.smoke = generateSmoke(req);
     else if (stage === 'draft') { req.smoke = generateSmoke(req); req.draft = generateDraft(req); }
     else { req.smoke = generateSmoke(req); req.draft = generateDraft(req); req.prd = generatePRD(req); }
-    State.upsert(req); toast('已创建'); navigate(`#/req/${req.id}/${stage}`);
+    const hasDemo = req.attachments.some(a => a.kind === 'html' || a.kind === 'code');
+    if (hasDemo && stage !== 'prd') { const ana = analyzeDemo(req); decomposeToSmoke(req, ana); if (stage === 'draft') decomposeToDraft(req, ana); }
+    State.upsert(req); toast(hasDemo ? '已创建并拆解 demo' : '已创建'); navigate(`#/req/${req.id}/${stage}`);
   };
   return el;
 }
 
 /* ============================================================ Upload / attachments */
+function kindOf(file) {
+  const n = (file.name || '').toLowerCase();
+  if ((file.type || '').startsWith('image/')) return 'image';
+  if ((file.type || '').startsWith('video/')) return 'video';
+  if (/html/.test(file.type) || /\.html?$/.test(n)) return 'html';
+  if (/\.(js|ts|jsx|tsx|vue|css|scss|less|json|py|go|java|rb|php|md|txt)$/.test(n)) return 'code';
+  return 'file';
+}
 function fileToAttachment(file) {
   return new Promise(res => {
-    const kind = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video'
-      : (/html/.test(file.type) || /\.html?$/i.test(file.name)) ? 'html' : 'file';
+    const kind = kindOf(file);
+    const asData = kind === 'image' || kind === 'video';
     const reader = new FileReader();
     reader.onload = () => res({ id: uid(), kind, name: file.name, size: file.size,
-      dataUrl: (kind === 'image' || kind === 'video') ? reader.result : '', text: (kind === 'html' || kind === 'file') ? reader.result : '', note: '' });
-    if (kind === 'image' || kind === 'video') reader.readAsDataURL(file); else reader.readAsText(file);
+      dataUrl: asData ? reader.result : '', text: asData ? '' : String(reader.result || '').slice(0, 200000), note: '' });
+    if (asData) reader.readAsDataURL(file); else reader.readAsText(file);
   });
 }
+
+/* 工程文件 zip：按需加载 JSZip（cdnjs 允许），失败则提示解压后多选 */
+let _jszipP = null;
+function loadJSZip() {
+  if (window.JSZip) return Promise.resolve(window.JSZip);
+  if (_jszipP) return _jszipP;
+  _jszipP = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    s.onload = () => resolve(window.JSZip); s.onerror = () => reject(new Error('JSZip load failed'));
+    document.head.appendChild(s);
+  });
+  return _jszipP;
+}
+async function unzipToAttachments(file) {
+  const JSZip = await loadJSZip();
+  const zip = await JSZip.loadAsync(file);
+  const out = [];
+  const entries = Object.values(zip.files).filter(f => !f.dir && !/node_modules\/|\.git\/|dist\//.test(f.name));
+  let imgN = 0;
+  for (const e of entries.slice(0, 80)) {
+    const low = e.name.toLowerCase(), base = e.name.split('/').pop();
+    if (/\.(png|jpe?g|gif|webp|svg)$/.test(low)) {
+      if (imgN++ > 8) continue;
+      const mime = low.endsWith('.svg') ? 'image/svg+xml' : 'image/' + low.split('.').pop().replace('jpg', 'jpeg');
+      out.push({ id: uid(), kind: 'image', name: base, dataUrl: `data:${mime};base64,${await e.async('base64')}`, text: '', note: '来自工程 ' + file.name });
+    } else if (/\.html?$/.test(low)) {
+      out.push({ id: uid(), kind: 'html', name: base, dataUrl: '', text: await e.async('string'), note: '来自工程 ' + file.name });
+    } else if (/\.(js|ts|jsx|tsx|vue|css|scss|less|json|md|txt)$/.test(low)) {
+      out.push({ id: uid(), kind: 'code', name: base, dataUrl: '', text: (await e.async('string')).slice(0, 8000), note: '来自工程 ' + file.name });
+    }
+  }
+  return out;
+}
 function mountDropzone(host, list, onChange) {
-  host.innerHTML = `<div class="dropzone" id="dz"><input type="file" id="dz-input" multiple accept="image/*,video/*,.html,.htm,.txt,.md" hidden>
-      <div class="dz-inner"><span class="dz-ico">⇪</span><div><b>拖拽或点击上传</b><div class="muted" style="font-size:var(--fs-4)">图片/截图 → 线框图 · 视频 → 演示证据 · HTML → 抽正文</div></div></div></div>
+  host.innerHTML = `<div class="dropzone" id="dz"><input type="file" id="dz-input" multiple accept="image/*,video/*,.html,.htm,.txt,.md,.zip,.js,.ts,.jsx,.tsx,.vue,.css,.scss,.json" hidden>
+      <div class="dz-inner"><span class="dz-ico">⇪</span><div><b>拖拽或点击上传 demo / 工程文件</b><div class="muted" style="font-size:var(--fs-4)">HTML/工程(.zip) → 拆解成文档 · 图片 → 线框图 · 视频 → 演示</div></div></div></div>
     <div class="attach-list" id="dz-list"></div>`;
   const input = $('#dz-input', host), dz = $('#dz', host);
   dz.onclick = () => input.click();
@@ -208,7 +252,19 @@ function mountDropzone(host, list, onChange) {
   dz.ondragleave = () => dz.classList.remove('over');
   dz.ondrop = async e => { e.preventDefault(); dz.classList.remove('over'); await add(e.dataTransfer.files); };
   input.onchange = async () => { await add(input.files); input.value = ''; };
-  async function add(files) { for (const f of files) { if (f.size > 8 * 1024 * 1024 && f.type.startsWith('video/')) { toast('视频过大，建议 <8MB'); } list.push(await fileToAttachment(f)); } onChange(); }
+  async function add(files) {
+    for (const f of files) {
+      if (/\.zip$/i.test(f.name)) {
+        toast('正在解压工程…');
+        try { const items = await unzipToAttachments(f); list.push(...items); toast(`已解压 ${items.length} 个文件`); }
+        catch (e) { toast('解压失败，请解压后多选上传'); }
+        continue;
+      }
+      if (f.size > 8 * 1024 * 1024 && (f.type || '').startsWith('video/')) toast('视频过大，建议 <8MB');
+      list.push(await fileToAttachment(f));
+    }
+    onChange();
+  }
   renderPendingList(host, list);
 }
 function renderPendingList(host, list) {
@@ -216,12 +272,18 @@ function renderPendingList(host, list) {
   box.innerHTML = list.map((a, i) => attachChip(a, i)).join('');
   $$('.attach-del', box).forEach(b => b.onclick = () => { list.splice(+b.dataset.i, 1); renderPendingList(host, list); });
 }
+const escAttr = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+/* 统一缩略图：HTML demo 用 sandbox iframe 实时预览，作为线框图证据 */
+function attachThumb(a) {
+  if (a.kind === 'image') return `<img src="${a.dataUrl}" alt="">`;
+  if (a.kind === 'video') return `<video src="${a.dataUrl}" muted></video>`;
+  if (a.kind === 'html') return `<iframe class="demo-frame" sandbox srcdoc="${escAttr(a.text)}" tabindex="-1" scrolling="no"></iframe>`;
+  return `<span class="att-ico">${a.kind === 'code' ? '{ }' : '✎'}</span>`;
+}
 function attachChip(a, i) {
-  const thumb = a.kind === 'image' ? `<img src="${a.dataUrl}" alt="">`
-    : a.kind === 'video' ? `<span class="att-ico">▶</span>`
-    : a.kind === 'html' ? `<span class="att-ico">&lt;/&gt;</span>` : `<span class="att-ico">✎</span>`;
-  return `<div class="attach-chip"><div class="att-thumb">${thumb}</div><div class="att-meta"><div class="att-name">${esc(a.name)}</div>
-    <div class="att-kind">${UPLOAD_KINDS[a.kind].label}</div></div><button class="attach-del" data-i="${i}" title="移除">✕</button></div>`;
+  const k = UPLOAD_KINDS[a.kind] || { label: a.kind };
+  return `<div class="attach-chip"><div class="att-thumb">${attachThumb(a)}</div><div class="att-meta"><div class="att-name">${esc(a.name)}</div>
+    <div class="att-kind">${esc(k.label)}</div></div><button class="attach-del" data-i="${i}" title="移除">✕</button></div>`;
 }
 
 /* ============================================================ Requirement stage */
@@ -279,6 +341,7 @@ function rightRail(req, stage) {
       <div class="section-title" style="font-size:var(--fs-3)">已挂载 <span class="muted">(${(req.attachments || []).length})</span></div>
       <div class="gallery">${gallery}</div>
     </div>
+    ${decomposePanel(req)}
     <div class="panel panel-pad">
       <div class="section-title">评审门槛 · GATE <span class="muted" style="font-weight:400">· 评审 Skill</span></div>
       <p class="section-hint">评审人：${st.gate}</p>
@@ -294,11 +357,37 @@ function rightRail(req, stage) {
     </div>
   </div>`;
 }
+function decomposePanel(req) {
+  const h = attachmentsByKind(req, 'html').length, c = attachmentsByKind(req, 'code').length;
+  if (!h && !c) return '';
+  return `<div class="panel panel-pad decompose">
+    <div class="section-title">从 demo 拆解 <span class="muted" style="font-weight:400">· 做图+框架 Skill</span></div>
+    <p class="section-hint">识别到 ${h} 个 HTML demo${c ? ` · ${c} 个工程文件` : ''}。解析结构后填进范本。</p>
+    <div class="btn-row"><button class="btn btn-primary btn-sm" id="dec-smoke">拆成冒烟</button><button class="btn btn-sm" id="dec-draft">拆成 Draft</button></div>
+  </div>`;
+}
+function runDecompose(req, target) {
+  const ana = analyzeDemo(req);
+  if (!req.smoke) req.smoke = generateSmoke(req);
+  decomposeToSmoke(req, ana);
+  if (target === 'draft') decomposeToDraft(req, ana);
+  advance(req, target);
+  save(req);
+  showDecomposeModal(ana, target);
+  navigate(`#/req/${req.id}/${target}`);
+}
+function showDecomposeModal(ana, target) {
+  const tags = (label, arr) => arr && arr.length ? `<div class="kv"><div class="kv-label">${label}</div><div class="tag-list">${arr.slice(0, 8).map(x => `<span class="tag">${esc(x)}</span>`).join('')}</div></div>` : '';
+  showModal('demo 拆解结果 → ' + (target === 'smoke' ? '冒烟' : 'Draft'),
+    `<div class="kv"><div class="kv-label">识别标题</div><div class="kv-val">${esc(ana.title || '—')}</div></div>
+     ${tags('页面 / 主路径', ana.pages)}
+     ${tags('关键操作（功能候选）', ana.actions.length ? ana.actions : ana.featureCands)}
+     <div class="kv"><div class="kv-label">规模</div><div class="kv-val">${ana.htmlCount} 个 HTML · ${ana.codeN} 个源码文件 · ${ana.forms} 表单 · ${ana.imgs} 图</div></div>
+     <p class="section-hint" style="margin-top:12px">已按结构填进${target === 'smoke' ? '冒烟' : 'Draft'}范本；demo 预览已作为线框图挂载，缺项标「待补充」。</p>`);
+}
 function attachGalleryItem(a) {
-  const thumb = a.kind === 'image' ? `<img src="${a.dataUrl}" alt="${esc(a.name)}">`
-    : a.kind === 'video' ? `<video src="${a.dataUrl}" muted></video>`
-    : `<span class="att-ico">${a.kind === 'html' ? '&lt;/&gt;' : '✎'}</span>`;
-  return `<div class="gitem" title="${esc(a.name)}">${thumb}<span class="gitem-k">${a.kind === 'image' ? '截图' : a.kind === 'video' ? '视频' : a.kind === 'html' ? 'HTML' : '文本'}</span></div>`;
+  const label = a.kind === 'image' ? '截图' : a.kind === 'video' ? '视频' : a.kind === 'html' ? 'demo' : a.kind === 'code' ? '工程' : '文本';
+  return `<div class="gitem" title="${esc(a.name)}">${attachThumb(a)}<span class="gitem-k">${label}</span></div>`;
 }
 function wireRail(req, stage, root) {
   const list = req.attachments = req.attachments || [];
@@ -308,17 +397,19 @@ function wireRail(req, stage, root) {
   $('#exp-copy', root).onclick = () => copyText(exportMarkdown(req, stage));
   const lb = $('#lint-btn', root);
   if (lb) lb.onclick = () => { const txt = collectDocText(req, stage); if (!txt) return toast('还没有可校对的正文'); showLintModal('写作体检 · ' + STAGES[STAGE_INDEX[stage]].label, txt, lintText(txt)); };
+  const dsm = $('#dec-smoke', root); if (dsm) dsm.onclick = () => runDecompose(req, 'smoke');
+  const ddr = $('#dec-draft', root); if (ddr) ddr.onclick = () => runDecompose(req, 'draft');
   const nx = $('#to-next', root);
   if (nx) nx.onclick = () => { const to = STAGES[STAGE_INDEX[stage] + 1].key; if (to === 'draft' && !req.draft) req.draft = generateDraft(req); if (to === 'prd' && !req.prd) req.prd = generatePRD(req); advance(req, to); navigate(`#/req/${req.id}/${to}`); };
 }
 
 /* ---------- attachment picker for 截图/线框图 cells ---------- */
 function attachPicker(req, currentId, onPick) {
-  const imgs = (req.attachments || []).filter(a => a.kind === 'image' || a.kind === 'video');
-  const cur = imgs.find(a => a.id === currentId);
-  if (cur) return `<div class="wire-cell" data-pick="1">${cur.kind === 'image' ? `<img src="${cur.dataUrl}">` : `<video src="${cur.dataUrl}" muted></video>`}<span class="wire-x" data-clear="1">✕</span></div>`;
-  if (!imgs.length) return `<span class="muted" style="font-size:var(--fs-4)">先在右侧上传图片</span>`;
-  return `<select class="wire-select"><option value="">选择物料…</option>${imgs.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join('')}</select>`;
+  const usable = (req.attachments || []).filter(a => a.kind === 'image' || a.kind === 'video' || a.kind === 'html');
+  const cur = usable.find(a => a.id === currentId);
+  if (cur) return `<div class="wire-cell" data-pick="1">${attachThumb(cur)}<span class="wire-x" data-clear="1">✕</span></div>`;
+  if (!usable.length) return `<span class="muted" style="font-size:var(--fs-4)">先在右侧上传</span>`;
+  return `<select class="wire-select"><option value="">选择物料…</option>${usable.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join('')}</select>`;
 }
 
 /* ============================================================ SMOKE stage */
@@ -361,10 +452,12 @@ function renderSmoke(req, root) {
   wireEcells(root);
 }
 function smokeWires(req) {
-  const w = (req.attachments || []).filter(a => a.kind === 'image' || a.kind === 'video');
-  if (!w.length) return `<div class="col-label" style="margin-top:12px">线框图 / 演示</div><div class="muted" style="font-size:var(--fs-4)">右侧上传图片或视频，自动作为线框图/演示证据</div>`;
+  const w = (req.attachments || []).filter(a => a.kind === 'image' || a.kind === 'video' || a.kind === 'html');
+  if (!w.length) return `<div class="col-label" style="margin-top:12px">线框图 / 演示</div><div class="muted" style="font-size:var(--fs-4)">右侧上传 demo / 图片 / 视频，自动作为线框图 / 演示证据</div>`;
   return `<div class="col-label" style="margin-top:12px">线框图 / 演示 <span class="muted">(${w.length})</span></div>
-    <div class="wire-row">${w.map(a => a.kind === 'image' ? `<img class="wire-thumb" src="${a.dataUrl}">` : `<video class="wire-thumb" src="${a.dataUrl}" muted controls></video>`).join('')}</div>`;
+    <div class="wire-row">${w.map(a => a.kind === 'image' ? `<img class="wire-thumb" src="${a.dataUrl}">`
+      : a.kind === 'video' ? `<video class="wire-thumb" src="${a.dataUrl}" muted controls></video>`
+      : `<div class="wire-thumb"><iframe class="demo-frame" sandbox srcdoc="${escAttr(a.text)}" tabindex="-1" scrolling="no"></iframe></div>`).join('')}</div>`;
 }
 
 /* ============================================================ DRAFT stage */

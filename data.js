@@ -136,7 +136,8 @@ const PRD_TEMPLATE = {
 const UPLOAD_KINDS = {
   image: { label: '图片 / 截图', use: '充当线框图 / 高保真 / 竞品截图', accept: 'image/*' },
   video: { label: '视频 / 录屏', use: '充当 demo 演示证据', accept: 'video/*' },
-  html:  { label: 'HTML / 网页', use: '抽取正文关键信息填入文档', accept: '.html,.htm,text/html' },
+  html:  { label: 'HTML / demo', use: '拆解结构 → 填进文档，预览作线框图', accept: '.html,.htm,text/html' },
+  code:  { label: '工程文件', use: '估算研发复杂度量级', accept: '.js,.ts,.css,.json,.vue' },
   file:  { label: '文本 / 其他', use: '作为附件与证据', accept: '.txt,.md' },
 };
 

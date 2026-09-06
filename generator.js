@@ -285,3 +285,89 @@ function exportMarkdown(req, stage) {
   out.push('_由 Principle 工作台（Demo）导出 · 结论需引用文档内已有信息，缺内容标「待补充」。_');
   return out.join('\n');
 }
+
+/* ============================================================
+ * demo 拆解：把上传的 HTML / 工程文件结构化，拆成冒烟 / Draft
+ * 做图 Skill（解析结构）+ 框架 Skill（填进范本）
+ * ============================================================ */
+function uniqArr(a) { return [...new Set(a.map(s => String(s).replace(/\s+/g, ' ').trim()).filter(Boolean))]; }
+
+/* 结构化解析单个 HTML demo（浏览器 DOMParser） */
+function analyzeHtml(html, name) {
+  let doc;
+  try { doc = new DOMParser().parseFromString(html, 'text/html'); } catch (e) { return null; }
+  const txt = el => (el && el.textContent || '').replace(/\s+/g, ' ').trim();
+  const title = txt(doc.querySelector('title')) || txt(doc.querySelector('h1')) || (name || '').replace(/\.html?$/i, '');
+  const headings = uniqArr([...doc.querySelectorAll('h1,h2,h3')].map(txt)).slice(0, 24);
+  const buttons = uniqArr([...doc.querySelectorAll('button,[role=button],.btn,input[type=submit],input[type=button]')].map(el => txt(el) || el.value || '')).slice(0, 24);
+  const navItems = uniqArr([...doc.querySelectorAll('nav a,[class*=nav] a,[class*=menu] a,[class*=tab] a,[class*=sidebar] a')].map(txt)).slice(0, 16);
+  const links = uniqArr([...doc.querySelectorAll('a')].map(txt)).slice(0, 24);
+  const inputs = uniqArr([...doc.querySelectorAll('input,select,textarea')].map(el => el.getAttribute('placeholder') || el.getAttribute('name') || el.type || '')).slice(0, 20);
+  const paras = uniqArr([...doc.querySelectorAll('p,li')].map(txt).filter(t => t.length > 6)).slice(0, 40);
+  return { name, title, headings, buttons, navItems, links, inputs, paras,
+    forms: doc.querySelectorAll('form').length, imgs: doc.querySelectorAll('img').length };
+}
+
+function fileStats(req) {
+  const stat = {};
+  (req.attachments || []).forEach(a => { const ext = (a.name.split('.').pop() || '').toLowerCase(); stat[ext] = (stat[ext] || 0) + 1; });
+  return stat;
+}
+
+/* 汇总所有 demo / 工程文件 → 拆解结果 */
+function analyzeDemo(req) {
+  const htmls = (req.attachments || []).filter(a => a.kind === 'html' && a.text);
+  const parts = htmls.map(a => analyzeHtml(a.text, a.name)).filter(Boolean);
+  const flat = key => uniqArr([].concat(...parts.map(p => p[key] || [])));
+  const title = (parts.find(p => p.title) || {}).title || req.name || '';
+  const pages = flat('navItems').length ? flat('navItems') : flat('headings').slice(0, 8);
+  const actions = flat('buttons');
+  const headings = flat('headings');
+  const texts = uniqArr([].concat(...parts.map(p => p.paras || []))).slice(0, 20);
+  const featureCands = (actions.length ? actions : headings).slice(0, 8);
+  const stats = fileStats(req);
+  const codeN = Object.entries(stats).filter(([e]) => ['js', 'ts', 'jsx', 'tsx', 'vue', 'css', 'scss', 'py', 'go', 'java'].includes(e)).reduce((n, [, c]) => n + c, 0);
+  const forms = parts.reduce((n, p) => n + p.forms, 0);
+  const imgs = parts.reduce((n, p) => n + p.imgs, 0);
+  return { title, pages, actions, headings, texts, featureCands, forms, imgs, stats, codeN,
+    htmlCount: htmls.length, fileCount: (req.attachments || []).length, previewId: htmls[0] && htmls[0].id };
+}
+
+/* 拆成冒烟 */
+function decomposeToSmoke(req, ana) {
+  if (!req.smoke) req.smoke = generateSmoke(req);
+  const s = req.smoke;
+  if (isTodo(s.conclusion)) s.conclusion = ana.title ? `做一个「${ana.title}」：${TODO}（补「为什么现在做」）` : s.conclusion;
+  if (isTodo(s.background) && ana.texts[0]) s.background = ana.texts[0];
+  if (ana.pages.length) s.approach = '主路径：' + ana.pages.slice(0, 6).join(' → ') + (ana.actions.length ? `；关键操作：${ana.actions.slice(0, 4).join(' / ')}` : '');
+  if ((!s.goals || s.goals.every(isTodo)) && ana.actions.length) s.goals = [`让用户完成：${ana.actions.slice(0, 4).join(' / ')}`];
+  s.complexity = (s.complexity || []).map(c => {
+    if (c.dim === '研发') return { dim: '研发', level: ana.codeN > 12 ? '大' : ana.codeN > 4 ? '中' : '小', basis: `demo 含 ${ana.codeN} 个源码文件、${ana.forms} 个表单` };
+    if (c.dim === '设计') return { dim: '设计', level: ana.pages.length > 6 ? '大' : ana.pages.length > 2 ? '中' : '小', basis: `约 ${ana.pages.length} 个页面 / 区块` };
+    return c;
+  });
+  s.wireframeCount = attachmentsByKind(req, 'image').length + attachmentsByKind(req, 'video').length + attachmentsByKind(req, 'html').length;
+  req.smoke = s;
+}
+
+/* 拆成 Draft（每个功能用 demo 预览作为线框图） */
+function decomposeToDraft(req, ana) {
+  if (!req.draft) req.draft = generateDraft(req);
+  const d = req.draft;
+  d.basic['所属团队/模块'] = isTodo(d.basic['所属团队/模块']) ? (DIRECTIONS[req.direction] || DIRECTIONS.general).label : d.basic['所属团队/模块'];
+  if (isTodo(d.conclusion)) d.conclusion = ana.title ? `面向 [目标用户]，通过 [${ana.title}]，让用户获得 [可衡量结果]（${TODO}）` : d.conclusion;
+  if (isTodo(d.bg_now) && ana.texts[0]) d.bg_now = ana.texts[0];
+  if (isTodo(d.uv_better) && ana.texts[1]) d.uv_better = ana.texts[1];
+  const img = attachmentsByKind(req, 'image')[0];
+  const wireId = ana.previewId || (img && img.id) || '';
+  if (ana.featureCands.length) {
+    d.features = ana.featureCands.map((name, i) => ({
+      name, pri: i < 2 ? 'P0' : 'P1',
+      scenario: `用户在 demo${ana.pages[i] ? `「${ana.pages[i]}」` : ''} 中完成「${name}」`,
+      how: '1. 用户……\n2. 系统……\n3. ……',
+      wire: wireId,
+      note: '来自 demo 拆解，待补充触发/依赖',
+    }));
+  }
+  req.draft = d;
+}

@@ -522,3 +522,18 @@ table.req-table { width: 100%; border-collapse: collapse; }
 .lint-samples { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
 .lint-samples code { font-family: inherit; font-size: var(--fs-4); background: #f2f4f8; color: var(--ink-2); padding: 2px 7px; border-radius: 5px; }
 .lint-ok { background: var(--ok-soft); color: var(--ok); padding: 14px; border-radius: 8px; font-weight: 600; text-align: center; }
+
+/* ============================================================
+ * v5 — demo 拆解：iframe 预览 + 拆解面板
+ * ============================================================ */
+.demo-frame { width: 320px; height: 200px; border: 0; transform: scale(.45); transform-origin: top left; pointer-events: none; background: #fff; }
+/* 缩略容器裁剪 iframe 的缩放溢出 */
+.att-thumb .demo-frame { width: 200px; height: 120px; transform: scale(.2); }
+.gitem .demo-frame { width: 300px; height: 200px; transform: scale(.28); }
+.wire-cell .demo-frame { width: 250px; height: 156px; transform: scale(.4); }
+.wire-thumb .demo-frame { width: 300px; height: 190px; transform: scale(.4); }
+.gitem, .att-thumb, .wire-cell, .wire-thumb { overflow: hidden; }
+.wire-thumb { position: relative; }
+
+.decompose { border-color: #d7ddfb; }
+.decompose .section-title { color: var(--brand); }
