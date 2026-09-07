@@ -131,6 +131,16 @@ def plan(case_id):
     return json.loads(subprocess.check_output(['node', 'server/cli.js', 'plan', case_id, '--compact'], cwd=ROOT, text=True))
 
 
+def text_ladder(text):
+    """每句依次尝试的(文本, 额外参数)。CosyVoice 对一两个字的句子(「行。」)常常只回几十毫秒的空音频,
+    重试同样的文本没用,所以极短句往后换文本:先拉长句尾,再补一个语气词;念出来的文本记进 manifest.spoken_text。"""
+    zh = {'language_hints': ['zh']}
+    n = len([c for c in text if '\u4e00' <= c <= '\u9fff' or c.isalnum()])
+    if n > 2: return [(text, {}), (text, {}), (text, zh), (text, zh)]
+    core = text.rstrip('。.!！?？~～…—')
+    return [(text, {}), (text, zh), (core + '……', zh), (core + '——', zh), ('嗯，' + text, zh), ('嗯……' + core + '。', zh)]
+
+
 def synth(case_id, only, force, model, rate, pitch):
     dashscope = need_key()
     from dashscope.audio.tts_v2 import SpeechSynthesizer, AudioFormat
@@ -154,17 +164,18 @@ def synth(case_id, only, force, model, rate, pitch):
     fails = 0; total_ms = 0
     nchars = lambda t: len([c for c in t if '\u4e00' <= c <= '\u9fff' or c.isalnum()])
     for n, (it, v, m, h) in enumerate(todo, 1):
-        wav = None; err = None
-        for attempt in range(4):
+        wav = None; err = None; spoken = it['text']
+        for attempt, (text, kw) in enumerate(text_ladder(it['text'])):
             try:
-                kw = {'language_hints': ['zh']} if attempt >= 2 else {}
                 syn = SpeechSynthesizer(model=m, voice=v['voice_id'], format=AudioFormat.WAV_24000HZ_MONO_16BIT, speech_rate=rate, pitch_rate=pitch, **kw)
-                wav = syn.call(it['text'])
+                wav = syn.call(text)
                 if not wav: raise RuntimeError(f'空返回(request {syn.get_last_request_id()})')
                 wav = fix_wav_header(wav)
                 dur = (len(wav) - 44) / 2 / 24000
-                if dur < 0.18 * max(1, nchars(it['text'])) + 0.12:                # 极短的返回(比如单字「行。」只回 90ms)按失败重试
-                    raise RuntimeError(f'返回太短 {dur:.2f}s({nchars(it["text"])} 字,request {syn.get_last_request_id()})')
+                if dur < 0.18 * max(1, nchars(text)) + 0.12:                # 极短的返回(比如单字「行。」只回 90ms)按失败处理,换下一档文本
+                    raise RuntimeError(f'返回太短 {dur:.2f}s({nchars(text)} 字,文本「{text}」,request {syn.get_last_request_id()})')
+                spoken = text
+                if text != it['text']: print(f'  ! {it["id"]} 原文「{it["text"]}」合成不出来,改念「{text}」', file=sys.stderr)
                 break
             except Exception as e:
                 err = e; wav = None; time.sleep(2 * (attempt + 1))
@@ -176,7 +187,8 @@ def synth(case_id, only, force, model, rate, pitch):
         total_ms += dur
         st = path.stat()
         manifest['clips'][it['clip']] = {'file': path.name, 'size': st.st_size, 'mtime': st.st_mtime * 1000, 'duration_ms': dur, 'format': 'wav', 'sample_rate': sr,
-                                         'hash': h, 'source': f'cosy:{m}:{v["voice_id"]}', 'text': it['text'], 'generated_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}
+                                         'hash': h, 'source': f'cosy:{m}:{v["voice_id"]}', 'text': it['text'], 'generated_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+                                         **({'spoken_text': spoken} if spoken != it['text'] else {})}
         manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', 'utf-8')
         print(f'[{n}/{len(todo)}] {it["id"]} {it["speaker_name"]:<4} {dur/1000:5.1f}s {it["text"][:28]}', file=sys.stderr)
     print(f'完成:合成 {len(todo) - fails} 句,失败 {fails},语音共 {total_ms/1000:.0f}s', file=sys.stderr)
