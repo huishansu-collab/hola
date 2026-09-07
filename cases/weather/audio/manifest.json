@@ -124,11 +124,12 @@
       "duration_ms": 560,
       "format": "wav",
       "sample_rate": 24000,
-      "hash": "3aa87fcd59cedd28",
+      "hash": "b695ac9462300f06",
       "source": "cosy:cosyvoice-v2:cosyvoice-v2-assistant-67d3a5c5347c4a79b76730b2de007306",
-      "text": "行。",
+      "text": "好的。",
       "generated_at": "2026-09-07T08:57:14Z",
-      "carrier_text": "行。好的，我知道了。"
+      "carrier_text": "行。好的，我知道了。",
+      "note": "CosyVoice 复刻音色会吞掉句首的「行」(载体句「行。好的，我知道了。」只念出「好的」),故剧本改为「好的。」与音频一致"
     },
     "u011": {
       "file": "u011.wav",

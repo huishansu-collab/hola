@@ -744,7 +744,7 @@
     },
     {
       "type": "say",
-      "text": "行。",
+      "text": "好的。",
       "clock": "20:30:18.0",
       "clock_end": "20:30:18.4",
       "speaker": "assistant",
