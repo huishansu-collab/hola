@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: '声轨 · 语音标注工作台',
-  description: '多轨语音标注原型：缩放、选区与打断事件检查。',
+  title: 'Track Studio — Voice Annotation',
+  description: 'Multitrack voice annotation with timeline selection and interruption inspection.',
 };
 
 export default function RootLayout({
@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
