@@ -3,6 +3,6 @@
 provider: cosy
 case: weather
 force: true
-only: assistant
+only: u009
 model:
-run: 14
+run: 15

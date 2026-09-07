@@ -152,19 +152,25 @@ def synth(case_id, only, force, model, rate, pitch):
         todo.append((it, v, m, h))
     print(f'{len(items)} 句,需合成 {len(todo)} 句(有音色的说话人:{", ".join(voices) or "无"})', file=sys.stderr)
     fails = 0; total_ms = 0
+    nchars = lambda t: len([c for c in t if '\u4e00' <= c <= '\u9fff' or c.isalnum()])
     for n, (it, v, m, h) in enumerate(todo, 1):
         wav = None; err = None
-        for attempt in range(3):
+        for attempt in range(4):
             try:
-                syn = SpeechSynthesizer(model=m, voice=v['voice_id'], format=AudioFormat.WAV_24000HZ_MONO_16BIT, speech_rate=rate, pitch_rate=pitch)
+                kw = {'language_hints': ['zh']} if attempt >= 2 else {}
+                syn = SpeechSynthesizer(model=m, voice=v['voice_id'], format=AudioFormat.WAV_24000HZ_MONO_16BIT, speech_rate=rate, pitch_rate=pitch, **kw)
                 wav = syn.call(it['text'])
                 if not wav: raise RuntimeError(f'空返回(request {syn.get_last_request_id()})')
+                wav = fix_wav_header(wav)
+                dur = (len(wav) - 44) / 2 / 24000
+                if dur < 0.18 * max(1, nchars(it['text'])) + 0.12:                # 极短的返回(比如单字「行。」只回 90ms)按失败重试
+                    raise RuntimeError(f'返回太短 {dur:.2f}s({nchars(it["text"])} 字,request {syn.get_last_request_id()})')
                 break
             except Exception as e:
-                err = e; time.sleep(2 * (attempt + 1))
+                err = e; wav = None; time.sleep(2 * (attempt + 1))
         if not wav:
             fails += 1; print(f'✗ {it["id"]} {err}', file=sys.stderr); continue
-        path = audio_dir / (it['clip'] + '.wav'); path.write_bytes(fix_wav_header(wav))
+        path = audio_dir / (it['clip'] + '.wav'); path.write_bytes(wav)
         for ext in ('.mp3', '.m4a'): (audio_dir / (it['clip'] + ext)).unlink(missing_ok=True)
         with wave.open(str(path), 'rb') as w: dur = round(w.getnframes() / w.getframerate() * 1000); sr = w.getframerate()
         total_ms += dur
