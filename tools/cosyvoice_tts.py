@@ -12,7 +12,7 @@ tools/cosyvoice_tts.py — 用阿里云百炼 CosyVoice 的「声音复刻」让
 
 音色 id 存在 cases/<id>/audio/voices.json;GitHub Actions 里 provider=cosy 会先按 ref_<speaker>.wav 自动复刻再合成。
 """
-import argparse, hashlib, json, os, subprocess, sys, time, wave, io
+import argparse, hashlib, json, math, os, subprocess, sys, time, wave, io
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -132,13 +132,62 @@ def plan(case_id):
 
 
 def text_ladder(text):
-    """每句依次尝试的(文本, 额外参数)。CosyVoice 对一两个字的句子(「行。」)常常只回几十毫秒的空音频,
-    重试同样的文本没用,所以极短句往后换文本:先拉长句尾,再补一个语气词;念出来的文本记进 manifest.spoken_text。"""
+    """每句依次尝试的(文本, 额外参数, 处理方式)。CosyVoice 对一两个字的句子(「行。」)常常只回几十毫秒到半秒的空音频,
+    重试同样的文本没用,所以极短句往后换法:先把它放进一句「载体」里合成再只截出第一个词(念的还是原文),
+    再退到补一个语气词(念出来的文本记进 manifest.spoken_text)。"""
     zh = {'language_hints': ['zh']}
     n = len([c for c in text if '\u4e00' <= c <= '\u9fff' or c.isalnum()])
-    if n > 2: return [(text, {}), (text, {}), (text, zh), (text, zh)]
+    if n > 2: return [(text, {}, None), (text, {}, None), (text, zh, None), (text, zh, None)]
     core = text.rstrip('。.!！?？~～…—')
-    return [(text, {}), (text, zh), (core + '……', zh), (core + '——', zh), ('嗯，' + text, zh), ('嗯……' + core + '。', zh)]
+    return [(text, {}, None), (text, zh, None),
+            (core + '。好的，我知道了。', zh, 'first'), (core + '。那我们继续。', zh, 'first'),
+            ('嗯，' + core + '。', zh, None), ('嗯……' + core + '。', zh, None), ('好，' + core + '。', zh, None)]
+
+
+def pcm_stats(wav, win_ms=20):
+    """24k/16bit 单声道 wav → (峰值, 整体 rms, 每 20ms 一格的 rms 包络),纯标准库,CI 上不装 numpy 也能跑"""
+    import array
+    a = array.array('h'); a.frombytes(wav[44:len(wav) - (len(wav) - 44) % 2])
+    if not a: return 0.0, 0.0, []
+    peak = max(abs(x) for x in a) / 32768
+    rms = math.sqrt(sum(x * x for x in a) / len(a)) / 32768
+    win = 24000 * win_ms // 1000
+    env = [math.sqrt(sum(x * x for x in a[i:i + win]) / win) / 32768 for i in range(0, len(a) - win + 1, win)]
+    return peak, rms, env
+
+
+def too_quiet(wav, nchars):
+    peak, rms, _ = pcm_stats(wav)
+    return peak < 0.06 or rms < 0.004                     # 「行……」那种 0.4s 的近似静音:峰值 0.03、rms 0.002;正常一句峰值 ≥0.15、rms ≥0.02
+
+
+def cut_first_word(wav, win_ms=20):
+    """载体句「行。好的,我知道了。」只留第一个词:按 20ms 包络找第一段语音(允许 120ms 内的小空隙),
+    前留 80ms、后留 200ms,首尾各 8ms 淡入淡出。第一段太长(>0.9s,说明句号没停顿)或太短就返回 None 走下一档。"""
+    import array
+    peak, rms, env = pcm_stats(wav, win_ms)
+    if not env: return None
+    thr = max(0.004, 0.06 * max(env))
+    on = [e > thr for e in env]
+    try: start = on.index(True)
+    except ValueError: return None
+    end = start; gap = 0; max_gap = 120 // win_ms
+    for i in range(start, len(on)):
+        if on[i]: end = i; gap = 0
+        else:
+            gap += 1
+            if gap > max_gap: break
+    dur = (end - start + 1) * win_ms / 1000
+    if dur > 0.9 or dur < 0.06: return None
+    sr = 24000; win = sr * win_ms // 1000
+    a = array.array('h'); a.frombytes(wav[44:len(wav) - (len(wav) - 44) % 2])
+    s0 = max(0, start * win - int(sr * 0.08)); s1 = min(len(a), (end + 1) * win + int(sr * 0.20))
+    seg = array.array('h', a[s0:s1]); f = int(sr * 0.008)
+    for i in range(min(f, len(seg))):
+        seg[i] = int(seg[i] * i / f); seg[len(seg) - 1 - i] = int(seg[len(seg) - 1 - i] * i / f)
+    body = seg.tobytes()
+    hdr = bytearray(wav[:44]); hdr[4:8] = (36 + len(body)).to_bytes(4, 'little'); hdr[40:44] = len(body).to_bytes(4, 'little')
+    return bytes(hdr) + body
 
 
 def synth(case_id, only, force, model, rate, pitch):
@@ -164,18 +213,26 @@ def synth(case_id, only, force, model, rate, pitch):
     fails = 0; total_ms = 0
     nchars = lambda t: len([c for c in t if '\u4e00' <= c <= '\u9fff' or c.isalnum()])
     for n, (it, v, m, h) in enumerate(todo, 1):
-        wav = None; err = None; spoken = it['text']
-        for attempt, (text, kw) in enumerate(text_ladder(it['text'])):
+        wav = None; err = None; spoken = it['text']; carrier = None
+        for attempt, (text, kw, mode) in enumerate(text_ladder(it['text'])):
             try:
                 syn = SpeechSynthesizer(model=m, voice=v['voice_id'], format=AudioFormat.WAV_24000HZ_MONO_16BIT, speech_rate=rate, pitch_rate=pitch, **kw)
                 wav = syn.call(text)
                 if not wav: raise RuntimeError(f'空返回(request {syn.get_last_request_id()})')
                 wav = fix_wav_header(wav)
                 dur = (len(wav) - 44) / 2 / 24000
-                if dur < 0.18 * max(1, nchars(text)) + 0.12:                # 极短的返回(比如单字「行。」只回 90ms)按失败处理,换下一档文本
+                if dur < 0.18 * max(1, nchars(text)) + 0.12:                # 极短的返回(比如单字「行。」只回 90ms)按失败处理,换下一档
                     raise RuntimeError(f'返回太短 {dur:.2f}s({nchars(text)} 字,文本「{text}」,request {syn.get_last_request_id()})')
-                spoken = text
-                if text != it['text']: print(f'  ! {it["id"]} 原文「{it["text"]}」合成不出来,改念「{text}」', file=sys.stderr)
+                if too_quiet(wav, nchars(text)):                             # 时长够但几乎无声(「行……」回 0.4s 静音)同样算失败
+                    raise RuntimeError(f'返回近似静音 {dur:.2f}s(峰值 {pcm_stats(wav)[0]:.3f},文本「{text}」,request {syn.get_last_request_id()})')
+                if mode == 'first':
+                    cut = cut_first_word(wav)
+                    if not cut: raise RuntimeError(f'载体句「{text}」切不出第一个词(request {syn.get_last_request_id()})')
+                    wav = cut; carrier = text; spoken = it['text']
+                    print(f'  ! {it["id"]} 「{it["text"]}」单独合成不出来,借载体句「{text}」截出第一个词 {(len(wav) - 44) / 2 / 24000:.2f}s', file=sys.stderr)
+                else:
+                    spoken = text
+                    if text != it['text']: print(f'  ! {it["id"]} 原文「{it["text"]}」合成不出来,改念「{text}」', file=sys.stderr)
                 break
             except Exception as e:
                 err = e; wav = None; time.sleep(2 * (attempt + 1))
@@ -188,7 +245,7 @@ def synth(case_id, only, force, model, rate, pitch):
         st = path.stat()
         manifest['clips'][it['clip']] = {'file': path.name, 'size': st.st_size, 'mtime': st.st_mtime * 1000, 'duration_ms': dur, 'format': 'wav', 'sample_rate': sr,
                                          'hash': h, 'source': f'cosy:{m}:{v["voice_id"]}', 'text': it['text'], 'generated_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-                                         **({'spoken_text': spoken} if spoken != it['text'] else {})}
+                                         **({'spoken_text': spoken} if spoken != it['text'] else {}), **({'carrier_text': carrier} if carrier else {})}
         manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', 'utf-8')
         print(f'[{n}/{len(todo)}] {it["id"]} {it["speaker_name"]:<4} {dur/1000:5.1f}s {it["text"][:28]}', file=sys.stderr)
     print(f'完成:合成 {len(todo) - fails} 句,失败 {fails},语音共 {total_ms/1000:.0f}s', file=sys.stderr)
