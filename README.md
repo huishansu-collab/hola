@@ -117,6 +117,8 @@ python3 tools/cosyvoice_tts.py synth morning --only assistant       # 逐句 24k
 
 复刻好的音色 id 记在 `cases/<id>/audio/voices.json`，样本必须能被公网访问（公开仓库的 raw 链接即可）。CosyVoice 支持跨语言复刻：英文样本也能说中文。GitHub Actions 里选 provider = cosy（secret 名 `DASHSCOPE_API_KEY`），`auto` 子命令会先把还没复刻的 `ref_*.wav` 复刻好再合成；`only` 填说话人只做那一位，其它说话人保留原引擎的声音。
 
+一两个字的句子（「行。」「好。」）CosyVoice 经常只回几十毫秒的空音频，工具会自动换法：先把这个字放进一句「载体」（「行。好的，我知道了。」）里合成，再按能量包络只截出第一个词，念的仍是原文；实在不行才退到补语气词（「嗯，行。」），实际念的文本记在 manifest 的 `spoken_text`、载体句记在 `carrier_text`，方便核对。
+
 ### 场景环境音与音效
 
 参考包的做法原样保留：living edge 触碰「嘚嘚」建连音、任务执行中的五声音阶等待循环、卡片「叮」、震动「嗡」、来电铃声都在 `public/assets/fx/`；场景环境音按段切换，剧本里写：
