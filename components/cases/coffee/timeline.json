@@ -1,0 +1,409 @@
+{
+  "timing_status": "aligned",
+  "duration_ms": 36400,
+  "tracks": [
+    {
+      "id": "user",
+      "name": "用户",
+      "clips": [
+        {
+          "id": "speech_u001",
+          "kind": "speech",
+          "label": "帮我订一杯咖啡。",
+          "start_at_ms": 0,
+          "end_at_ms": 1250,
+          "utterance_id": "u001",
+          "audio_key": "coffee_u001",
+          "source_duration_ms": 1250,
+          "source_start_ms": 150,
+          "source_end_ms": 1400
+        },
+        {
+          "id": "speech_u004",
+          "kind": "speech",
+          "label": "是的。",
+          "start_at_ms": 10000,
+          "end_at_ms": 10600,
+          "utterance_id": "u004",
+          "audio_key": "coffee_u004",
+          "source_duration_ms": 600,
+          "source_start_ms": 7650,
+          "source_end_ms": 8250
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "name": "用户控制",
+      "clips": [
+        {
+          "id": "click",
+          "kind": "state",
+          "label": "用户点击 AI 卡片",
+          "start_at_ms": 24800,
+          "end_at_ms": 25200,
+          "event_ref": "click_1"
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "name": "助手",
+      "clips": [
+        {
+          "id": "speech_u002",
+          "kind": "speech",
+          "label": "嗯……",
+          "start_at_ms": 2400,
+          "end_at_ms": 3550,
+          "utterance_id": "u002",
+          "audio_key": "coffee_u002",
+          "source_duration_ms": 1150,
+          "source_start_ms": 2300,
+          "source_end_ms": 3450
+        },
+        {
+          "id": "speech_u007",
+          "kind": "speech",
+          "label": "我看一下。",
+          "start_at_ms": 4000,
+          "end_at_ms": 5000,
+          "utterance_id": "u007",
+          "audio_key": "coffee_u007",
+          "source_duration_ms": 1000,
+          "source_start_ms": 3500,
+          "source_end_ms": 4500
+        },
+        {
+          "id": "speech_u003",
+          "kind": "speech",
+          "label": "大杯冰美式，送到公司，对吧？",
+          "start_at_ms": 5600,
+          "end_at_ms": 8000,
+          "utterance_id": "u003",
+          "audio_key": "coffee_u003",
+          "source_duration_ms": 2400,
+          "source_start_ms": 5100,
+          "source_end_ms": 7500
+        },
+        {
+          "id": "speech_u008",
+          "kind": "speech",
+          "label": "好的，这就定。",
+          "start_at_ms": 11600,
+          "end_at_ms": 13150,
+          "utterance_id": "u008",
+          "audio_key": "coffee_u008",
+          "source_duration_ms": 1550,
+          "source_start_ms": 9200,
+          "source_end_ms": 10750
+        },
+        {
+          "id": "speech_u005",
+          "kind": "speech",
+          "label": "一共二十一元，预计二十五分钟送到。点卡片就能支付。",
+          "start_at_ms": 16800,
+          "end_at_ms": 21670,
+          "utterance_id": "u005",
+          "audio_key": "coffee_u005",
+          "source_duration_ms": 4870,
+          "source_start_ms": 11050,
+          "source_end_ms": 15920
+        },
+        {
+          "id": "speech_u006",
+          "kind": "speech",
+          "label": "店家接单了，预计二十五分钟送到公司。",
+          "start_at_ms": 32000,
+          "end_at_ms": 35190,
+          "utterance_id": "u006",
+          "audio_key": "coffee_u006",
+          "source_duration_ms": 3190,
+          "source_start_ms": 16060,
+          "source_end_ms": 19250
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "name": "表达控制",
+      "clips": [
+        {
+          "id": "filler",
+          "kind": "state",
+          "label": "平调拖音 · 战术性拖延",
+          "start_at_ms": 2400,
+          "end_at_ms": 3550,
+          "sub": "有声约0.9秒；未达到1.6秒目标，原速保留"
+        }
+      ]
+    },
+    {
+      "id": "reasoning",
+      "name": "后台判断",
+      "clips": [
+        {
+          "id": "reason_0",
+          "kind": "state",
+          "label": "逐步识别咖啡购买需求，规格与地点待确认",
+          "start_at_ms": 400,
+          "end_at_ms": 2000
+        },
+        {
+          "id": "reason_1",
+          "kind": "state",
+          "label": "决定读取历史候选并核对当前位置",
+          "start_at_ms": 2000,
+          "end_at_ms": 2400
+        },
+        {
+          "id": "gps_result",
+          "kind": "state",
+          "label": "当前位置已返回 · 决定读取已保存地点",
+          "start_at_ms": 3600,
+          "end_at_ms": 4000
+        },
+        {
+          "id": "saved_result",
+          "kind": "state",
+          "label": "已保存地点返回 · 与 GPS 匹配公司位置",
+          "start_at_ms": 4400,
+          "end_at_ms": 4800
+        },
+        {
+          "id": "matched",
+          "kind": "state",
+          "label": "确认位于公司 · 使用保存的完整地址，询问用户",
+          "start_at_ms": 5200,
+          "end_at_ms": 5600
+        },
+        {
+          "id": "reason_4",
+          "kind": "state",
+          "label": "收听是的，确认其指向上一轮规格与配送地点",
+          "start_at_ms": 10400,
+          "end_at_ms": 11200
+        },
+        {
+          "id": "reason_5",
+          "kind": "state",
+          "label": "确认大杯冰美式一杯，送公司；只查询报价",
+          "start_at_ms": 11200,
+          "end_at_ms": 11600
+        },
+        {
+          "id": "reason_6",
+          "kind": "state",
+          "label": "核对可配送、规格及含配送费总价",
+          "start_at_ms": 16400,
+          "end_at_ms": 16800
+        },
+        {
+          "id": "reason_7",
+          "kind": "state",
+          "label": "支付平台回传成功；店家接单状态仍待确认",
+          "start_at_ms": 28000,
+          "end_at_ms": 28400
+        },
+        {
+          "id": "reason_8",
+          "kind": "state",
+          "label": "店家已接单，更新订单卡并播报",
+          "start_at_ms": 31600,
+          "end_at_ms": 32000
+        }
+      ]
+    },
+    {
+      "id": "playback",
+      "name": "播报控制",
+      "clips": [
+        {
+          "id": "run_wait_quote",
+          "kind": "loading",
+          "label": "audio.play()",
+          "start_at_ms": 13600,
+          "end_at_ms": 16400,
+          "lane": 0
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "name": "工具调用",
+      "clips": [
+        {
+          "id": "run_memory_1",
+          "kind": "state",
+          "label": "memory.get()",
+          "start_at_ms": 2400,
+          "end_at_ms": 3600,
+          "lane": 0
+        },
+        {
+          "id": "run_gps_1",
+          "kind": "state",
+          "label": "gps.get_location()",
+          "start_at_ms": 2400,
+          "end_at_ms": 3600,
+          "lane": 1
+        },
+        {
+          "id": "run_saved_1",
+          "kind": "state",
+          "label": "memory.get_Saved_position()",
+          "start_at_ms": 4000,
+          "end_at_ms": 4400,
+          "lane": 0
+        },
+        {
+          "id": "run_location_1",
+          "kind": "state",
+          "label": "position.match(gps, save_position)",
+          "start_at_ms": 4800,
+          "end_at_ms": 5200,
+          "lane": 0
+        },
+        {
+          "id": "run_quote_1",
+          "kind": "state",
+          "label": "coffee.get_quote()",
+          "start_at_ms": 11600,
+          "end_at_ms": 16400,
+          "lane": 0
+        },
+        {
+          "id": "run_show_quote",
+          "kind": "state",
+          "label": "ui.show_coffee_card()",
+          "start_at_ms": 16400,
+          "end_at_ms": 16800,
+          "lane": 0
+        },
+        {
+          "id": "run_status_1",
+          "kind": "state",
+          "label": "coffee.get_order_status()",
+          "start_at_ms": 28400,
+          "end_at_ms": 31600,
+          "lane": 0
+        },
+        {
+          "id": "run_show_order",
+          "kind": "state",
+          "label": "ui.show_coffee_card()",
+          "start_at_ms": 31600,
+          "end_at_ms": 32000,
+          "lane": 0
+        }
+      ]
+    }
+  ],
+  "response_links": [
+    {
+      "user_id": "u001",
+      "assistant_id": "u002"
+    },
+    {
+      "user_id": "u004",
+      "assistant_id": "u008"
+    }
+  ],
+  "interruptions": [],
+  "tool_runs": [
+    {
+      "event_id": "memory_1",
+      "start_at_ms": 2400,
+      "end_at_ms": 3600,
+      "depends_on": [],
+      "decision_end_at_ms": 2400
+    },
+    {
+      "event_id": "gps_1",
+      "start_at_ms": 2400,
+      "end_at_ms": 3600,
+      "depends_on": [],
+      "decision_end_at_ms": 2400
+    },
+    {
+      "event_id": "saved_1",
+      "start_at_ms": 4000,
+      "end_at_ms": 4400,
+      "depends_on": [
+        "gps_1"
+      ],
+      "decision_end_at_ms": 4000
+    },
+    {
+      "event_id": "location_1",
+      "start_at_ms": 4800,
+      "end_at_ms": 5200,
+      "depends_on": [
+        "gps_1",
+        "saved_1"
+      ],
+      "decision_end_at_ms": 4800
+    },
+    {
+      "event_id": "quote_1",
+      "start_at_ms": 11600,
+      "end_at_ms": 16400,
+      "depends_on": [
+        "memory_1",
+        "saved_1",
+        "location_1"
+      ],
+      "decision_end_at_ms": 11600
+    },
+    {
+      "event_id": "wait_quote",
+      "start_at_ms": 13600,
+      "end_at_ms": 16400,
+      "depends_on": []
+    },
+    {
+      "event_id": "show_quote",
+      "start_at_ms": 16400,
+      "end_at_ms": 16800,
+      "depends_on": [
+        "quote_1"
+      ]
+    },
+    {
+      "event_id": "status_1",
+      "start_at_ms": 28400,
+      "end_at_ms": 31600,
+      "depends_on": [
+        "quote_1",
+        "show_quote"
+      ],
+      "decision_end_at_ms": 28400,
+      "payment_event_ref": "paid_1"
+    },
+    {
+      "event_id": "show_order",
+      "start_at_ms": 31600,
+      "end_at_ms": 32000,
+      "depends_on": [
+        "status_1"
+      ]
+    }
+  ],
+  "external_actions": [
+    {
+      "event_ref": "click_1",
+      "type": "card_click",
+      "time_at_ms": 24800
+    },
+    {
+      "event_ref": "checkout_1",
+      "type": "checkout_opened",
+      "time_at_ms": 25200
+    },
+    {
+      "event_ref": "paid_1",
+      "type": "payment_completed",
+      "time_at_ms": 28000
+    }
+  ]
+}

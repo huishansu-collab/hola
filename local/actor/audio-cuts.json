@@ -1,0 +1,47 @@
+[
+  {
+    "id": "actor_u0",
+    "start": 2.35,
+    "end": 5.16
+  },
+  {
+    "id": "actor_intro",
+    "start": 5.38,
+    "end": 8.06
+  },
+  {
+    "id": "actor_a0",
+    "start": 10.55,
+    "end": 12.1
+  },
+  {
+    "id": "actor_u1",
+    "start": 14.78,
+    "end": 17.43
+  },
+  {
+    "id": "actor_a1",
+    "start": 19.14,
+    "end": 20.5
+  },
+  {
+    "id": "actor_u2",
+    "start": 22.0,
+    "end": 24.34
+  },
+  {
+    "id": "actor_a2",
+    "start": 24.42,
+    "end": 26.46
+  },
+  {
+    "id": "actor_a3",
+    "start": 27.26,
+    "end": 30.02
+  },
+  {
+    "id": "actor_u3",
+    "start": 31.43,
+    "end": 32.232
+  }
+]

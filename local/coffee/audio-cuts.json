@@ -1,0 +1,42 @@
+[
+  {
+    "id": "coffee_u001",
+    "start": 0.15,
+    "end": 1.4
+  },
+  {
+    "id": "coffee_u002",
+    "start": 2.3,
+    "end": 3.45
+  },
+  {
+    "id": "coffee_u007",
+    "start": 3.5,
+    "end": 4.5
+  },
+  {
+    "id": "coffee_u003",
+    "start": 5.1,
+    "end": 7.5
+  },
+  {
+    "id": "coffee_u004",
+    "start": 7.65,
+    "end": 8.25
+  },
+  {
+    "id": "coffee_u008",
+    "start": 9.2,
+    "end": 10.75
+  },
+  {
+    "id": "coffee_u005",
+    "start": 11.05,
+    "end": 15.92
+  },
+  {
+    "id": "coffee_u006",
+    "start": 16.06,
+    "end": 19.25
+  }
+]

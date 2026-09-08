@@ -10,7 +10,9 @@
     "build": "vinext build",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint",
-    "format": "oxfmt"
+    "format": "oxfmt",
+    "build:local": "vite build --config vite.local.config.ts && python3 local/package_single.py",
+    "dev:local": "vite --config vite.local.config.ts --host 127.0.0.1"
   },
   "dependencies": {
     "react": "19.2.6",

@@ -1,0 +1,13 @@
+import fs from 'node:fs';import ts from 'typescript';import assert from 'node:assert/strict';
+const source=fs.readFileSync('components/case-info.ts','utf8').replace(/^import .*;\n/gm,'').replace('export function','function');
+const summarize=Function(ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText+';return summarizeCase')();
+const data=JSON.parse(fs.readFileSync('components/cases/coffee/case.json'));
+const timeline=JSON.parse(fs.readFileSync('components/cases/coffee/timeline.json'));
+const info=summarize({END:timeline.duration_ms,utterances:data.utterances,inputEvents:data.events,tracks:timeline.tracks,events:[]});
+assert.equal(info.rounds,2);assert.equal(info.speakerTurns,4);assert.equal(info.utterances,8);assert.equal(info.duration,36400);assert.equal(info.events,data.events.length);assert.equal(info.toolCalls,9);assert.equal(info.interruptions,0);assert(info.tools.includes('position.match'));assert(!info.tools.includes('payment_event'));
+const dirSource=fs.readFileSync('components/case-directory.ts','utf8').replaceAll('export ','');
+const {moveCase}=Function(ts.transpileModule(dirSource,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText+';return {moveCase}')();
+const folders=[{id:'a',name:'A',cases:[{id:'coffee',name:'Coffee',tags:['implicit','hf']}]},{id:'b',name:'B',cases:[]}];
+const saved=JSON.parse(JSON.stringify(moveCase(folders,'coffee',{folderId:'b'})));
+assert.deepEqual(saved[1].cases[0].tags,['implicit','hf']);assert.equal(folders[0].cases.length,1);
+console.log('PASS: case-specific metrics, merged dialogue rounds, event/call distinction, tag persistence across folder moves');

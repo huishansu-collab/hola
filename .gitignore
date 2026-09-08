@@ -38,3 +38,10 @@ next-env.d.ts
 /work/
 
 *.tsbuildinfo
+
+# Local build output and platform-specific hosting metadata
+/local-dist/
+/.openai/
+
+# Raw service responses duplicate generated audio and are not source inputs
+/local/**/master-response.json
