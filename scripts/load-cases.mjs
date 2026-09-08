@@ -1,7 +1,7 @@
 import fs from 'node:fs';import ts from 'typescript';
 export const compile=file=>ts.transpileModule(fs.readFileSync(file,'utf8').replace(/^import .*;\n/gm,'').replaceAll('export ',''),{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
 export function loadCases(){
- const audio=Object.assign({},...['clips','actor-clips','ride-clips','coffee-clips'].map(n=>JSON.parse(fs.readFileSync(`components/audio/${n}.json`))));
+ const audio=Object.assign({},...['clips','actor-clips','ride-clips','coffee-clips','sms-clips','gmail-clips'].map(n=>JSON.parse(fs.readFileSync(`components/audio/${n}.json`))));
  const page=fs.readFileSync('app/page.tsx','utf8');
  const weather=ts.transpileModule(page.slice(page.indexOf('let END='),page.indexOf('function Wave(')),{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText.replace(/export \{\};?/g,'');
  const base=compile('components/loading-spacing.ts')+compile('components/scenario-utils.ts');

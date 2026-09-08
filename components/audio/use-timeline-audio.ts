@@ -4,8 +4,9 @@ import actorData from './actor-clips.json';
 import rideData from './ride-clips.json';
 import coffeeData from './coffee-clips.json';
 import smsData from './sms-clips.json';
+import gmailData from './gmail-clips.json';
 export type RealClip={a:number;b:number;audioKey?:string;fadeMs?:number;loop?:boolean;gainPoints?:[number,number][]};
-export const audioClips={...data,...actorData,...rideData,...coffeeData,...smsData} as Record<string,{src:string;start:number;duration:number;peaks:number[];sourceStart?:number;sourceEnd?:number;source?:string}>;
+export const audioClips={...data,...actorData,...rideData,...coffeeData,...smsData,...gmailData} as Record<string,{src:string;start:number;duration:number;peaks:number[];sourceStart?:number;sourceEnd?:number;source?:string}>;
 export function useTimelineAudio(clips:RealClip[],pos:number,playing:boolean){
  const players=useRef<Map<string,HTMLAudioElement>>(new Map());
  const [error,setError]=useState('');
