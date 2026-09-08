@@ -1,0 +1,583 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "coffee",
+      "case_name": "订咖啡 / 偏好与地址确认",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 36400,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "device_state": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "aligned",
+      "location_permission": "本模拟场景已获定位授权",
+      "memory_policy": "历史偏好只是候选，必须确认当前规格与地址",
+      "payment_policy": "用户亲自在AI卡片进入支付界面完成支付；口头是的不等于支付授权",
+      "address_policy": "GPS位置不充当收货地址；使用已保存完整公司地址引用",
+      "audio_note": "完整对白整段生成、原速剪辑；用户为成年男声。嗯片段1.15秒，有声约0.9秒，尚未达到1.6秒目标。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "memory.get",
+          "description": "读取历史咖啡偏好作为候选，不视为本次确认。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "keys": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "keys"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "gps.get_location",
+          "description": "读取已授权定位，本Case使用模拟GPS。",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory.get_Saved_position",
+          "description": "读取已保存的地点、公司标签及完整配送地址。",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "position.match",
+          "description": "匹配 GPS 与已保存地点，判断是否在公司；配送地址来自保存的地点资料。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "gps": {
+                "type": "string"
+              },
+              "save_position": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "gps",
+              "save_position"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "coffee.get_quote",
+          "description": "只读查询指定咖啡的库存、门店配送范围、预计送达和含配送费报价；不下单或扣款。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "merchant_ref": {
+                "type": "string",
+                "description": "候选门店"
+              },
+              "item": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "string"
+                  },
+                  "temperature": {
+                    "type": "string"
+                  },
+                  "quantity": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "name",
+                  "size",
+                  "temperature",
+                  "quantity"
+                ]
+              },
+              "delivery_address_ref": {
+                "type": "string",
+                "description": "已确认的完整收货地址引用"
+              }
+            },
+            "required": [
+              "merchant_ref",
+              "item",
+              "delivery_address_ref"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "audio.play",
+          "description": "播放等待音效，保持收听，任务结束时停止。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "sound": {
+                "type": "string",
+                "description": "音效名称"
+              },
+              "duration_ms": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "sound",
+              "duration_ms"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "ui.show_coffee_card",
+          "description": "展示商品、门店、配送地址、报价或订单卡；支付由用户点击进入支付界面完成。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "card": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "card"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "coffee.get_order_status",
+          "description": "只读查询用户完成支付后平台产生的订单及店家接单状态，不代付、不提交订单。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "checkout_id": {
+                "type": "string",
+                "description": "支付平台返回的交易引用"
+              }
+            },
+            "required": [
+              "checkout_id"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "帮我订一杯咖啡。",
+      "start_at_ms": 0,
+      "end_at_ms": 1250
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯……",
+      "start_at_ms": 2400,
+      "end_at_ms": 3550
+    },
+    {
+      "id": "u007",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "我看一下。",
+      "start_at_ms": 4000,
+      "end_at_ms": 5000
+    },
+    {
+      "id": "u003",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "大杯冰美式，送到公司，对吧？",
+      "start_at_ms": 5600,
+      "end_at_ms": 8000
+    },
+    {
+      "id": "u004",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "是的。",
+      "start_at_ms": 10000,
+      "end_at_ms": 10600
+    },
+    {
+      "id": "u008",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好的，这就定。",
+      "start_at_ms": 11600,
+      "end_at_ms": 13150
+    },
+    {
+      "id": "u005",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "一共二十一元，预计二十五分钟送到。点卡片就能支付。",
+      "start_at_ms": 16800,
+      "end_at_ms": 21670
+    },
+    {
+      "id": "u006",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "店家接单了，预计二十五分钟送到公司。",
+      "start_at_ms": 32000,
+      "end_at_ms": 35190
+    }
+  ],
+  "events": [
+    {
+      "event_id": "memory_1",
+      "event_type": "function_call",
+      "tool_name": "memory.get",
+      "time_at_ms": 2400,
+      "query": "{\"keys\": [\"coffee_last_confirmed\"]}"
+    },
+    {
+      "event_id": "gps_1",
+      "event_type": "function_call",
+      "tool_name": "gps.get_location",
+      "time_at_ms": 2400,
+      "query": "{}"
+    },
+    {
+      "event_id": "memory_1",
+      "event_type": "function_call",
+      "tool_name": "memory.get",
+      "time_at_ms": 3600,
+      "results": {
+        "simulated": true,
+        "coffee_candidate": {
+          "name": "美式",
+          "size": "大杯",
+          "temperature": "冰",
+          "quantity": 1,
+          "source": "最近一次确认的历史订单，非本次已确认"
+        },
+        "merchant_candidate": {
+          "ref": "merchant_demo_A",
+          "name": "晨间咖啡（示例门店）"
+        },
+        "needs_confirmation": true
+      }
+    },
+    {
+      "event_id": "gps_1",
+      "event_type": "function_call",
+      "tool_name": "gps.get_location",
+      "time_at_ms": 3600,
+      "results": {
+        "simulated": true,
+        "position_ref": "gps_demo",
+        "accuracy_m": 35
+      }
+    },
+    {
+      "event_id": "saved_1",
+      "event_type": "function_call",
+      "tool_name": "memory.get_Saved_position",
+      "time_at_ms": 4000,
+      "query": "{}"
+    },
+    {
+      "event_id": "saved_1",
+      "event_type": "function_call",
+      "tool_name": "memory.get_Saved_position",
+      "time_at_ms": 4400,
+      "results": {
+        "simulated": true,
+        "save_position": "saved_positions_demo",
+        "positions": [
+          {
+            "place_ref": "office_demo",
+            "label": "公司",
+            "delivery_address": {
+              "ref": "company_address_demo",
+              "display": "示例科技园A座一层前台（模拟）",
+              "company_ref": "office_demo",
+              "complete": true,
+              "recipient_ref": "user_self_demo",
+              "phone_ref": "saved_contact_demo"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "event_id": "location_1",
+      "event_type": "function_call",
+      "tool_name": "position.match",
+      "time_at_ms": 4800,
+      "query": "{\"gps\": \"gps_demo\", \"save_position\": \"saved_positions_demo\"}"
+    },
+    {
+      "event_id": "location_1",
+      "event_type": "function_call",
+      "tool_name": "position.match",
+      "time_at_ms": 5200,
+      "results": {
+        "simulated": true,
+        "match": "at_office",
+        "confidence": 0.96,
+        "does_not_replace_delivery_address": true
+      }
+    },
+    {
+      "event_id": "quote_1",
+      "event_type": "function_call",
+      "tool_name": "coffee.get_quote",
+      "time_at_ms": 11600,
+      "query": "{\"merchant_ref\": \"merchant_demo_A\", \"item\": {\"name\": \"美式\", \"size\": \"大杯\", \"temperature\": \"冰\", \"quantity\": 1}, \"delivery_address_ref\": \"company_address_demo\"}"
+    },
+    {
+      "event_id": "wait_quote",
+      "event_type": "function_call",
+      "tool_name": "audio.play",
+      "time_at_ms": 13600,
+      "query": "{\"sound\":\"loading\",\"duration_ms\":2800}"
+    },
+    {
+      "event_id": "quote_1",
+      "event_type": "function_call",
+      "tool_name": "coffee.get_quote",
+      "time_at_ms": 16400,
+      "results": {
+        "simulated": true,
+        "quote_id": "coffee_quote_demo",
+        "merchant_name": "晨间咖啡（示例门店）",
+        "merchant_ref": "merchant_demo_A",
+        "item": {
+          "name": "美式",
+          "size": "大杯",
+          "temperature": "冰",
+          "quantity": 1
+        },
+        "delivery_address_ref": "company_address_demo",
+        "address_display": "示例科技园A座一层前台（模拟）",
+        "recipient_display": "用户本人（模拟）",
+        "contact_display": "已保存联系方式（脱敏）",
+        "in_stock": true,
+        "deliverable": true,
+        "item_cny": 18,
+        "delivery_fee_cny": 3,
+        "total_cny": 21,
+        "estimated_arrival_minutes": 25,
+        "eta_is_estimate": true,
+        "valid_until_case_ms": 40000,
+        "cancellation_terms": "模拟规则：店家接单前可取消退款；接单后需联系门店确认",
+        "actions": [
+          {
+            "id": "pay",
+            "label": "去支付 ¥21",
+            "type": "open_user_checkout"
+          },
+          {
+            "id": "edit",
+            "label": "修改商品或地址"
+          }
+        ]
+      }
+    },
+    {
+      "event_id": "show_quote",
+      "event_type": "function_call",
+      "tool_name": "ui.show_coffee_card",
+      "time_at_ms": 16400,
+      "query": "{\"card\": {\"quote_id\": \"coffee_quote_demo\", \"merchant_name\": \"晨间咖啡（示例门店）\", \"merchant_ref\": \"merchant_demo_A\", \"item\": {\"name\": \"美式\", \"size\": \"大杯\", \"temperature\": \"冰\", \"quantity\": 1}, \"delivery_address_ref\": \"company_address_demo\", \"address_display\": \"示例科技园A座一层前台（模拟）\", \"recipient_display\": \"用户本人（模拟）\", \"contact_display\": \"已保存联系方式（脱敏）\", \"in_stock\": true, \"deliverable\": true, \"item_cny\": 18, \"delivery_fee_cny\": 3, \"total_cny\": 21, \"estimated_arrival_minutes\": 25, \"eta_is_estimate\": true, \"valid_until_case_ms\": 40000, \"cancellation_terms\": \"模拟规则：店家接单前可取消退款；接单后需联系门店确认\", \"actions\": [{\"id\": \"pay\", \"label\": \"去支付 ¥21\", \"type\": \"open_user_checkout\"}, {\"id\": \"edit\", \"label\": \"修改商品或地址\"}]}}"
+    },
+    {
+      "event_id": "wait_quote",
+      "event_type": "function_call",
+      "tool_name": "audio.play",
+      "time_at_ms": 16400,
+      "results": {
+        "simulated": true,
+        "status": "completed",
+        "duration_ms": 2800,
+        "gain_points": [
+          [
+            13600,
+            0
+          ],
+          [
+            13720,
+            0.35
+          ],
+          [
+            16220,
+            0.35
+          ],
+          [
+            16400,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "event_id": "show_quote",
+      "event_type": "function_call",
+      "tool_name": "ui.show_coffee_card",
+      "time_at_ms": 16800,
+      "results": {
+        "simulated": true,
+        "shown": true,
+        "quote_id": "coffee_quote_demo"
+      }
+    },
+    {
+      "event_id": "click_1",
+      "event_type": "ui_event",
+      "time_at_ms": 24800,
+      "context": {
+        "simulated": true,
+        "source": "user",
+        "action": "open_user_checkout",
+        "quote_id": "coffee_quote_demo",
+        "amount_cny": 21,
+        "note": "点击打开支付界面，不等于支付成功"
+      }
+    },
+    {
+      "event_id": "checkout_1",
+      "event_type": "ui_event",
+      "time_at_ms": 25200,
+      "context": {
+        "simulated": true,
+        "source": "payment_app",
+        "action": "checkout_opened",
+        "quote_id": "coffee_quote_demo",
+        "note": "用户进入支付软件，自行核对并完成支付；尚未支付成功"
+      }
+    },
+    {
+      "event_id": "paid_1",
+      "event_type": "payment_event",
+      "time_at_ms": 28000,
+      "context": {
+        "simulated": true,
+        "source": "payment_provider",
+        "status": "paid",
+        "quote_id": "coffee_quote_demo",
+        "checkout_id": "coffee_checkout_demo",
+        "amount_cny": 21,
+        "initiated_by": "user_card_checkout"
+      }
+    },
+    {
+      "event_id": "status_1",
+      "event_type": "function_call",
+      "tool_name": "coffee.get_order_status",
+      "time_at_ms": 28400,
+      "query": "{\"checkout_id\": \"coffee_checkout_demo\"}"
+    },
+    {
+      "event_id": "status_1",
+      "event_type": "function_call",
+      "tool_name": "coffee.get_order_status",
+      "time_at_ms": 31600,
+      "results": {
+        "simulated": true,
+        "order_id": "coffee_order_demo",
+        "payment_status": "paid",
+        "merchant_status": "accepted",
+        "item": {
+          "name": "美式",
+          "size": "大杯",
+          "temperature": "冰",
+          "quantity": 1
+        },
+        "delivery_address_ref": "company_address_demo",
+        "estimated_arrival_minutes": 25,
+        "eta_is_estimate": true
+      }
+    },
+    {
+      "event_id": "show_order",
+      "event_type": "function_call",
+      "tool_name": "ui.show_coffee_card",
+      "time_at_ms": 31600,
+      "query": "{\"card\": {\"order_id\": \"coffee_order_demo\", \"payment_status\": \"paid\", \"merchant_status\": \"accepted\", \"item\": {\"name\": \"美式\", \"size\": \"大杯\", \"temperature\": \"冰\", \"quantity\": 1}, \"delivery_address_ref\": \"company_address_demo\", \"estimated_arrival_minutes\": 25, \"eta_is_estimate\": true, \"merchant_name\": \"晨间咖啡（示例门店）\", \"total_cny\": 21, \"address_display\": \"示例科技园A座一层前台（模拟）\", \"actions\": [\"查看配送进度\", \"联系门店\"]}}"
+    },
+    {
+      "event_id": "show_order",
+      "event_type": "function_call",
+      "tool_name": "ui.show_coffee_card",
+      "time_at_ms": 32000,
+      "results": {
+        "simulated": true,
+        "shown": true,
+        "order_id": "coffee_order_demo"
+      }
+    }
+  ],
+  "fdx_annotation": [
+    {
+      "fdx_type": "垫句",
+      "role": "assistant",
+      "start_at_ms": 2400,
+      "end_at_ms": 3550
+    }
+  ],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

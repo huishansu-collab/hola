@@ -1,0 +1,206 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "gmail",
+      "case_name": "新用户查 Gmail 邮件",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 23200,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "aligned",
+      "audio_status": "generated",
+      "stream_step_ms": 400,
+      "task_goal": "读取未读邮件，简述值得关注的信息",
+      "completion_boundary": "配置卡片已展示，等待用户配置；尚未绑定邮箱或读取邮件",
+      "audio_note": "四段语音来自同一次完整对话生成，按录音分段并对齐；保持原始语速。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "memory.get",
+          "description": "读取用户已有的邮箱绑定记录。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "description": "记忆查询键"
+              }
+            },
+            "required": [
+              "key"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "store.search",
+          "description": "查询当前生态可用的 connector 或 MCP。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "需要的能力"
+              }
+            },
+            "required": [
+              "query"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "ui.show_connector_config",
+          "description": "在站内展示连接器配置卡片，后续配置由用户完成。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "connector_id": {
+                "type": "string",
+                "description": "已发现且用户同意配置的连接器标识"
+              }
+            },
+            "required": [
+              "connector_id"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "帮我查一下未读邮件，brief 一下，看看有什么值得关注的。",
+      "start_at_ms": 0,
+      "end_at_ms": 4400
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "你还没有绑定过邮箱。想绑定哪个邮箱？比如 Gmail。",
+      "start_at_ms": 6400,
+      "end_at_ms": 10950
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "好的，帮我绑定 Gmail。",
+      "start_at_ms": 11600,
+      "end_at_ms": 13400
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好的，Gmail 的配置卡片已经发给你了。点开按提示配置好，我就能帮你看未读邮件，整理值得关注的内容。",
+      "start_at_ms": 14800,
+      "end_at_ms": 22886
+    }
+  ],
+  "events": [
+    {
+      "event_id": "gmail_bindings",
+      "event_type": "memory_call",
+      "tool_name": "memory.get",
+      "time_at_ms": 4400,
+      "query": "{\"key\": \"email_bindings\"}"
+    },
+    {
+      "event_id": "gmail_bindings",
+      "event_type": "memory_call",
+      "tool_name": "memory.get",
+      "time_at_ms": 4800,
+      "results": {
+        "bindings": [],
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "gmail_discovery",
+      "event_type": "function_call",
+      "tool_name": "store.search",
+      "time_at_ms": 4800,
+      "query": "{\"query\": \"邮件 connector 或 MCP，支持读取未读邮件\"}"
+    },
+    {
+      "event_id": "gmail_discovery",
+      "event_type": "function_call",
+      "tool_name": "store.search",
+      "time_at_ms": 6000,
+      "results": {
+        "connectors": [
+          {
+            "connector_id": "gmail",
+            "name": "Gmail",
+            "capabilities": [
+              "list_unread",
+              "read_email"
+            ],
+            "status": "available",
+            "requires_user_configuration": true
+          }
+        ],
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "gmail_config_card",
+      "event_type": "function_call",
+      "tool_name": "ui.show_connector_config",
+      "time_at_ms": 14000,
+      "query": "{\"connector_id\": \"gmail\"}"
+    },
+    {
+      "event_id": "gmail_config_card",
+      "event_type": "function_call",
+      "tool_name": "ui.show_connector_config",
+      "time_at_ms": 14400,
+      "results": {
+        "card_id": "gmail_config_001",
+        "connector_id": "gmail",
+        "status": "displayed",
+        "binding_status": "not_connected",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

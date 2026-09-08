@@ -1,0 +1,257 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "sms",
+      "case_name": "手机欠费短信 / Living Edge 提醒",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 12800,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "device_state": {
+      "phone_id": "phone_demo",
+      "living_edge_id": "edge_demo",
+      "screen_state": "off",
+      "interactive": false,
+      "assistant_state": "inactive"
+    },
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "aligned",
+      "audio_status": "generated",
+      "audio_note": "按用户确认的新台词与朋友聊天提示词重新生成，原速片段 3.65 秒；未做后期变速。",
+      "notification_access_authorized": true,
+      "notification_readout_after_touch": true,
+      "non_active_definition": "手机未处于交互状态，屏幕熄灭；不代表关机、断网或欠费已停机。",
+      "lighting_duration_ms": 5000,
+      "touch_does_not_unlock_phone": true,
+      "stream_step_ms": 400
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "device.get_state",
+          "description": "模拟读取手机交互状态与助手激活状态。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "device_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "device_id"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "living_edge.light",
+          "description": "模拟黄色闪烁提醒；成功返回后开始计时，持续指定毫秒数并自动熄灭。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "device_id": {
+                "type": "string"
+              },
+              "color": {
+                "type": "string",
+                "enum": [
+                  "yellow"
+                ]
+              },
+              "pattern": {
+                "type": "string",
+                "enum": [
+                  "blink"
+                ]
+              },
+              "duration_ms": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "notification_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "device_id",
+              "color",
+              "pattern",
+              "duration_ms",
+              "notification_id"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "assistant.activate",
+          "description": "模拟响应用户触摸，激活助手并绑定待读通知；不解锁手机。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "trigger_event_id": {
+                "type": "string"
+              },
+              "notification_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "trigger_event_id",
+              "notification_id"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {
+    "pending_notification_id": "sms_demo_001"
+  },
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "中国移动发短信来了，说你手机快欠费停机了。",
+      "start_at_ms": 8400,
+      "end_at_ms": 12050
+    }
+  ],
+  "events": [
+    {
+      "event_id": "sms_received",
+      "event_type": "world_event",
+      "time_at_ms": 0,
+      "context": {
+        "source": "sms",
+        "action": "received",
+        "notification_id": "sms_demo_001",
+        "sender": "中国移动",
+        "sender_number": "10086",
+        "text": "您的账户余额不足，即将欠费停机，请及时充值。",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "state_001",
+      "event_type": "function_call",
+      "tool_name": "device.get_state",
+      "time_at_ms": 400,
+      "query": "{\"device_id\": \"phone_demo\"}"
+    },
+    {
+      "event_id": "state_001",
+      "event_type": "function_call",
+      "tool_name": "device.get_state",
+      "time_at_ms": 800,
+      "results": {
+        "device_id": "phone_demo",
+        "interactive": false,
+        "screen_state": "off",
+        "assistant_state": "inactive",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "light_001",
+      "event_type": "function_call",
+      "tool_name": "living_edge.light",
+      "time_at_ms": 1200,
+      "query": "{\"device_id\": \"edge_demo\", \"color\": \"yellow\", \"pattern\": \"blink\", \"duration_ms\": 5000, \"notification_id\": \"sms_demo_001\"}"
+    },
+    {
+      "event_id": "light_001",
+      "event_type": "function_call",
+      "tool_name": "living_edge.light",
+      "time_at_ms": 1600,
+      "results": {
+        "status": "started",
+        "device_id": "edge_demo",
+        "color": "yellow",
+        "pattern": "blink",
+        "started_at_ms": 1600,
+        "duration_ms": 5000,
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "light_finished",
+      "event_type": "world_event",
+      "time_at_ms": 6600,
+      "context": {
+        "source": "living_edge",
+        "action": "light_finished",
+        "related_event_id": "light_001",
+        "device_id": "edge_demo",
+        "elapsed_ms": 5000,
+        "light_state": "off",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "edge_touch",
+      "event_type": "ui_event",
+      "time_at_ms": 7200,
+      "context": {
+        "source": "living_edge",
+        "action": "touch",
+        "device_id": "edge_demo",
+        "notification_id": "sms_demo_001",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "activate_001",
+      "event_type": "function_call",
+      "tool_name": "assistant.activate",
+      "time_at_ms": 7600,
+      "query": "{\"trigger_event_id\": \"edge_touch\", \"notification_id\": \"sms_demo_001\"}"
+    },
+    {
+      "event_id": "activate_001",
+      "event_type": "function_call",
+      "tool_name": "assistant.activate",
+      "time_at_ms": 8000,
+      "results": {
+        "assistant_state": "active",
+        "notification_id": "sms_demo_001",
+        "phone_unlocked": false,
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

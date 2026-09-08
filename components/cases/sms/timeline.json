@@ -1,0 +1,217 @@
+{
+  "timing_status": "aligned",
+  "duration_ms": 12800,
+  "roles": [
+    {
+      "role": "user",
+      "track_ids": [
+        "user",
+        "control"
+      ]
+    },
+    {
+      "role": "assistant",
+      "track_ids": [
+        "assistant",
+        "expression",
+        "playback"
+      ]
+    },
+    {
+      "role": "world",
+      "track_ids": [
+        "world"
+      ]
+    },
+    {
+      "role": "backend",
+      "track_ids": [
+        "reasoning",
+        "tools"
+      ]
+    }
+  ],
+  "tracks": [
+    {
+      "id": "user",
+      "name": "用户",
+      "clips": []
+    },
+    {
+      "id": "control",
+      "name": "用户控制",
+      "clips": [
+        {
+          "id": "touch",
+          "kind": "state",
+          "start_at_ms": 7200,
+          "end_at_ms": 7600,
+          "label": "触摸 Living Edge",
+          "sub": "用户主动操作 · 查看待处理提醒"
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "name": "助手",
+      "clips": [
+        {
+          "id": "speech_001",
+          "kind": "speech",
+          "start_at_ms": 8400,
+          "end_at_ms": 12050,
+          "label": "中国移动发短信来了，说你手机快欠费停机了。",
+          "utterance_id": "u001",
+          "sub": "原速播报 · 3.65 秒",
+          "audio_key": "sms_a0",
+          "source_duration_ms": 3650
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "name": "表达控制",
+      "clips": []
+    },
+    {
+      "id": "playback",
+      "name": "播报控制",
+      "clips": [
+        {
+          "id": "yellow",
+          "kind": "state",
+          "start_at_ms": 1600,
+          "end_at_ms": 6600,
+          "label": "黄灯闪烁 · 5 秒",
+          "sub": "Living Edge · 需要关注的信息 · 无声音"
+        },
+        {
+          "id": "off",
+          "kind": "device_state",
+          "start_at_ms": 6600,
+          "end_at_ms": 7000,
+          "label": "黄灯自动熄灭",
+          "sub": "闪烁满 5 秒 · 通知仍待处理",
+          "event_id": "light_finished"
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "name": "世界",
+      "clips": [
+        {
+          "id": "sms",
+          "kind": "state",
+          "start_at_ms": 0,
+          "end_at_ms": 400,
+          "label": "收到中国移动短信 · 即将欠费停机",
+          "sub": "世界信号 · 10086 · 模拟短信",
+          "event_id": "sms_received"
+        }
+      ]
+    },
+    {
+      "id": "reasoning",
+      "name": "后台判断",
+      "clips": [
+        {
+          "id": "classify",
+          "kind": "state",
+          "start_at_ms": 400,
+          "end_at_ms": 800,
+          "label": "识别欠费预警 · 查询设备状态",
+          "sub": "来自短信的通知，不当作用户口头指令"
+        },
+        {
+          "id": "silent",
+          "kind": "state",
+          "start_at_ms": 800,
+          "end_at_ms": 1200,
+          "label": "手机非激活 · 选择静默黄灯提醒",
+          "sub": "屏幕熄灭、未在交互；未触摸前不播报"
+        },
+        {
+          "id": "wake",
+          "kind": "state",
+          "start_at_ms": 7600,
+          "end_at_ms": 8000,
+          "label": "收到触摸 · 激活助手并关联短信",
+          "sub": "触摸打开本次提醒，不代表充值或解锁"
+        },
+        {
+          "id": "read",
+          "kind": "state",
+          "start_at_ms": 8000,
+          "end_at_ms": 8400,
+          "label": "激活成功 · 允许播报待处理短信",
+          "sub": "先报来源，沿用原短信“即将停机”的含义"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "name": "工具调用",
+      "clips": [
+        {
+          "id": "run_state",
+          "kind": "state",
+          "start_at_ms": 400,
+          "end_at_ms": 800,
+          "label": "device.get_state()",
+          "sub": "返回：屏幕熄灭 / 非交互 / 助手未激活"
+        },
+        {
+          "id": "run_light",
+          "kind": "state",
+          "start_at_ms": 1200,
+          "end_at_ms": 1600,
+          "label": "living_edge.light(yellow, blink, 5000)",
+          "sub": "成功后闪烁 5 秒，效果在播报控制轨道展示"
+        },
+        {
+          "id": "run_activate",
+          "kind": "state",
+          "start_at_ms": 7600,
+          "end_at_ms": 8000,
+          "label": "assistant.activate()",
+          "sub": "用户触摸后激活 · 不解锁手机"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "trigger_links": [
+    {
+      "event_id": "edge_touch",
+      "assistant_id": "u001",
+      "activation_event_id": "activate_001"
+    }
+  ],
+  "interruptions": [],
+  "tool_runs": [
+    {
+      "event_id": "state_001",
+      "start_at_ms": 400,
+      "end_at_ms": 800,
+      "depends_on": [],
+      "decision_end_at_ms": 400
+    },
+    {
+      "event_id": "light_001",
+      "start_at_ms": 1200,
+      "end_at_ms": 1600,
+      "depends_on": [
+        "state_001"
+      ],
+      "decision_end_at_ms": 1200
+    },
+    {
+      "event_id": "activate_001",
+      "start_at_ms": 7600,
+      "end_at_ms": 8000,
+      "depends_on": [],
+      "decision_end_at_ms": 7600
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+import fs from 'node:fs';import ts from 'typescript';import assert from 'node:assert/strict';
+const source=ts.transpileModule(fs.readFileSync('components/case-viewport.ts','utf8').replaceAll('export ',''),{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
+const {readViewports,resolveViewport}=Function(source+';return {readViewports,resolveViewport}')();
+const weather=resolveViewport({mode:'fit',scale:210,scrollMs:2400},900,32800);
+const actor=resolveViewport(undefined,900,28400);
+assert.equal(weather.scale,900/32.8);assert.equal(actor.scale,210);assert.equal(actor.mode,'custom');
+const views=readViewports(JSON.stringify({weather,actor:{...actor,scale:420,scrollMs:8000}}));
+assert.equal(resolveViewport(views.actor,900,28400).scale,420);assert.equal(resolveViewport(views.actor,900,28400).scrollMs,8000);
+assert.equal(resolveViewport(views.weather,1200,32800).scale,1200/32.8);
+assert.equal(resolveViewport(views.actor,1200,28400).scale,420);
+assert.equal(resolveViewport({mode:'custom',scale:10,scrollMs:999999},900,12800).scrollMs,0);
+assert.deepEqual(readViewports('{broken'),{});assert.deepEqual(readViewports('{"case":{"mode":"fit","scale":0,"scrollMs":0}}'),{});
+console.log('PASS: independent case modes, reload round-trip, fit resizing, custom zoom and bounds.');

@@ -1,0 +1,434 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": null,
+      "case_name": null,
+      "source_type": null,
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": null,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "device_state": {},
+    "memory": {
+      "identity": {
+        "chinese_name": null,
+        "english_name": null,
+        "gender": null,
+        "birthday": {
+          "month": null,
+          "day": null
+        },
+        "hometown": null,
+        "nationality": null
+      },
+      "dynamic_profile": {
+        "age": {
+          "value": null,
+          "as_of": null,
+          "note": null
+        },
+        "residence": {
+          "country": null,
+          "province": null,
+          "city": null,
+          "district": null,
+          "area": null
+        }
+      },
+      "career": {
+        "employer": null,
+        "company_type": null,
+        "job_title": null,
+        "industry": null,
+        "professional_domain": null
+      },
+      "family": {
+        "marital_status": null,
+        "spouse": {
+          "relation": null,
+          "name": null
+        },
+        "children": [
+          {
+            "relation": null,
+            "name": null,
+            "health_constraints": [
+              {
+                "type": null,
+                "item": null,
+                "action": null
+              }
+            ]
+          }
+        ]
+      },
+      "pets": [
+        {
+          "species": null,
+          "breed": null,
+          "color": null,
+          "name": null,
+          "weight_kg": null,
+          "health_management": []
+        }
+      ],
+      "communication_preferences": {
+        "detail_level": null,
+        "structure": [],
+        "evidence_preference": [],
+        "tone": null,
+        "preferred_address": null,
+        "person_reference": null
+      },
+      "output_templates": {
+        "weekly_report": {
+          "sections": []
+        },
+        "meeting_notes": {
+          "sections": []
+        }
+      },
+      "agent_profile": {
+        "identity": null,
+        "background": null,
+        "proactivity": {
+          "level": null,
+          "recommendation_scope": []
+        },
+        "response_style": []
+      },
+      "important_insights": {
+        "user": [],
+        "agent": []
+      }
+    },
+    "constraints": {},
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "weather.query",
+          "description": "查询天气及生活指数，包括穿衣建议、紫外线指数等。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "dailysteps": {
+                "type": "number",
+                "description": "未来天数，包含当日；与 date 二选一。"
+              },
+              "date": {
+                "type": "string",
+                "description": "日期，可使用对话中的相对日期；本案例为明天，绝对日期未给定。"
+              },
+              "district": {
+                "type": "string",
+                "description": "城市或县区。"
+              }
+            },
+            "required": [
+              "district"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "web_search",
+          "description": "联网搜索实时公开信息。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "搜索关键词。"
+              }
+            },
+            "required": [
+              "query"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "reminder.create",
+          "description": "创建指定时间的提醒。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "time": {
+                "type": "string",
+                "description": "当地时间 HH:mm；时区与绝对日期未明确时不补造。"
+              },
+              "text": {
+                "type": "string",
+                "description": "提醒事项。"
+              },
+              "date": {
+                "type": "string",
+                "description": "提醒日期；保留案例给定的相对日期，例如明天。"
+              }
+            },
+            "required": [
+              "time",
+              "text",
+              "date"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "reminder.update",
+          "description": "修改已创建提醒的时间或事项。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "创建提醒时返回的提醒 ID。"
+              },
+              "time": {
+                "type": "string",
+                "description": "当地时间 HH:mm；时区与绝对日期未明确时不补造。"
+              },
+              "text": {
+                "type": "string",
+                "description": "新的提醒事项；不修改时省略。"
+              },
+              "date": {
+                "type": "string",
+                "description": "提醒日期；保留案例给定的相对日期，例如明天。"
+              }
+            },
+            "required": [
+              "id",
+              "time",
+              "date"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory.get",
+          "description": "读取已保存的信息。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "description": "信息键，例如 home"
+              }
+            },
+            "required": [
+              "key"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "gps.get_location",
+          "description": "读取已授权的实时位置。",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory.get_saved_positions",
+          "description": "读取已保存的地点及标签。",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "position.match",
+          "description": "匹配实时位置和已保存地点；不等同于确认上车出口。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "gps": {
+                "type": "object"
+              },
+              "saved_positions": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": [
+              "gps",
+              "saved_positions"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "amap.route",
+          "description": "查询驾车路线和路况；本地 Case 使用模拟结果。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "origin": {
+                "type": "string",
+                "description": "实时位置"
+              },
+              "destination": {
+                "type": "string",
+                "description": "目的地"
+              },
+              "mode": {
+                "type": "string",
+                "description": "交通方式"
+              }
+            },
+            "required": [
+              "origin",
+              "destination",
+              "mode"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "ride.book",
+          "description": "按已确认上车点和目的地提交订单并等待接单；本地 Case 不实际叫车。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "车型"
+              },
+              "pickup": {
+                "type": "string",
+                "description": "已确认上车点"
+              },
+              "destination": {
+                "type": "string",
+                "description": "目的地"
+              }
+            },
+            "required": [
+              "type",
+              "pickup",
+              "destination"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "information_card.show",
+          "description": "展示订单完整信息及操作入口。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "order": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "order"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "audio.play",
+          "description": "播放当前 Case 的等待音效，与助手人声前后至少间隔400毫秒。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "sound": {
+                "type": "string",
+                "description": "音效名称"
+              },
+              "duration_ms": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "sound"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "audio.stop",
+          "description": "停止指定 audio.play 调用的等待音效。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "playback_event_id": {
+                "type": "string",
+                "description": "对应 audio.play 的 event_id"
+              }
+            },
+            "required": [
+              "playback_event_id"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {
+    "time_at_ms": null,
+    "world_signal": [
+      {
+        "screen_content": null
+      },
+      {
+        "canlendar_time": null,
+        "canlendar_content": null
+      },
+      {}
+    ]
+  }
+}
