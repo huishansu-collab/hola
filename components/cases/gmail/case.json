@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 23200,
+        "duration_ms": 17200,
         "file": null,
         "tracks": [
           {
@@ -35,7 +35,7 @@
       "stream_step_ms": 400,
       "task_goal": "读取未读邮件，简述值得关注的信息",
       "completion_boundary": "配置卡片已展示，等待用户配置；尚未绑定邮箱或读取邮件",
-      "audio_note": "用户两句由同一次男声生成，助手保留已确认录音；按原速与实际时长对齐。"
+      "audio_note": "保留首轮录音，用户短打断与助手结束语重新生成；原速播放，打断时对助手尾部施加 120 ms 淡出。"
     },
     "tools": [
       {
@@ -94,6 +94,28 @@
             ]
           }
         }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "audio.stop",
+          "description": "用户打断时淡出并停止当前助手语音。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "playback_event_id": {
+                "type": "string"
+              },
+              "fade_ms": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "playback_event_id",
+              "fade_ms"
+            ]
+          }
+        }
       }
     ]
   },
@@ -111,25 +133,25 @@
       "id": "u002",
       "speaker": "assistant",
       "speaker_id": "assistant",
-      "text": "你还没有绑定过邮箱。想绑定哪个邮箱？比如 Gmail 邮箱。",
+      "text": "你还没有绑定过邮箱。想绑定哪个邮箱？比如 Gmail。",
       "start_at_ms": 6000,
-      "end_at_ms": 10750
+      "end_at_ms": 10120
     },
     {
       "id": "u003",
       "speaker": "user",
       "speaker_id": "user_1",
-      "text": "好的，帮我绑定 Gmail。",
-      "start_at_ms": 11200,
-      "end_at_ms": 13000
+      "text": "就 Gmail。",
+      "start_at_ms": 9880,
+      "end_at_ms": 10580
     },
     {
       "id": "u004",
       "speaker": "assistant",
       "speaker_id": "assistant",
-      "text": "好的，Gmail 的配置卡片已经发给你了。点开按提示配置好，我就能帮你看未读邮件，整理值得关注的内容。",
-      "start_at_ms": 14400,
-      "end_at_ms": 22986
+      "text": "需要你自己确认绑定，Gmail 卡片发你了，按提示操作就行。",
+      "start_at_ms": 12000,
+      "end_at_ms": 16986
     }
   ],
   "events": [
@@ -179,17 +201,36 @@
       }
     },
     {
+      "event_id": "gmail_stop",
+      "event_type": "function_call",
+      "tool_name": "audio.stop",
+      "time_at_ms": 10000,
+      "query": "{\"playback_event_id\": \"gmail_u002\", \"fade_ms\": 120}"
+    },
+    {
+      "event_id": "gmail_stop",
+      "event_type": "function_call",
+      "tool_name": "audio.stop",
+      "time_at_ms": 10400,
+      "results": {
+        "status": "stopped",
+        "playback_event_id": "gmail_u002",
+        "stopped_at_ms": 10120,
+        "simulated": true
+      }
+    },
+    {
       "event_id": "gmail_config_card",
       "event_type": "function_call",
       "tool_name": "ui.show_connector_config",
-      "time_at_ms": 13600,
+      "time_at_ms": 11200,
       "query": "{\"connector_id\": \"gmail\"}"
     },
     {
       "event_id": "gmail_config_card",
       "event_type": "function_call",
       "tool_name": "ui.show_connector_config",
-      "time_at_ms": 14000,
+      "time_at_ms": 11600,
       "results": {
         "card_id": "gmail_config_001",
         "connector_id": "gmail",
