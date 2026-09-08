@@ -43,8 +43,7 @@
           "start_at_ms": 6000,
           "end_at_ms": 11320,
           "audio_key": "gmail_u002",
-          "fade_ms": 120,
-          "fade_out": true
+          "fade_ms": 120
         },
         {
           "id": "u004",
