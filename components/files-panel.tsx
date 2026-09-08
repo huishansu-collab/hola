@@ -4,7 +4,7 @@ import {useEffect,useRef,useState,type DragEvent} from 'react';
 import {caseTags,moveCase,type CaseFile,type Directory,type CaseDrop} from './case-directory';
 export type {CaseFile} from './case-directory';
 import {Folder,FolderOpen,NewCase,Plus} from './sf-symbols';
-const initial:Directory[]=[{id:'default',name:'我的案例',cases:[{id:'weather',name:'北京天气 / 跑步提醒'},{id:'actor',name:'演员名字 / 追问电视剧'},{id:'ride',name:'回家路况 / 呼叫快车'},{id:'coffee',name:'订咖啡 / 偏好与地址确认'},{id:'sms',name:'手机欠费短信 / Living Edge 提醒'}]}];
+const initial:Directory[]=[{id:'default',name:'我的案例',cases:[{id:'weather',name:'北京天气 / 跑步提醒'},{id:'actor',name:'演员名字 / 追问电视剧'},{id:'ride',name:'回家路况 / 呼叫快车'},{id:'coffee',name:'订咖啡 / 偏好与地址确认'},{id:'sms',name:'手机欠费短信 / Living Edge 提醒'},{id:'gmail',name:'新用户查 Gmail 邮件'}]}];
 export function FilesPanel({active,onSelect,getScenario,onInspect}:{getScenario:(id:string)=>Scenario|undefined;onInspect:()=>void;active:string;onSelect:(file:CaseFile)=>void}){
  const [folders,setFolders]=useState(initial),[folder,setFolder]=useState('default'),[open,setOpen]=useState<Record<string,boolean>>({default:true});
  const [creating,setCreating]=useState<'folder'|'case'|null>(null),[name,setName]=useState(''),[error,setError]=useState('');

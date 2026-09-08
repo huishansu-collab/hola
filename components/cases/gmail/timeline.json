@@ -1,0 +1,185 @@
+{
+  "timing_status": "planned",
+  "duration_ms": 32400,
+  "tracks": [
+    {
+      "id": "user",
+      "name": "用户",
+      "clips": [
+        {
+          "id": "u001",
+          "kind": "speech",
+          "utterance_id": "u001",
+          "label": "帮我查一下未读邮件，brief 一下，看看有什么值得关注的。",
+          "start_at_ms": 0,
+          "end_at_ms": 6400,
+          "sub": "语音待生成 · 当前为设计时长"
+        },
+        {
+          "id": "u003",
+          "kind": "speech",
+          "utterance_id": "u003",
+          "label": "好的，帮我绑定 Gmail。",
+          "start_at_ms": 16000,
+          "end_at_ms": 18400,
+          "sub": "语音待生成 · 当前为设计时长"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "name": "用户控制",
+      "clips": []
+    },
+    {
+      "id": "assistant",
+      "name": "助手",
+      "clips": [
+        {
+          "id": "u002",
+          "kind": "speech",
+          "utterance_id": "u002",
+          "label": "你还没有绑定过邮箱。想绑定哪个邮箱？比如 Gmail。",
+          "start_at_ms": 8400,
+          "end_at_ms": 15600,
+          "sub": "语音待生成 · 当前为设计时长"
+        },
+        {
+          "id": "u004",
+          "kind": "speech",
+          "utterance_id": "u004",
+          "label": "好的，Gmail 的配置卡片已经发给你了。点开按提示配置好，我就能帮你看未读邮件，整理值得关注的内容。",
+          "start_at_ms": 19600,
+          "end_at_ms": 32000,
+          "sub": "语音待生成 · 当前为设计时长"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "name": "表达控制",
+      "clips": []
+    },
+    {
+      "id": "world",
+      "name": "世界",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "name": "后台判断",
+      "clips": [
+        {
+          "id": "r0",
+          "kind": "state",
+          "start_at_ms": 400,
+          "end_at_ms": 6400,
+          "label": "逐步识别：未读邮件 / 简述重点"
+        },
+        {
+          "id": "r1",
+          "kind": "state",
+          "start_at_ms": 6800,
+          "end_at_ms": 7200,
+          "label": "未绑定邮箱 · 发现可用邮件连接能力"
+        },
+        {
+          "id": "r2",
+          "kind": "state",
+          "start_at_ms": 8000,
+          "end_at_ms": 8400,
+          "label": "发现 Gmail · 询问用户是否配置"
+        },
+        {
+          "id": "r3",
+          "kind": "state",
+          "start_at_ms": 16400,
+          "end_at_ms": 18800,
+          "label": "接收选择 · 用户同意配置 Gmail"
+        },
+        {
+          "id": "r4",
+          "kind": "state",
+          "start_at_ms": 19200,
+          "end_at_ms": 19600,
+          "label": "配置卡片已展示 · 说明下一步"
+        },
+        {
+          "id": "r5",
+          "kind": "state",
+          "start_at_ms": 32000,
+          "end_at_ms": 32400,
+          "label": "等待用户配置 · 保留未读邮件摘要任务"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "name": "工具调用",
+      "clips": [
+        {
+          "id": "gmail_bindings",
+          "kind": "tool",
+          "event_id": "gmail_bindings",
+          "start_at_ms": 6400,
+          "end_at_ms": 6800,
+          "label": "memory.get()",
+          "sub": "返回：没有已绑定邮箱"
+        },
+        {
+          "id": "gmail_discovery",
+          "kind": "tool",
+          "event_id": "gmail_discovery",
+          "start_at_ms": 6800,
+          "end_at_ms": 8000,
+          "label": "store.search()",
+          "sub": "发现 Gmail · 需用户配置"
+        },
+        {
+          "id": "gmail_config_card",
+          "kind": "tool",
+          "event_id": "gmail_config_card",
+          "start_at_ms": 18800,
+          "end_at_ms": 19200,
+          "label": "ui.show_connector_config()",
+          "sub": "展示 Gmail 配置卡片 · 等待用户配置"
+        }
+      ]
+    }
+  ],
+  "response_links": [
+    {
+      "user_id": "u001",
+      "assistant_id": "u002"
+    },
+    {
+      "user_id": "u003",
+      "assistant_id": "u004"
+    }
+  ],
+  "interruptions": [],
+  "tool_runs": [
+    {
+      "event_id": "gmail_bindings",
+      "start_at_ms": 6400,
+      "end_at_ms": 6800,
+      "depends_on": []
+    },
+    {
+      "event_id": "gmail_discovery",
+      "start_at_ms": 6800,
+      "end_at_ms": 8000,
+      "depends_on": [
+        "gmail_bindings"
+      ]
+    },
+    {
+      "event_id": "gmail_config_card",
+      "start_at_ms": 18800,
+      "end_at_ms": 19200,
+      "depends_on": [
+        "gmail_discovery"
+      ]
+    }
+  ]
+}
