@@ -12,7 +12,7 @@
           "utterance_id": "u001",
           "label": "帮我查一下未读邮件，brief 一下，看看有什么值得关注的。",
           "start_at_ms": 0,
-          "end_at_ms": 4000,
+          "end_at_ms": 3650,
           "audio_key": "gmail_u001"
         },
         {
@@ -21,7 +21,7 @@
           "utterance_id": "u003",
           "label": "就 Gmail。",
           "start_at_ms": 11080,
-          "end_at_ms": 11780,
+          "end_at_ms": 11830,
           "audio_key": "gmail_u003"
         }
       ]

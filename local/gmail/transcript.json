@@ -2,9 +2,9 @@
   {
     "id": "gmail_u001",
     "text": "帮我查一下未读邮件，brief 一下，看看有什么值得关注的。",
-    "source": "session-master.wav",
-    "start": 0,
-    "end": 4.0
+    "source": "user-master.wav",
+    "start": 0.5,
+    "end": 4.15
   },
   {
     "id": "gmail_u002",
@@ -16,9 +16,9 @@
   {
     "id": "gmail_u003",
     "text": "就 Gmail。",
-    "source": "session-master.wav",
-    "start": 11.6,
-    "end": 12.3
+    "source": "user-master.wav",
+    "start": 5.05,
+    "end": 5.8
   },
   {
     "id": "gmail_u004",

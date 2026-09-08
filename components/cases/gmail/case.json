@@ -35,7 +35,7 @@
       "stream_step_ms": 400,
       "task_goal": "读取未读邮件，简述值得关注的信息",
       "completion_boundary": "配置卡片已展示，等待用户配置；尚未绑定邮箱或读取邮件",
-      "audio_note": "四句对白来自同一次完整对话母带，原速剪辑并对齐；用户在 Gmail 处插话，助手在 120 ms 淡出后停止。"
+      "audio_note": "用户两句从同一次单人男声连续录音裁切；助手保持已确认录音。均按原速播放，助手打断尾部淡出 120 ms。"
     },
     "tools": [
       {
@@ -127,7 +127,7 @@
       "speaker_id": "user_1",
       "text": "帮我查一下未读邮件，brief 一下，看看有什么值得关注的。",
       "start_at_ms": 0,
-      "end_at_ms": 4000
+      "end_at_ms": 3650
     },
     {
       "id": "u002",
@@ -143,7 +143,7 @@
       "speaker_id": "user_1",
       "text": "就 Gmail。",
       "start_at_ms": 11080,
-      "end_at_ms": 11780
+      "end_at_ms": 11830
     },
     {
       "id": "u004",
