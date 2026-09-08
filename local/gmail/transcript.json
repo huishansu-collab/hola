@@ -2,28 +2,28 @@
   {
     "id": "gmail_u001",
     "start": 0,
-    "end": 4.4,
+    "end": 4.45,
     "text": "帮我查一下未读邮件，brief 一下，看看有什么值得关注的。",
     "verification": "分段 ASR 核对；邮箱及 Gmail 存在同音转写差异"
   },
   {
     "id": "gmail_u002",
-    "start": 5.0,
-    "end": 9.55,
-    "text": "你还没有绑定过邮箱。想绑定哪个邮箱？比如 Gmail。",
+    "start": 4.65,
+    "end": 9.4,
+    "text": "你还没有绑定过邮箱。想绑定哪个邮箱？比如 Gmail 邮箱。",
     "verification": "分段 ASR 核对；邮箱及 Gmail 存在同音转写差异"
   },
   {
     "id": "gmail_u003",
-    "start": 10.7,
-    "end": 12.5,
+    "start": 9.6,
+    "end": 11.5,
     "text": "好的，帮我绑定 Gmail。",
     "verification": "分段 ASR 核对；邮箱及 Gmail 存在同音转写差异"
   },
   {
     "id": "gmail_u004",
-    "start": 12.65,
-    "end": 20.736,
+    "start": 11.55,
+    "end": 20.136,
     "text": "好的，Gmail 的配置卡片已经发给你了。点开按提示配置好，我就能帮你看未读邮件，整理值得关注的内容。",
     "verification": "分段 ASR 核对；邮箱及 Gmail 存在同音转写差异"
   }
