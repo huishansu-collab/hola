@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 17200,
+        "duration_ms": 18800,
         "file": null,
         "tracks": [
           {
@@ -35,7 +35,7 @@
       "stream_step_ms": 400,
       "task_goal": "读取未读邮件，简述值得关注的信息",
       "completion_boundary": "配置卡片已展示，等待用户配置；尚未绑定邮箱或读取邮件",
-      "audio_note": "保留首轮录音，用户短打断与助手结束语重新生成；原速播放，打断时对助手尾部施加 120 ms 淡出。"
+      "audio_note": "四句对白来自同一次完整对话母带，原速剪辑并对齐；用户在 Gmail 处插话，助手在 120 ms 淡出后停止。"
     },
     "tools": [
       {
@@ -127,7 +127,7 @@
       "speaker_id": "user_1",
       "text": "帮我查一下未读邮件，brief 一下，看看有什么值得关注的。",
       "start_at_ms": 0,
-      "end_at_ms": 3800
+      "end_at_ms": 4000
     },
     {
       "id": "u002",
@@ -135,23 +135,23 @@
       "speaker_id": "assistant",
       "text": "你还没有绑定过邮箱。想绑定哪个邮箱？比如 Gmail。",
       "start_at_ms": 6000,
-      "end_at_ms": 10120
+      "end_at_ms": 11320
     },
     {
       "id": "u003",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "就 Gmail。",
-      "start_at_ms": 9880,
-      "end_at_ms": 10580
+      "start_at_ms": 11080,
+      "end_at_ms": 11780
     },
     {
       "id": "u004",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "需要你自己确认绑定，Gmail 卡片发你了，按提示操作就行。",
-      "start_at_ms": 12000,
-      "end_at_ms": 16986
+      "start_at_ms": 13200,
+      "end_at_ms": 18432
     }
   ],
   "events": [
@@ -204,18 +204,18 @@
       "event_id": "gmail_stop",
       "event_type": "function_call",
       "tool_name": "audio.stop",
-      "time_at_ms": 10000,
+      "time_at_ms": 11200,
       "query": "{\"playback_event_id\": \"gmail_u002\", \"fade_ms\": 120}"
     },
     {
       "event_id": "gmail_stop",
       "event_type": "function_call",
       "tool_name": "audio.stop",
-      "time_at_ms": 10400,
+      "time_at_ms": 11600,
       "results": {
         "status": "stopped",
         "playback_event_id": "gmail_u002",
-        "stopped_at_ms": 10120,
+        "stopped_at_ms": 11320,
         "simulated": true
       }
     },
@@ -223,14 +223,14 @@
       "event_id": "gmail_config_card",
       "event_type": "function_call",
       "tool_name": "ui.show_connector_config",
-      "time_at_ms": 11200,
+      "time_at_ms": 12400,
       "query": "{\"connector_id\": \"gmail\"}"
     },
     {
       "event_id": "gmail_config_card",
       "event_type": "function_call",
       "tool_name": "ui.show_connector_config",
-      "time_at_ms": 11600,
+      "time_at_ms": 12800,
       "results": {
         "card_id": "gmail_config_001",
         "connector_id": "gmail",

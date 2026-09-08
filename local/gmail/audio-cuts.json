@@ -2,25 +2,21 @@
   {
     "id": "gmail_u001",
     "start": 0,
-    "end": 3.8,
-    "source": "user-master.wav"
+    "end": 4.0
   },
   {
     "id": "gmail_u002",
-    "start": 4.52,
-    "end": 8.64,
-    "source": "session-master.wav"
+    "start": 4.76,
+    "end": 10.08
   },
   {
     "id": "gmail_u003",
-    "start": 0.25,
-    "end": 0.95,
-    "source": "ending-master.wav"
+    "start": 11.6,
+    "end": 12.3
   },
   {
     "id": "gmail_u004",
-    "start": 3.15,
-    "end": 8.136,
-    "source": "ending-master.wav"
+    "start": 13.08,
+    "end": 18.312
   }
 ]

@@ -1,6 +1,6 @@
 {
   "timing_status": "aligned",
-  "duration_ms": 17200,
+  "duration_ms": 18800,
   "tracks": [
     {
       "id": "user",
@@ -12,7 +12,7 @@
           "utterance_id": "u001",
           "label": "帮我查一下未读邮件，brief 一下，看看有什么值得关注的。",
           "start_at_ms": 0,
-          "end_at_ms": 3800,
+          "end_at_ms": 4000,
           "audio_key": "gmail_u001"
         },
         {
@@ -20,8 +20,8 @@
           "kind": "speech",
           "utterance_id": "u003",
           "label": "就 Gmail。",
-          "start_at_ms": 9880,
-          "end_at_ms": 10580,
+          "start_at_ms": 11080,
+          "end_at_ms": 11780,
           "audio_key": "gmail_u003"
         }
       ]
@@ -41,7 +41,7 @@
           "utterance_id": "u002",
           "label": "你还没有绑定过邮箱。想绑定哪个邮箱？比如 Gmail。",
           "start_at_ms": 6000,
-          "end_at_ms": 10120,
+          "end_at_ms": 11320,
           "audio_key": "gmail_u002",
           "fade_ms": 120,
           "fade_out": true
@@ -51,8 +51,8 @@
           "kind": "speech",
           "utterance_id": "u004",
           "label": "需要你自己确认绑定，Gmail 卡片发你了，按提示操作就行。",
-          "start_at_ms": 12000,
-          "end_at_ms": 16986,
+          "start_at_ms": 13200,
+          "end_at_ms": 18432,
           "audio_key": "gmail_u004"
         }
       ]
@@ -95,15 +95,15 @@
         {
           "id": "r3",
           "kind": "state",
-          "start_at_ms": 10000,
-          "end_at_ms": 11200,
+          "start_at_ms": 11200,
+          "end_at_ms": 12400,
           "label": "检测到插话 · 让出话权并接收 Gmail 选择"
         },
         {
           "id": "r4",
           "kind": "state",
-          "start_at_ms": 11600,
-          "end_at_ms": 12000,
+          "start_at_ms": 12800,
+          "end_at_ms": 13200,
           "label": "配置卡片已展示 · 说明下一步"
         }
       ]
@@ -134,8 +134,8 @@
           "id": "gmail_config_card",
           "kind": "tool",
           "event_id": "gmail_config_card",
-          "start_at_ms": 11200,
-          "end_at_ms": 11600,
+          "start_at_ms": 12400,
+          "end_at_ms": 12800,
           "label": "ui.show_connector_config()",
           "sub": "展示 Gmail 配置卡片 · 等待用户配置"
         },
@@ -143,10 +143,10 @@
           "id": "gmail_stop",
           "kind": "tool",
           "event_id": "gmail_stop",
-          "start_at_ms": 10000,
-          "end_at_ms": 10400,
+          "start_at_ms": 11200,
+          "end_at_ms": 11600,
           "label": "audio.stop()",
-          "sub": "淡出 120 ms · 10.120 秒实际停声"
+          "sub": "淡出 120 ms · 11.320 秒实际停声"
         }
       ]
     }
@@ -165,11 +165,11 @@
     {
       "user_id": "u003",
       "assistant_id": "u002",
-      "detected_at_ms": 10000,
-      "stop_command_at_ms": 10000,
-      "fade_start_at_ms": 10000,
-      "stop_at_ms": 10120,
-      "user_voice_onset_at_ms": 9900,
+      "detected_at_ms": 11200,
+      "stop_command_at_ms": 11200,
+      "fade_start_at_ms": 11200,
+      "stop_at_ms": 11320,
+      "user_voice_onset_at_ms": 11130,
       "timing_basis": "音频对齐；检出和停播为模拟设计值",
       "discarded_text": "邮箱"
     }
@@ -191,14 +191,14 @@
     },
     {
       "event_id": "gmail_stop",
-      "start_at_ms": 10000,
-      "end_at_ms": 10400,
+      "start_at_ms": 11200,
+      "end_at_ms": 11600,
       "depends_on": []
     },
     {
       "event_id": "gmail_config_card",
-      "start_at_ms": 11200,
-      "end_at_ms": 11600,
+      "start_at_ms": 12400,
+      "end_at_ms": 12800,
       "depends_on": [
         "gmail_discovery"
       ]
