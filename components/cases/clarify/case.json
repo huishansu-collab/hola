@@ -1,0 +1,224 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "clarify",
+      "case_name": "指代不明 / 先澄清再发送",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 24000,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "把用户指定的文件发给用户指定的联系人",
+      "completion_boundary": "文件已发送并播报结果；未新建文件、未修改联系人",
+      "ambiguity_rule": "指代候选多于一个时不推断，先取候选再提问",
+      "question_batching": "同一轮内问清全部歧义，不连续追问",
+      "timing_note": "时序为设计值，语音尚未生成；边界按 400 毫秒步长排布。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "file.recent",
+          "description": "列出最近共享过的文件。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "description": "返回条数上限"
+              }
+            },
+            "required": []
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "contact.recent",
+          "description": "列出最近联系过的联系人。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "description": "返回条数上限"
+              }
+            },
+            "required": []
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "message.send",
+          "description": "把指定文件发送给指定联系人。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "contact_id": {
+                "type": "string",
+                "description": "已确认的收件人标识"
+              },
+              "file_id": {
+                "type": "string",
+                "description": "已确认的文件标识"
+              },
+              "note": {
+                "type": "string",
+                "description": "附言，未提供时不传"
+              }
+            },
+            "required": [
+              "contact_id",
+              "file_id"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {
+    "pending_intent": "share_file"
+  },
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "把上次那个文件发给他。",
+      "start_at_ms": 0,
+      "end_at_ms": 3600
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "最近有两个文件：Q3 预算表和交互模型评审纪要。要发哪一个？发给谁，张磊还是王倩？",
+      "start_at_ms": 6800,
+      "end_at_ms": 13200
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "评审纪要，发给张磊。",
+      "start_at_ms": 14000,
+      "end_at_ms": 17200
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "评审纪要已经发给张磊了。",
+      "start_at_ms": 19200,
+      "end_at_ms": 23200
+    }
+  ],
+  "events": [
+    {
+      "event_id": "files_1",
+      "event_type": "function_call",
+      "tool_name": "file.recent",
+      "time_at_ms": 4000,
+      "query": "{\"limit\": 5}"
+    },
+    {
+      "event_id": "files_1",
+      "event_type": "function_call",
+      "tool_name": "file.recent",
+      "time_at_ms": 4800,
+      "results": {
+        "files": [
+          {
+            "id": "f_1",
+            "name": "Q3 预算表.xlsx",
+            "shared_at": "2026-09-02"
+          },
+          {
+            "id": "f_2",
+            "name": "交互模型评审纪要.docx",
+            "shared_at": "2026-09-04"
+          }
+        ],
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "contacts_1",
+      "event_type": "function_call",
+      "tool_name": "contact.recent",
+      "time_at_ms": 5200,
+      "query": "{\"limit\": 5}"
+    },
+    {
+      "event_id": "contacts_1",
+      "event_type": "function_call",
+      "tool_name": "contact.recent",
+      "time_at_ms": 6000,
+      "results": {
+        "contacts": [
+          {
+            "id": "c_1",
+            "name": "张磊"
+          },
+          {
+            "id": "c_2",
+            "name": "王倩"
+          }
+        ],
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "send_1",
+      "event_type": "function_call",
+      "tool_name": "message.send",
+      "time_at_ms": 17600,
+      "query": "{\"contact_id\": \"c_1\", \"file_id\": \"f_2\"}"
+    },
+    {
+      "event_id": "send_1",
+      "event_type": "function_call",
+      "tool_name": "message.send",
+      "time_at_ms": 18400,
+      "results": {
+        "status": "sent",
+        "message_id": "m_9001",
+        "contact_id": "c_1",
+        "file_id": "f_2",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

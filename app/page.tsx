@@ -8,6 +8,9 @@ import {createRideCase} from '@/components/ride-case';
 import {createGmailCase} from '@/components/gmail-case';
 import {createSmsCase} from '@/components/sms-case';
 import {createCoffeeCase} from '@/components/coffee-case';
+import {createInterruptCase} from '@/components/interrupt-case';
+import {createRetryCase} from '@/components/retry-case';
+import {createClarifyCase} from '@/components/clarify-case';
 import {readViewports,resolveViewport,viewportStorageKey,type CaseViewport} from '@/components/case-viewport';
 import {streamingCase} from '@/components/streaming-case';
 import {reconcileCase} from '@/components/case-data';
@@ -158,8 +161,9 @@ export default function Studio(){
  const saveFilesWidth=()=>{try{localStorage.setItem('track-studio-files-width',String(filesWidthRef.current))}catch{}};
  useEffect(()=>{try{const value=Number(localStorage.getItem('track-studio-files-width'));if(value>=180&&value<=480)resizeFiles(value)}catch{}},[]);
  const [activeCase,setActiveCase]=useState<CaseFile>({id:"weather",name:"北京天气 / 跑步提醒"});
- const isWeather=['weather','actor','ride','coffee','sms','gmail'].includes(activeCase.id);
- const scenarios=useMemo<Record<string,Scenario>>(()=>({gmail:reconcileCase('gmail',streamingCase(createGmailCase())),weather:reconcileCase('weather',streamingCase(weatherScenario)),actor:reconcileCase('actor',streamingCase(createActorCase())),ride:reconcileCase('ride',streamingCase(createRideCase())),coffee:reconcileCase('coffee',streamingCase(createCoffeeCase())),sms:reconcileCase('sms',streamingCase(createSmsCase()))}),[]);
+ const scenarios=useMemo<Record<string,Scenario>>(()=>({gmail:reconcileCase('gmail',streamingCase(createGmailCase())),weather:reconcileCase('weather',streamingCase(weatherScenario)),actor:reconcileCase('actor',streamingCase(createActorCase())),ride:reconcileCase('ride',streamingCase(createRideCase())),coffee:reconcileCase('coffee',streamingCase(createCoffeeCase())),sms:reconcileCase('sms',streamingCase(createSmsCase())),interrupt:reconcileCase('interrupt',streamingCase(createInterruptCase())),retry:reconcileCase('retry',streamingCase(createRetryCase())),clarify:reconcileCase('clarify',streamingCase(createClarifyCase()))}),[]);
+ // Built-in fixtures carry data; cases the user creates in Files are still empty.
+ const isWeather=Object.hasOwn(scenarios,activeCase.id);
  const scenario=scenarios[activeCase.id]??scenarios.weather;
  const {END,events,tracks,expressions,playableClips,utterances,inputEvents,controlAnnotations}=scenario;
  const [scale,setScale]=useState(210),[pos,setPos]=useState(5900),[playing,setPlaying]=useState(false),[selected,setSelected]=useState<number|null>(0),[range,setRange]=useState<[number,number]>([events[0].t,events[0].end]);

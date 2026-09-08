@@ -1,0 +1,202 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "retry",
+      "case_name": "路况服务超时 / 降级用历史记录",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 23200,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "回答通勤是否拥堵，并给出出门时间建议",
+      "completion_boundary": "已按历史记录给出估算并说明来源；未取得实时路况",
+      "retry_policy": "仅在错误标记 retryable 时重试一次；再次失败即停止",
+      "degrade_rule": "实时数据缺失时可用历史记录估算，但播报中必须说明来源",
+      "timing_note": "时序为设计值，语音尚未生成；边界按 400 毫秒步长排布。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "traffic.query",
+          "description": "查询两地之间的实时路况与预计耗时。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "origin": {
+                "type": "string",
+                "description": "起点标签或坐标"
+              },
+              "destination": {
+                "type": "string",
+                "description": "终点标签或坐标"
+              },
+              "depart_at": {
+                "type": "string",
+                "description": "出发时间，now 表示当前"
+              }
+            },
+            "required": [
+              "origin",
+              "destination"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory.get",
+          "description": "读取用户已有的记忆条目。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "description": "记忆查询键"
+              }
+            },
+            "required": [
+              "key"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {
+    "home_label": "home",
+    "office_label": "office"
+  },
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "今天从家到公司堵不堵？我大概几点出门合适。",
+      "start_at_ms": 0,
+      "end_at_ms": 4000
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "稍等，我查一下路况。",
+      "start_at_ms": 5200,
+      "end_at_ms": 7200
+    },
+    {
+      "id": "u003",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "路况服务连不上，试了两次都超时，所以这次是按你过去的通勤记录估的：家到公司平常三十八分钟左右。要九点半到，八点四十五出门比较稳。等服务恢复我再给你实时的。",
+      "start_at_ms": 13200,
+      "end_at_ms": 21600
+    }
+  ],
+  "events": [
+    {
+      "event_id": "traffic_1",
+      "event_type": "function_call",
+      "tool_name": "traffic.query",
+      "time_at_ms": 4400,
+      "query": "{\"origin\": \"home\", \"destination\": \"office\", \"depart_at\": \"now\"}"
+    },
+    {
+      "event_id": "traffic_1",
+      "event_type": "function_call",
+      "tool_name": "traffic.query",
+      "time_at_ms": 7600,
+      "results": {
+        "status": "error",
+        "error_code": "upstream_timeout",
+        "elapsed_ms": 3200,
+        "retryable": true,
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "traffic_failed",
+      "event_type": "world_event",
+      "time_at_ms": 7600,
+      "context": {
+        "source": "traffic_service",
+        "action": "timeout",
+        "related_event_id": "traffic_1",
+        "attempt": 1,
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "traffic_2",
+      "event_type": "function_call",
+      "tool_name": "traffic.query",
+      "time_at_ms": 8000,
+      "query": "{\"origin\": \"home\", \"destination\": \"office\", \"depart_at\": \"now\"}"
+    },
+    {
+      "event_id": "traffic_2",
+      "event_type": "function_call",
+      "tool_name": "traffic.query",
+      "time_at_ms": 11200,
+      "results": {
+        "status": "error",
+        "error_code": "upstream_timeout",
+        "elapsed_ms": 3200,
+        "retryable": false,
+        "attempt": 2,
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "memory_1",
+      "event_type": "function_call",
+      "tool_name": "memory.get",
+      "time_at_ms": 11600,
+      "query": "{\"key\": \"commute_history\"}"
+    },
+    {
+      "event_id": "memory_1",
+      "event_type": "function_call",
+      "tool_name": "memory.get",
+      "time_at_ms": 12400,
+      "results": {
+        "key": "commute_history",
+        "typical_minutes": 38,
+        "samples": 21,
+        "last_updated": "2026-08-30",
+        "source": "history",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

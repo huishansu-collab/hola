@@ -2,7 +2,7 @@ import fs from 'node:fs';import assert from 'node:assert/strict';
 import {loadCases,compile} from './load-cases.mjs';
 const baseMeta=JSON.parse(fs.readFileSync('components/meta-data.json'));
 const {reconcileCase,buildCaseData}=Function('baseMeta',compile('components/case-data.ts')+';return {reconcileCase,buildCaseData}')(baseMeta);
-const names={weather:'北京天气 / 跑步提醒',actor:'演员名字 / 追问电视剧',ride:'回家路况 / 呼叫快车',coffee:'订咖啡 / 偏好与地址确认',sms:'手机欠费短信 / Living Edge 提醒',gmail:'新用户查 Gmail 邮件'};
+const names={weather:'北京天气 / 跑步提醒',actor:'演员名字 / 追问电视剧',ride:'回家路况 / 呼叫快车',coffee:'订咖啡 / 偏好与地址确认',sms:'手机欠费短信 / Living Edge 提醒',gmail:'新用户查 Gmail 邮件',interrupt:'播报中打断改口 / 高铁车次重查',retry:'路况服务超时 / 降级用历史记录',clarify:'指代不明 / 先澄清再发送'};
 function schema(value,s,path){
  if(s.type==='object'){assert(value&&typeof value==='object'&&!Array.isArray(value),path);for(const k of s.required??[])assert(Object.hasOwn(value,k),`${path} missing ${k}`);for(const [k,v] of Object.entries(value))if(s.properties?.[k])schema(v,s.properties[k],`${path}.${k}`);}
  else if(s.type==='array'){assert(Array.isArray(value),path);for(const v of value)if(s.items)schema(v,s.items,path+'[]');}

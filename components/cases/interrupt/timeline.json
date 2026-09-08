@@ -1,0 +1,248 @@
+{
+  "timing_status": "planned",
+  "duration_ms": 25200,
+  "roles": [
+    {
+      "role": "user",
+      "track_ids": [
+        "user",
+        "control"
+      ]
+    },
+    {
+      "role": "assistant",
+      "track_ids": [
+        "assistant",
+        "expression",
+        "playback"
+      ]
+    },
+    {
+      "role": "world",
+      "track_ids": [
+        "world"
+      ]
+    },
+    {
+      "role": "backend",
+      "track_ids": [
+        "reasoning",
+        "tools"
+      ]
+    }
+  ],
+  "tracks": [
+    {
+      "id": "user",
+      "name": "用户",
+      "clips": [
+        {
+          "id": "u001",
+          "kind": "speech",
+          "label": "帮我查一下明天上海到北京的高铁票。",
+          "start_at_ms": 0,
+          "end_at_ms": 4400,
+          "utterance_id": "u001"
+        },
+        {
+          "id": "u003",
+          "kind": "speech",
+          "label": "等一下，不是明天，是后天，而且我要二等座。",
+          "start_at_ms": 9600,
+          "end_at_ms": 13200,
+          "utterance_id": "u003"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "name": "用户控制",
+      "clips": []
+    },
+    {
+      "id": "assistant",
+      "name": "助手",
+      "clips": [
+        {
+          "id": "u002",
+          "kind": "speech",
+          "label": "好的。明天上海虹桥到北京南有二十多趟车，最早一班是早上六点二十六的 G2 次，",
+          "start_at_ms": 5600,
+          "end_at_ms": 10400,
+          "sub": "被用户打断 · 实际播出止于 10400 毫秒",
+          "utterance_id": "u002"
+        },
+        {
+          "id": "u004",
+          "kind": "speech",
+          "label": "改成后天了。上海虹桥到北京南，二等座最早一班是早上七点整的 G102 次，还有余票。",
+          "start_at_ms": 17200,
+          "end_at_ms": 24400,
+          "sub": "改口后的完整播报",
+          "utterance_id": "u004"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "name": "表达控制",
+      "clips": [
+        {
+          "id": "e001",
+          "kind": "state",
+          "label": "垫句 · 承接改口",
+          "start_at_ms": 17200,
+          "end_at_ms": 18000,
+          "sub": "先确认改口已生效，再给结果"
+        }
+      ]
+    },
+    {
+      "id": "playback",
+      "name": "播报控制",
+      "clips": [
+        {
+          "id": "stop",
+          "kind": "state",
+          "label": "停止播出 · 用户打断",
+          "start_at_ms": 10400,
+          "end_at_ms": 10800,
+          "sub": "实际停声 10400 毫秒；未记录待播队列，不推断丢弃文本"
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "name": "世界",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "name": "后台判断",
+      "clips": [
+        {
+          "id": "parse",
+          "kind": "state",
+          "label": "解析出发地、到达地与日期",
+          "start_at_ms": 4000,
+          "end_at_ms": 4400,
+          "sub": "“明天”按会话日期解析，不写入长期记忆"
+        },
+        {
+          "id": "detect",
+          "kind": "state",
+          "label": "检出用户起声 · 判定为打断",
+          "start_at_ms": 9600,
+          "end_at_ms": 10000,
+          "sub": "起声即检出；是否为新指令另行判断"
+        },
+        {
+          "id": "rewrite",
+          "kind": "state",
+          "label": "改写日期为后天并追加二等座",
+          "start_at_ms": 13200,
+          "end_at_ms": 13600,
+          "sub": "按改口后的完整条件重建查询，不沿用上一轮结果"
+        },
+        {
+          "id": "verify",
+          "kind": "state",
+          "label": "余票确认后再播报",
+          "start_at_ms": 15600,
+          "end_at_ms": 17200,
+          "sub": "先说明已改，避免用户不清楚以哪一轮为准"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "name": "工具调用",
+      "clips": [
+        {
+          "id": "run_search_1",
+          "kind": "state",
+          "label": "train.search(上海→北京, 明天)",
+          "start_at_ms": 4400,
+          "end_at_ms": 5200,
+          "sub": "返回 23 趟车次"
+        },
+        {
+          "id": "run_stop",
+          "kind": "state",
+          "label": "playback.stop(user_barge_in)",
+          "start_at_ms": 10000,
+          "end_at_ms": 10400,
+          "sub": "停止当前播出；不推断已生成而未播出的文本"
+        },
+        {
+          "id": "run_search_2",
+          "kind": "state",
+          "label": "train.search(上海→北京, 后天, 二等座)",
+          "start_at_ms": 13600,
+          "end_at_ms": 14400,
+          "sub": "按改口后的条件重新查询"
+        },
+        {
+          "id": "run_stock",
+          "kind": "state",
+          "label": "ticket.check_stock(G102, 后天, 二等座)",
+          "start_at_ms": 14800,
+          "end_at_ms": 15600,
+          "sub": "确认余票后才播报"
+        }
+      ]
+    }
+  ],
+  "response_links": [
+    {
+      "user_id": "u001",
+      "assistant_id": "u002"
+    },
+    {
+      "user_id": "u003",
+      "assistant_id": "u004"
+    }
+  ],
+  "trigger_links": [],
+  "interruptions": [
+    {
+      "user_id": "u003",
+      "interrupted_id": "u002",
+      "start_at_ms": 9600,
+      "stopped_at_ms": 10400,
+      "stop_event_id": "stop_1"
+    }
+  ],
+  "tool_runs": [
+    {
+      "event_id": "train_1",
+      "start_at_ms": 4400,
+      "end_at_ms": 5200,
+      "depends_on": [],
+      "decision_end_at_ms": 4400
+    },
+    {
+      "event_id": "stop_1",
+      "start_at_ms": 10000,
+      "end_at_ms": 10400,
+      "depends_on": [],
+      "decision_end_at_ms": 10000
+    },
+    {
+      "event_id": "train_2",
+      "start_at_ms": 13600,
+      "end_at_ms": 14400,
+      "depends_on": [],
+      "decision_end_at_ms": 13600
+    },
+    {
+      "event_id": "stock_1",
+      "start_at_ms": 14800,
+      "end_at_ms": 15600,
+      "depends_on": [
+        "train_2"
+      ],
+      "decision_end_at_ms": 14800
+    }
+  ]
+}

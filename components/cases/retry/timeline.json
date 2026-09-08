@@ -1,0 +1,216 @@
+{
+  "timing_status": "planned",
+  "duration_ms": 23200,
+  "roles": [
+    {
+      "role": "user",
+      "track_ids": [
+        "user",
+        "control"
+      ]
+    },
+    {
+      "role": "assistant",
+      "track_ids": [
+        "assistant",
+        "expression",
+        "playback"
+      ]
+    },
+    {
+      "role": "world",
+      "track_ids": [
+        "world"
+      ]
+    },
+    {
+      "role": "backend",
+      "track_ids": [
+        "reasoning",
+        "tools"
+      ]
+    }
+  ],
+  "tracks": [
+    {
+      "id": "user",
+      "name": "用户",
+      "clips": [
+        {
+          "id": "u001",
+          "kind": "speech",
+          "label": "今天从家到公司堵不堵？我大概几点出门合适。",
+          "start_at_ms": 0,
+          "end_at_ms": 4000,
+          "utterance_id": "u001"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "name": "用户控制",
+      "clips": []
+    },
+    {
+      "id": "assistant",
+      "name": "助手",
+      "clips": [
+        {
+          "id": "u002",
+          "kind": "speech",
+          "label": "稍等，我查一下路况。",
+          "start_at_ms": 5200,
+          "end_at_ms": 7200,
+          "sub": "查询期间的告知，不含结论",
+          "utterance_id": "u002"
+        },
+        {
+          "id": "u003",
+          "kind": "speech",
+          "label": "路况服务连不上，试了两次都超时，所以这次是按你过去的通勤记录估的：家到公司平常三十八分钟左右。要九点半到，八点四十五出门比较稳。等服务恢复我再给你实时的。",
+          "start_at_ms": 13200,
+          "end_at_ms": 21600,
+          "sub": "降级播报 · 明确标注数据来源",
+          "utterance_id": "u003"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "name": "表达控制",
+      "clips": []
+    },
+    {
+      "id": "playback",
+      "name": "播报控制",
+      "clips": [
+        {
+          "id": "degraded",
+          "kind": "state",
+          "label": "降级播报 · 标注数据来源",
+          "start_at_ms": 13200,
+          "end_at_ms": 13600,
+          "sub": "无实时路况；播报中说明估算依据，不冒充实时数据"
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "name": "世界",
+      "clips": [
+        {
+          "id": "timeout_1",
+          "kind": "state",
+          "label": "路况服务返回超时",
+          "start_at_ms": 7600,
+          "end_at_ms": 8000,
+          "sub": "外部服务不可用 · 模拟",
+          "event_id": "traffic_failed"
+        }
+      ]
+    },
+    {
+      "id": "reasoning",
+      "name": "后台判断",
+      "clips": [
+        {
+          "id": "plan",
+          "kind": "state",
+          "label": "解析通勤问题 · 查询实时路况",
+          "start_at_ms": 4000,
+          "end_at_ms": 4400,
+          "sub": "“堵不堵”需要实时数据，历史记录不能直接替代"
+        },
+        {
+          "id": "retry",
+          "kind": "state",
+          "label": "首次超时且可重试 · 安排一次重试",
+          "start_at_ms": 7600,
+          "end_at_ms": 8000,
+          "sub": "错误标记 retryable，按策略只重试一次"
+        },
+        {
+          "id": "stop",
+          "kind": "state",
+          "label": "二次超时且不可重试 · 停止重试",
+          "start_at_ms": 11200,
+          "end_at_ms": 11600,
+          "sub": "不无限重试，也不把超时当作“不堵”"
+        },
+        {
+          "id": "degrade",
+          "kind": "state",
+          "label": "改用历史通勤记录估算",
+          "start_at_ms": 12400,
+          "end_at_ms": 13200,
+          "sub": "播报时必须说明来源，并说明实时数据缺失"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "name": "工具调用",
+      "clips": [
+        {
+          "id": "run_traffic_1",
+          "kind": "state",
+          "label": "traffic.query(home→office)",
+          "start_at_ms": 4400,
+          "end_at_ms": 7600,
+          "sub": "超时 3.2 秒 · upstream_timeout · retryable"
+        },
+        {
+          "id": "run_traffic_2",
+          "kind": "state",
+          "label": "traffic.query(home→office) 重试",
+          "start_at_ms": 8000,
+          "end_at_ms": 11200,
+          "sub": "再次超时 · retryable=false · 停止重试"
+        },
+        {
+          "id": "run_memory",
+          "kind": "state",
+          "label": "memory.get(commute_history)",
+          "start_at_ms": 11600,
+          "end_at_ms": 12400,
+          "sub": "返回 21 次记录 · 平均 38 分钟"
+        }
+      ]
+    }
+  ],
+  "response_links": [
+    {
+      "user_id": "u001",
+      "assistant_id": "u003"
+    }
+  ],
+  "trigger_links": [],
+  "interruptions": [],
+  "tool_runs": [
+    {
+      "event_id": "traffic_1",
+      "start_at_ms": 4400,
+      "end_at_ms": 7600,
+      "depends_on": [],
+      "decision_end_at_ms": 4400
+    },
+    {
+      "event_id": "traffic_2",
+      "start_at_ms": 8000,
+      "end_at_ms": 11200,
+      "depends_on": [
+        "traffic_1"
+      ],
+      "decision_end_at_ms": 8000
+    },
+    {
+      "event_id": "memory_1",
+      "start_at_ms": 11600,
+      "end_at_ms": 12400,
+      "depends_on": [
+        "traffic_2"
+      ],
+      "decision_end_at_ms": 11600
+    }
+  ]
+}

@@ -1,0 +1,282 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "interrupt",
+      "case_name": "播报中打断改口 / 高铁车次重查",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 25200,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "按用户最终确认的日期与席别给出可购车次",
+      "completion_boundary": "已播报改口后的车次与余票；未下单、未支付",
+      "barge_in_definition": "用户在助手播报期间起声；停止播报与改写查询分别判断",
+      "no_queue_telemetry": "未记录待播队列，不推断打断时已生成而未播出的文本",
+      "timing_note": "时序为设计值，语音尚未生成；边界按 400 毫秒步长排布。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "train.search",
+          "description": "按出发地、到达地与日期查询高铁车次。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "origin": {
+                "type": "string",
+                "description": "出发城市"
+              },
+              "destination": {
+                "type": "string",
+                "description": "到达城市"
+              },
+              "date": {
+                "type": "string",
+                "description": "乘车日期"
+              },
+              "seat_class": {
+                "type": "string",
+                "description": "席别，未指定时不传"
+              }
+            },
+            "required": [
+              "origin",
+              "destination",
+              "date"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "playback.stop",
+          "description": "停止当前正在播出的助手语音。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "reason": {
+                "type": "string",
+                "description": "停止原因"
+              },
+              "playback_ref": {
+                "type": "string",
+                "description": "被停止的播出片段标识"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "ticket.check_stock",
+          "description": "查询指定车次、日期与席别的余票。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "trip_no": {
+                "type": "string",
+                "description": "车次号"
+              },
+              "date": {
+                "type": "string",
+                "description": "乘车日期"
+              },
+              "seat_class": {
+                "type": "string",
+                "description": "席别"
+              }
+            },
+            "required": [
+              "trip_no",
+              "date",
+              "seat_class"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {
+    "origin_city": "上海",
+    "destination_city": "北京"
+  },
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "帮我查一下明天上海到北京的高铁票。",
+      "start_at_ms": 0,
+      "end_at_ms": 4400
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好的。明天上海虹桥到北京南有二十多趟车，最早一班是早上六点二十六的 G2 次，",
+      "start_at_ms": 5600,
+      "end_at_ms": 10400
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "等一下，不是明天，是后天，而且我要二等座。",
+      "start_at_ms": 9600,
+      "end_at_ms": 13200
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "改成后天了。上海虹桥到北京南，二等座最早一班是早上七点整的 G102 次，还有余票。",
+      "start_at_ms": 17200,
+      "end_at_ms": 24400
+    }
+  ],
+  "events": [
+    {
+      "event_id": "train_1",
+      "event_type": "function_call",
+      "tool_name": "train.search",
+      "time_at_ms": 4400,
+      "query": "{\"origin\": \"上海\", \"destination\": \"北京\", \"date\": \"明天\"}"
+    },
+    {
+      "event_id": "train_1",
+      "event_type": "function_call",
+      "tool_name": "train.search",
+      "time_at_ms": 5200,
+      "results": {
+        "count": 23,
+        "date": "明天",
+        "trips": [
+          {
+            "trip_no": "G2",
+            "depart": "06:26",
+            "arrive": "12:24"
+          },
+          {
+            "trip_no": "G102",
+            "depart": "07:00",
+            "arrive": "12:38"
+          }
+        ],
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "stop_1",
+      "event_type": "function_call",
+      "tool_name": "playback.stop",
+      "time_at_ms": 10000,
+      "query": "{\"reason\": \"user_barge_in\", \"playback_ref\": \"u002\"}"
+    },
+    {
+      "event_id": "stop_1",
+      "event_type": "function_call",
+      "tool_name": "playback.stop",
+      "time_at_ms": 10400,
+      "results": {
+        "status": "stopped",
+        "playback_ref": "u002",
+        "stopped_at_ms": 10400,
+        "queue_telemetry": null,
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "train_2",
+      "event_type": "function_call",
+      "tool_name": "train.search",
+      "time_at_ms": 13600,
+      "query": "{\"origin\": \"上海\", \"destination\": \"北京\", \"date\": \"后天\", \"seat_class\": \"二等座\"}"
+    },
+    {
+      "event_id": "train_2",
+      "event_type": "function_call",
+      "tool_name": "train.search",
+      "time_at_ms": 14400,
+      "results": {
+        "count": 21,
+        "date": "后天",
+        "seat_class": "二等座",
+        "trips": [
+          {
+            "trip_no": "G102",
+            "depart": "07:00",
+            "arrive": "12:38"
+          },
+          {
+            "trip_no": "G6",
+            "depart": "07:32",
+            "arrive": "13:10"
+          }
+        ],
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "stock_1",
+      "event_type": "function_call",
+      "tool_name": "ticket.check_stock",
+      "time_at_ms": 14800,
+      "query": "{\"trip_no\": \"G102\", \"date\": \"后天\", \"seat_class\": \"二等座\"}"
+    },
+    {
+      "event_id": "stock_1",
+      "event_type": "function_call",
+      "tool_name": "ticket.check_stock",
+      "time_at_ms": 15600,
+      "results": {
+        "trip_no": "G102",
+        "seat_class": "二等座",
+        "available": true,
+        "remaining": 46,
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [
+    {
+      "fdx_type": "垫句",
+      "role": "assistant",
+      "start_at_ms": 17200,
+      "end_at_ms": 18000
+    }
+  ],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

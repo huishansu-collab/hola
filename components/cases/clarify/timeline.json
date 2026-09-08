@@ -1,0 +1,217 @@
+{
+  "timing_status": "planned",
+  "duration_ms": 24000,
+  "roles": [
+    {
+      "role": "user",
+      "track_ids": [
+        "user",
+        "control"
+      ]
+    },
+    {
+      "role": "assistant",
+      "track_ids": [
+        "assistant",
+        "expression",
+        "playback"
+      ]
+    },
+    {
+      "role": "world",
+      "track_ids": [
+        "world"
+      ]
+    },
+    {
+      "role": "backend",
+      "track_ids": [
+        "reasoning",
+        "tools"
+      ]
+    }
+  ],
+  "tracks": [
+    {
+      "id": "user",
+      "name": "用户",
+      "clips": [
+        {
+          "id": "u001",
+          "kind": "speech",
+          "label": "把上次那个文件发给他。",
+          "start_at_ms": 0,
+          "end_at_ms": 3600,
+          "utterance_id": "u001"
+        },
+        {
+          "id": "u003",
+          "kind": "speech",
+          "label": "评审纪要，发给张磊。",
+          "start_at_ms": 14000,
+          "end_at_ms": 17200,
+          "utterance_id": "u003"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "name": "用户控制",
+      "clips": []
+    },
+    {
+      "id": "assistant",
+      "name": "助手",
+      "clips": [
+        {
+          "id": "u002",
+          "kind": "speech",
+          "label": "最近有两个文件：Q3 预算表和交互模型评审纪要。要发哪一个？发给谁，张磊还是王倩？",
+          "start_at_ms": 6800,
+          "end_at_ms": 13200,
+          "sub": "两处歧义合并成一轮提问",
+          "utterance_id": "u002"
+        },
+        {
+          "id": "u004",
+          "kind": "speech",
+          "label": "评审纪要已经发给张磊了。",
+          "start_at_ms": 19200,
+          "end_at_ms": 23200,
+          "sub": "发送成功后才播报结果",
+          "utterance_id": "u004"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "name": "表达控制",
+      "clips": []
+    },
+    {
+      "id": "playback",
+      "name": "播报控制",
+      "clips": [
+        {
+          "id": "sent_cue",
+          "kind": "state",
+          "label": "发送成功提示音 · 短促",
+          "start_at_ms": 18400,
+          "end_at_ms": 18800,
+          "sub": "提示音只表示请求成功，不替代播报确认"
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "name": "世界",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "name": "后台判断",
+      "clips": [
+        {
+          "id": "detect",
+          "kind": "state",
+          "label": "“那个文件”与“他”都无唯一指代",
+          "start_at_ms": 3600,
+          "end_at_ms": 4000,
+          "sub": "两处指代都要澄清，先取候选"
+        },
+        {
+          "id": "candidates",
+          "kind": "state",
+          "label": "两个文件、两个联系人都成立 · 不推断",
+          "start_at_ms": 6000,
+          "end_at_ms": 6800,
+          "sub": "不默认最近一次共享，也不默认最近一次联系"
+        },
+        {
+          "id": "resolve",
+          "kind": "state",
+          "label": "用户补全文件与收件人 · 指代已唯一",
+          "start_at_ms": 17200,
+          "end_at_ms": 17600,
+          "sub": "补全后才具备执行条件"
+        },
+        {
+          "id": "confirm",
+          "kind": "state",
+          "label": "发送成功 · 播报结果",
+          "start_at_ms": 18400,
+          "end_at_ms": 19200,
+          "sub": "以发送返回为准，不以点击或提示音为准"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "name": "工具调用",
+      "clips": [
+        {
+          "id": "run_files",
+          "kind": "state",
+          "label": "file.recent(limit=5)",
+          "start_at_ms": 4000,
+          "end_at_ms": 4800,
+          "sub": "返回 2 个最近共享文件"
+        },
+        {
+          "id": "run_contacts",
+          "kind": "state",
+          "label": "contact.recent(limit=5)",
+          "start_at_ms": 5200,
+          "end_at_ms": 6000,
+          "sub": "返回 2 个最近联系人"
+        },
+        {
+          "id": "run_send",
+          "kind": "state",
+          "label": "message.send(张磊, 评审纪要)",
+          "start_at_ms": 17600,
+          "end_at_ms": 18400,
+          "sub": "用户补全后才执行发送"
+        }
+      ]
+    }
+  ],
+  "response_links": [
+    {
+      "user_id": "u001",
+      "assistant_id": "u002"
+    },
+    {
+      "user_id": "u003",
+      "assistant_id": "u004"
+    }
+  ],
+  "trigger_links": [],
+  "interruptions": [],
+  "tool_runs": [
+    {
+      "event_id": "files_1",
+      "start_at_ms": 4000,
+      "end_at_ms": 4800,
+      "depends_on": [],
+      "decision_end_at_ms": 4000
+    },
+    {
+      "event_id": "contacts_1",
+      "start_at_ms": 5200,
+      "end_at_ms": 6000,
+      "depends_on": [],
+      "decision_end_at_ms": 5200
+    },
+    {
+      "event_id": "send_1",
+      "start_at_ms": 17600,
+      "end_at_ms": 18400,
+      "depends_on": [
+        "files_1",
+        "contacts_1"
+      ],
+      "decision_end_at_ms": 17600
+    }
+  ]
+}
