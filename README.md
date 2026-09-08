@@ -23,7 +23,8 @@ npm run build:local
 
 ## 功能
 
-- 六个示例 Case：北京天气、演员与电视剧查询、回家叫车、订咖啡、短信提醒、新用户查 Gmail 邮件。Gmail Case 已接入四段完整对话语音，时序按实际录音对齐。
+- 九个示例 Case：北京天气、演员与电视剧查询、回家叫车、订咖啡、短信提醒、新用户查 Gmail 邮件、播报中打断改口、路况服务超时降级、指代不明先澄清。Gmail Case 已接入四段完整对话语音，时序按实际录音对齐。
+- 后三个 Case 尚未生成语音，时序为设计值，界面顶部会标注「语音待生成」；其余结构与已配音 Case 一致，可直接导出 JSON。
 - 用户、用户控制、助手、表达控制、世界、后台判断、工具调用七条轨道；播放控制并入工具调用。
 - 每个 Case 独立保存缩放、适应窗口和音频预览开关状态。
 - 完整双声道音频：用户位于左声道，助手位于右声道。
@@ -36,7 +37,8 @@ npm run build:local
 - `app/`：页面和样式。
 - `components/`：时间线、Case、音频与数据面板。
 - `components/audio/`：内嵌音频与波形数据、播放和双声道合成。
-- `components/cases/`：结构化 Case 数据。
+- `components/cases/`：结构化 Case 数据，每个目录含 `case.json` 与 `timeline.json`。
+- `components/json-case.ts`：纯 JSON 驱动 Case 的共用加载器。
 - `local/`：离线构建入口、音频生成与整理脚本、提示词及源音频。
 - `scripts/`：数据与界面回归检查。
 
@@ -46,9 +48,12 @@ npm run build:local
 npx tsc --noEmit
 node scripts/check-all-json.mjs
 node scripts/check-case-viewport.mjs
+node scripts/check-case-set.mjs
 ```
 
 `check-all-json.mjs` 会检查工具与事件关联，并把各 Case 的完整 JSON 写入同级 `Case Exports/` 目录。
+
+`check-case-set.mjs` 针对无语音的三个 Case 检查它们各自的交互约束：打断后停播与改写查询分开成立、工具超时只重试一次且降级时标注数据来源、指代唯一之前不执行发送。
 
 浏览器回归检查需要另行提供 Playwright 和 Chrome：
 

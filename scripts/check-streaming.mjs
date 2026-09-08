@@ -13,6 +13,13 @@ for(const name of ['actor','ride']){
  assert(!s.tracks.flatMap(t=>t.clips).some(c=>/\[丢弃：/.test(c.label)));
  assert(s.events.every(e=>!e.plan&&!e.drop));
  assert.deepEqual(s.playableClips.map(c=>[c.audioKey,c.a,c.b]),raw.playableClips.map(c=>[c.audioKey,c.a,c.b]));
- assert.deepEqual(s.utterances,raw.utterances);assert.deepEqual(s.inputEvents,raw.inputEvents);
+ assert.deepEqual(s.utterances,raw.utterances);
+ // The only history streamingCase adds is the audio.stop pair closing each
+ // loading region; everything the case authored must survive untouched.
+ assert.deepEqual(s.inputEvents.filter(e=>e.tool_name!=='audio.stop'),raw.inputEvents);
+ const plays=new Set(raw.inputEvents.filter(e=>e.tool_name==='audio.play'&&e.query!==undefined).map(e=>e.event_id));
+ const stops=s.inputEvents.filter(e=>e.tool_name==='audio.stop');
+ assert.equal(stops.length,plays.size*2,`${name}: one request and one result per stopped playback`);
+ for(const stop of stops)assert(plays.has((stop.query===undefined?stop.results:JSON.parse(stop.query)).playback_event_id),`${name}: stop without a matching audio.play`);
 }
-console.log('PASS: streaming tracks, no inferred discarded text, unchanged audible clips and JSON history');
+console.log('PASS: streaming tracks, no inferred discarded text, unchanged audible clips, authored history preserved and only audio.stop appended');
