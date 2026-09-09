@@ -127,14 +127,14 @@ validatePackage(voiced);
 const vs = packageToScenario(buildRuntime(voiced));
 assert.equal(vs.timingStatus, 'aligned');
 assert.equal(vs.playableClips.length, voiced.case.utterances.length);
-assert.equal(vs.expressions.length, 4);
-assert.equal(vs.expressions[0].delivery, '嗐');
+assert.equal(vs.expressions.length, 5);
+assert.equal(vs.expressions[0].delivery, '嗯');
 assert.equal(vs.tracks[3].clips[0].expression, 0);
 // Checkpoints survive even though nothing in this case was interrupted.
-assert.equal(vs.events.length, 3);
+assert.equal(vs.events.length, 4);
 assert.deepEqual(
   vs.events.map((e) => e.name),
-  ['首次附和', '句中附和', '用户接管'],
+  ['首次附和', '连声附和', '句中附和', '用户接管'],
 );
 assert(vs.events.every((e) => e.overlap === null));
 const u = (id) => voiced.case.utterances.find((x) => x.id === id);

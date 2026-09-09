@@ -182,6 +182,12 @@ export default function Studio(){
  const scenario=useMemo(()=>applyNudge(baseScenario,nudge),[baseScenario,nudge]);
  const bcUnits=useMemo(()=>backchannelUnits(baseScenario),[baseScenario]);
  const bcHeads=bcUnits.filter(u=>u.id===u.group[0]);
+ // 起声可以略早于气口——压着换气进去照样自然，判定与 local/retime_backchannel.py 的 NEAR 一致。
+ const bcSpot=(u:typeof bcUnits[number])=>{
+  const d=nudge[u.id]??0,host=(scenario.breaths??[]).find(b=>b.utterance_id===u.host);
+  const off=u.a+d-(host?.host_start_ms??u.a),win=host?.windows.find(w=>off>=w[0]-200&&off<=w[1]);
+  return {d,off,win,inBreath:!!win,exact:!!win&&off>=win[0]};
+ };
  const bcMove=(u:typeof bcUnits[number],startMs:number)=>{
   const r=resolveBackchannel(baseScenario,u,startMs);
   if(!r)return;
@@ -310,9 +316,7 @@ export default function Studio(){
  {bcHeads.length>0&&<div className="bc-layer" style={{height:(()=>{const t=tracks.find(x=>x.name==='用户');return t?(collapsedTracks['用户']?24:trackHeight(t)):0})()}}>
   {(scenario.breaths??[]).flatMap(b=>b.windows.map((w,i)=><div className="bc-breath" key={b.utterance_id+'-'+i} style={{left:px(b.host_start_ms+w[0]),width:Math.max(2,px(w[1]-w[0]))}}/>))}
   {bcHeads.map(u=>{
-   const tail=bcUnits.filter(x=>x.host===u.host).slice(-1)[0],d=nudge[u.id]??0,end=tail.b+(nudge[tail.id]??0);
-   const host=(scenario.breaths??[]).find(b=>b.utterance_id===u.host);
-   const inBreath=!!host&&host.windows.some(w=>u.a+d>=host.host_start_ms+w[0]&&u.a+d<=host.host_start_ms+w[1]);
+   const tail=bcUnits.filter(x=>x.host===u.host).slice(-1)[0],{d,inBreath}=bcSpot(u),end=tail.b+(nudge[tail.id]??0);
    return <button type="button" key={u.id} className={'bc-handle'+(dragUnit===u.id?' dragging':'')+(inBreath?'':' bad')}
     style={{left:px(u.a+d),width:Math.max(30,px(end-(u.a+d)))}}
     title={`拖动或用左右方向键调整附和「${u.label}」的起声时间`} aria-label={`附和「${u.label}」起声 ${Math.round(u.a+d)} 毫秒，左右方向键每次 400 毫秒`}
@@ -331,14 +335,12 @@ export default function Studio(){
    <span className="bc-actions"><button onClick={()=>{setNudge({});setBcCopied('')}} disabled={!Object.keys(nudge).length}>复位</button><button onClick={()=>{const text=exportOffsets(baseScenario,bcUnits,nudge);void navigator.clipboard?.writeText(text).then(()=>setBcCopied('已复制落点，可回填 local/retime_backchannel.py'),()=>setBcCopied(text))}}>复制落点</button></span></div>
   {bcCopied&&<p className="bc-copied">{bcCopied}</p>}
   {bcHeads.map(u=>{
-   const d=nudge[u.id]??0,hostClip=(tracks.find(t=>t.name==='用户')?.clips??[]).find(c=>c.audioKey?.endsWith('/'+u.host));
-   const host=(scenario.breaths??[]).find(b=>b.utterance_id===u.host);
-   const inBreath=!!host&&host.windows.some(w=>u.a+d>=host.host_start_ms+w[0]&&u.a+d<=host.host_start_ms+w[1]);
+   const {d,off,inBreath,exact}=bcSpot(u),hostClip=(tracks.find(t=>t.name==='用户')?.clips??[]).find(c=>c.audioKey?.endsWith('/'+u.host));
    return <div className={'bc-item'+(inBreath?' in-breath':'')} key={u.id}>
     <button onClick={()=>{setPlaying(false);setPos(Math.max(0,(hostClip?.a??u.a)-500));setPlaying(true)}}>试听</button>
     <b>{bcUnits.filter(x=>x.host===u.host).map(x=>x.label).join(' / ')}</b>
     <span className="bc-host">{hostClip?.label??u.host}</span>
-    <span className="bc-offset">起声 +{Math.round(u.a+d-(hostClip?.a??0))} ms{d?`（原 +${Math.round(u.a-(hostClip?.a??0))}）`:''} · {inBreath?'落在换气口':'不在换气口'}</span>
+    <span className="bc-offset">起声 +{Math.round(off)} ms{d?`（原 +${Math.round(u.a-(hostClip?.a??0))}）`:''} · {exact?'落在换气口':inBreath?'压着换气口起声':'不在换气口'}</span>
    </div>;
   })}
  </div>}

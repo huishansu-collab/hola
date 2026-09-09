@@ -14,15 +14,11 @@
         },
         {
           "kind": "speech",
-          "utterance_id": "u004"
-        },
-        {
-          "kind": "speech",
           "utterance_id": "u005"
         },
         {
           "kind": "speech",
-          "utterance_id": "u008"
+          "utterance_id": "u006"
         },
         {
           "kind": "speech",
@@ -30,7 +26,7 @@
         },
         {
           "kind": "speech",
-          "utterance_id": "u011"
+          "utterance_id": "u010"
         },
         {
           "kind": "speech",
@@ -38,7 +34,11 @@
         },
         {
           "kind": "speech",
-          "utterance_id": "u014"
+          "utterance_id": "u013"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u015"
         }
       ]
     },
@@ -55,7 +55,7 @@
         },
         {
           "kind": "speech",
-          "utterance_id": "u006"
+          "utterance_id": "u004"
         },
         {
           "kind": "speech",
@@ -63,15 +63,19 @@
         },
         {
           "kind": "speech",
-          "utterance_id": "u010"
+          "utterance_id": "u008"
         },
         {
           "kind": "speech",
-          "utterance_id": "u013"
+          "utterance_id": "u011"
         },
         {
           "kind": "speech",
-          "utterance_id": "u015"
+          "utterance_id": "u014"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u016"
         }
       ]
     },
@@ -80,9 +84,19 @@
       "clips": [
         {
           "kind": "expression",
+          "label": "附和词 · 嗯",
+          "start_at_ms": 8400,
+          "end_at_ms": 8760,
+          "description": "一声轻应，只表示在听；不接话、不问原因，用户继续说。",
+          "trigger": "用户开口吐槽",
+          "delivery": "嗯",
+          "annotation": "一声轻应，只表示在听；不接话、不问原因，用户继续说。"
+        },
+        {
+          "kind": "expression",
           "label": "附和词 · 嗐",
-          "start_at_ms": 12400,
-          "end_at_ms": 13320,
+          "start_at_ms": 12800,
+          "end_at_ms": 13200,
           "description": "四声短促气声；起声落在气口，用户未停。",
           "trigger": "用户换气",
           "delivery": "嗐",
@@ -91,8 +105,8 @@
         {
           "kind": "expression",
           "label": "附和词 · 是啊！",
-          "start_at_ms": 13600,
-          "end_at_ms": 14400,
+          "start_at_ms": 13200,
+          "end_at_ms": 13820,
           "description": "纯应和，不带内容也不评价老板；用户继续说完。",
           "trigger": "承接上一声附和",
           "delivery": "是啊！",
@@ -101,8 +115,8 @@
         {
           "kind": "expression",
           "label": "附和句 · 那真是够呛",
-          "start_at_ms": 21600,
-          "end_at_ms": 22840,
+          "start_at_ms": 20000,
+          "end_at_ms": 21200,
           "description": "共情处境，不评判也不给建议，不切断句子。",
           "trigger": "长句语义接缝",
           "delivery": "那真是够呛",
@@ -112,7 +126,7 @@
           "kind": "expression",
           "label": "附和句 · 唉，光耗在这上头了",
           "start_at_ms": 28000,
-          "end_at_ms": 29100,
+          "end_at_ms": 29400,
           "description": "顺用户原话收，不加码不升级。",
           "trigger": "情绪到顶",
           "delivery": "唉，光耗在这上头了。",
@@ -131,15 +145,15 @@
           "kind": "state",
           "label": "新时间明确唯一 · 直接改",
           "description": "不反问确认，也不追问为什么改",
-          "start_at_ms": 2800,
-          "end_at_ms": 3200
+          "start_at_ms": 2400,
+          "end_at_ms": 2800
         },
         {
           "kind": "state",
           "label": "更新成功 · event_id 不变",
           "description": "同一场会的第一次改动，不新建日程",
-          "start_at_ms": 4000,
-          "end_at_ms": 4400
+          "start_at_ms": 3600,
+          "end_at_ms": 4000
         },
         {
           "kind": "state",
@@ -150,17 +164,24 @@
         },
         {
           "kind": "state",
-          "label": "同一件事的延续 · 本轮不出声",
-          "description": "节奏未断，附和过密会打扰",
+          "label": "第一句先听着 · 这一句再应",
+          "description": "刚起头就附和会打断节奏",
+          "start_at_ms": 7600,
+          "end_at_ms": 8000
+        },
+        {
+          "kind": "state",
+          "label": "换气处应一声 · 只表示在听",
+          "description": "一声轻应，不接话也不问原因",
           "start_at_ms": 8000,
           "end_at_ms": 8400
         },
         {
           "kind": "state",
-          "label": "连说三句 · 在换气处应一声",
+          "label": "情绪续上来 · 连着应两声",
           "description": "压在人声上，用户不停即不算打断",
-          "start_at_ms": 12000,
-          "end_at_ms": 12400
+          "start_at_ms": 12400,
+          "end_at_ms": 12800
         },
         {
           "kind": "state",
@@ -173,15 +194,15 @@
           "kind": "state",
           "label": "长句出现语义接缝 · 只表示在听",
           "description": "不接话、不给建议、不切断句子",
-          "start_at_ms": 21200,
-          "end_at_ms": 21600
+          "start_at_ms": 19600,
+          "end_at_ms": 20000
         },
         {
           "kind": "state",
           "label": "客户会与方案都没让动",
           "description": "不查日历、不改、不提议帮挪，也不建任务或提醒",
-          "start_at_ms": 24400,
-          "end_at_ms": 24800
+          "start_at_ms": 24000,
+          "end_at_ms": 24400
         },
         {
           "kind": "state",
@@ -194,15 +215,15 @@
           "kind": "state",
           "label": "用户表示自己处理 · 不接活",
           "description": "不追问怎么调，也不提出代劳",
-          "start_at_ms": 30000,
-          "end_at_ms": 30400
+          "start_at_ms": 30800,
+          "end_at_ms": 31200
         },
         {
           "kind": "state",
           "label": "只回应情绪 · 不复述改动",
           "description": "改动已确认过一次，重复确认属于话多",
-          "start_at_ms": 33200,
-          "end_at_ms": 33600
+          "start_at_ms": 32800,
+          "end_at_ms": 33200
         }
       ]
     },
@@ -226,44 +247,56 @@
   "interruptions": [],
   "backchannels": [
     {
-      "assistant_id": "u006",
+      "assistant_id": "u004",
       "over_user_id": "u005"
     },
     {
       "assistant_id": "u007",
-      "over_user_id": "u005"
+      "over_user_id": "u006"
     },
     {
-      "assistant_id": "u010",
-      "over_user_id": "u009"
+      "assistant_id": "u008",
+      "over_user_id": "u006"
     },
     {
-      "assistant_id": "u013",
-      "over_user_id": "u012"
+      "assistant_id": "u011",
+      "over_user_id": "u010"
+    },
+    {
+      "assistant_id": "u014",
+      "over_user_id": "u013"
     }
   ],
   "checkpoints": [
     {
       "name": "首次附和",
+      "title": "嗯",
+      "tag": "助手附和",
+      "start_at_ms": 8400,
+      "end_at_ms": 8760,
+      "note": "用户开口吐槽的第一句就应一声；纯语气，压在人声上，用户没停。"
+    },
+    {
+      "name": "连声附和",
       "title": "嗐 + 是啊！",
       "tag": "助手附和",
-      "start_at_ms": 12400,
-      "end_at_ms": 14400,
-      "note": "连说三句后才在换气处应一声；压在用户人声上，用户没停。"
+      "start_at_ms": 12800,
+      "end_at_ms": 13820,
+      "note": "情绪续上来才给第二次，中间隔着一整段用户发言。"
     },
     {
       "name": "句中附和",
       "title": "那真是够呛 落在语义接缝",
       "tag": "助手附和",
-      "start_at_ms": 21600,
-      "end_at_ms": 22840,
+      "start_at_ms": 20000,
+      "end_at_ms": 21200,
       "note": "只表示在听，不切断句子，用户照常说完后半句。"
     },
     {
       "name": "用户接管",
       "title": "我看看怎么调整吧",
-      "start_at_ms": 30460,
-      "end_at_ms": 32860,
+      "start_at_ms": 31200,
+      "end_at_ms": 32740,
       "note": "用户表示自己处理；不接活、不提议代劳、不复述改动。"
     }
   ],
@@ -276,197 +309,237 @@
   "breaths": [
     {
       "utterance_id": "u003",
-      "host_start_ms": 6180,
+      "host_start_ms": 6000,
       "windows": [
         [
-          700,
-          880
+          20,
+          80
         ],
         [
-          980,
-          1040
+          720,
+          860
         ],
         [
-          1140,
-          1220
-        ],
-        [
-          1680,
-          1760
-        ]
-      ]
-    },
-    {
-      "utterance_id": "u004",
-      "host_start_ms": 8600,
-      "windows": [
-        [
-          0,
-          180
-        ],
-        [
-          320,
-          380
-        ],
-        [
-          460,
-          540
-        ],
-        [
-          660,
-          1460
-        ],
-        [
-          1700,
-          1800
-        ],
-        [
-          1940,
-          2060
+          1320,
+          1400
         ]
       ]
     },
     {
       "utterance_id": "u005",
-      "host_start_ms": 11280,
+      "host_start_ms": 8000,
       "windows": [
         [
-          0,
-          60
+          460,
+          520
         ],
         [
-          520,
-          600
+          640,
+          720
         ],
         [
-          960,
-          1220
-        ],
-        [
-          1340,
-          1440
-        ],
-        [
-          1540,
-          2200
-        ],
-        [
-          2660,
-          2860
-        ],
-        [
-          2920,
-          3420
+          800,
+          940
         ]
       ]
     },
     {
-      "utterance_id": "u008",
-      "host_start_ms": 15740,
+      "utterance_id": "u006",
+      "host_start_ms": 10400,
       "windows": [
         [
           0,
-          60
+          80
         ],
         [
-          1540,
-          1720
+          880,
+          960
+        ],
+        [
+          1100,
+          1160
+        ],
+        [
+          1280,
+          1340
+        ],
+        [
+          1480,
+          1800
+        ],
+        [
+          1980,
+          2040
+        ],
+        [
+          2280,
+          2460
+        ],
+        [
+          2540,
+          2960
+        ],
+        [
+          3400,
+          3460
+        ],
+        [
+          3520,
+          3940
+        ],
+        [
+          3960,
+          4460
         ]
       ]
     },
     {
       "utterance_id": "u009",
-      "host_start_ms": 18080,
+      "host_start_ms": 15600,
       "windows": [
         [
           0,
           60
         ],
         [
-          440,
-          500
-        ],
-        [
-          720,
-          780
-        ],
-        [
-          1140,
-          1260
-        ],
-        [
-          1340,
-          1400
-        ],
-        [
-          1580,
-          2260
-        ],
-        [
-          3000,
-          3060
-        ],
-        [
-          3140,
-          3940
-        ],
-        [
-          4820,
-          4920
-        ],
-        [
-          5220,
-          5320
-        ],
-        [
-          5840,
-          5900
+          1440,
+          1600
         ]
       ]
     },
     {
-      "utterance_id": "u011",
-      "host_start_ms": 24960,
+      "utterance_id": "u010",
+      "host_start_ms": 18000,
       "windows": [
         [
           0,
           60
         ],
         [
-          80,
-          140
+          420,
+          480
+        ],
+        [
+          680,
+          760
+        ],
+        [
+          1100,
+          1200
+        ],
+        [
+          1240,
+          1400
+        ],
+        [
+          1500,
+          2180
+        ],
+        [
+          2440,
+          2520
+        ],
+        [
+          2880,
+          2980
+        ],
+        [
+          3080,
+          3220
+        ],
+        [
+          3280,
+          3580
+        ],
+        [
+          4060,
+          4140
+        ],
+        [
+          4280,
+          4340
+        ],
+        [
+          4620,
+          4740
+        ],
+        [
+          4940,
+          5000
+        ],
+        [
+          5280,
+          5420
         ]
       ]
     },
     {
       "utterance_id": "u012",
-      "host_start_ms": 27000,
+      "host_start_ms": 24400,
       "windows": [
         [
-          760,
-          1300
+          0,
+          160
         ],
         [
-          1400,
-          1460
+          400,
+          460
         ],
         [
-          1920,
-          1980
+          680,
+          760
+        ],
+        [
+          1340,
+          1400
         ]
       ]
     },
     {
-      "utterance_id": "u014",
-      "host_start_ms": 30460,
+      "utterance_id": "u013",
+      "host_start_ms": 26800,
       "windows": [
         [
-          260,
-          1400
+          0,
+          60
         ],
         [
-          2020,
-          2080
+          580,
+          640
+        ],
+        [
+          860,
+          1320
+        ],
+        [
+          1420,
+          1480
+        ],
+        [
+          2500,
+          2580
+        ],
+        [
+          3100,
+          3480
+        ]
+      ]
+    },
+    {
+      "utterance_id": "u015",
+      "host_start_ms": 31200,
+      "windows": [
+        [
+          0,
+          60
+        ],
+        [
+          200,
+          500
+        ],
+        [
+          1100,
+          1160
         ]
       ]
     }

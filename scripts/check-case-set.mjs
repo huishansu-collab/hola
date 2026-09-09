@@ -138,7 +138,7 @@ for(const [id,s] of Object.entries(cases)){
  const users=track(s,'用户').clips,assistant=track(s,'助手').clips;
  const spoken=id=>s.utterances.find(u=>u.id===id);
  const backchannels=assistant.filter(c=>s.controlAnnotations.fdx_annotation.some(a=>a.start_at_ms===Math.round(c.a)));
- assert.equal(backchannels.length,4,'backchannel: four annotated backchannel units');
+ assert.equal(backchannels.length,5,'backchannel: five annotated backchannel units');
  for(const c of backchannels){
   // The defining property: it lands inside a user clip and the user keeps going.
   const over=users.find(u=>u.a<c.a&&u.b>c.b);
@@ -146,7 +146,9 @@ for(const [id,s] of Object.entries(cases)){
   assert(over.b-c.b>=800,`backchannel: user must keep talking after ${c.label}`);
   assert(!assistant.some(o=>o!==c&&o.a<c.b&&o.b>c.a),`backchannel: ${c.label} overlaps another assistant clip`);
  }
- const [particle,agree,sympathy,echo]=backchannels;
+ const [light,particle,agree,sympathy,echo]=backchannels;
+ assert.equal(light.label,'嗯','backchannel: 第一次附和是一声纯语气的轻应');
+ assert(light.b-light.a<=particle.b-particle.a,'backchannel: 轻应是所有附和里最短的一声');
  assert.equal(particle.label,'嗐','backchannel: the particle is its own unit');
  assert(agree.a>=particle.b&&agree.a-particle.b<=400,'backchannel: 嗐 and the agreement it heads stay adjacent');
  assert.equal(agree.label,'是啊！');
@@ -154,9 +156,9 @@ for(const [id,s] of Object.entries(cases)){
  assert(echo.label.startsWith('唉'));
  const types=s.controlAnnotations.fdx_annotation.map(a=>a.fdx_type);
  // Particles carry only tone; sentences carry a judgement about the situation.
- assert.deepEqual(types,['附和词','附和词','附和句','附和句'],'backchannel: tone-only and content units are typed apart');
+ assert.deepEqual(types,['附和词','附和词','附和词','附和句','附和句'],'backchannel: tone-only and content units are typed apart');
  // 纯语气的附和词必须比带内容的附和句短——这条与录制时长无关，是两类的分野。
- const words=[particle,agree],sentences=[sympathy,echo];
+ const words=[light,particle,agree],sentences=[sympathy,echo];
  assert(Math.max(...words.map(c=>c.b-c.a))<Math.min(...sentences.map(c=>c.b-c.a)),
   'backchannel: 附和词必须短于附和句');
  for(const c of backchannels)assert(c.b-c.a<=2000,`backchannel: ${c.label} 过长，已经不像附和`);
@@ -165,12 +167,14 @@ for(const [id,s] of Object.entries(cases)){
  // Spacing: the user gets whole segments with no assistant voice at all.
  const silent=users.filter(u=>!assistant.some(c=>c.a<u.b&&c.b>u.a));
  assert(silent.length>=5,`backchannel: at least five user segments must go unanswered, got ${silent.length}`);
- // Spacing is the point: never two answered segments in a row.
- const answered=users.flatMap((u,i)=>assistant.some(c=>c.a<u.b&&c.b>u.a)?[i]:[]);
- for(let i=1;i<answered.length;i++)assert(answered[i]-answered[i-1]>=2,`backchannel: leave a whole user segment between backchannels (${answered.join(',')})`);
-
+ // 密度不是均匀的：第一段先听着，第二段给一声轻应，第三段才连着应两声，此后每次都隔着整段。
  assert(!assistant.some(c=>c.a<vented[0].b&&c.b>vented[0].a),'backchannel: the first vented segment gets no backchannel');
- assert(!assistant.some(c=>c.a<vented[1].b&&c.b>vented[1].a),'backchannel: the second vented segment gets no backchannel either');
+ const answered=users.flatMap((u,i)=>assistant.some(c=>c.a<u.b&&c.b>u.a)?[i]:[]);
+ assert.deepEqual(answered.slice(0,2),[2,3],`backchannel: 轻应落在第二段吐槽、连声落在第三段 (${answered.join(',')})`);
+ assert.equal(backchannels.filter(c=>c.a<users[answered[0]].b&&c.b>users[answered[0]].a).length,1,
+  'backchannel: 第一次只给一声，不是连声');
+ for(let i=2;i<answered.length;i++)assert(answered[i]-answered[i-1]>=2,
+  `backchannel: 此后每次附和之间隔着一整段用户发言 (${answered.join(',')})`);
  // Venting is not an instruction.
  assert.equal(calls(s,'calendar.update').length,1,'backchannel: exactly one calendar write');
  const write=s.inputEvents.find(e=>e.event_id==='cal_1'&&e.query!==undefined);

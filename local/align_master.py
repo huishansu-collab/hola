@@ -18,7 +18,8 @@ MODEL_URL = f'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models
 NORM = re.compile(r'[^一-鿿A-Za-z0-9]')
 # 语气词的写法在识别结果里不稳定（嗐/嗨、唉/哎、诶/欸 同音异形），
 # 归一到同一个字再比对，否则附和这类单字台词会匹配不上、只能插值。
-VARIANTS = str.maketrans({'嗐': '嗨', '唉': '哎', '诶': '欸', '嘿': '嗨', '呐': '哪'})
+VARIANTS = str.maketrans({'嗐': '嗨', '唉': '哎', '诶': '欸', '嘿': '嗨', '呐': '哪',
+                          '恩': '嗯', '唔': '嗯', '呣': '嗯', '嗯': '嗯'})
 norm = lambda t: NORM.sub('', str(t)).lower().translate(VARIANTS)
 
 
@@ -108,7 +109,10 @@ def main():
         model=str(model_dir / 'model.int8.onnx'), tokens=str(model_dir / 'tokens.txt'),
         num_threads=min(8, os.cpu_count() or 4), use_itn=False, language='zh')
     d = json.loads((ROOT / 'case-packages' / case / 'case.json').read_text('utf-8'))
-    lines = [{'id': u['id'], 'text': u['text']} for u in d['utterances']]
+    # 台词 id 按录制顺序编号，case.json 的数组按时间线排——附和会插到宿主句后面，
+    # 两者不一定同序。对齐要的是母带里的朗读顺序，所以按 id 排。
+    lines = [{'id': u['id'], 'text': u['text']}
+             for u in sorted(d['utterances'], key=lambda u: u['id'])]
     master = ROOT / 'local' / case / 'audio' / 'session-master.wav'
     regs, sims, text = align_master(rec, master, lines)
     out = {'source': f'audio/sources/session-master.wav', 'clips': [
