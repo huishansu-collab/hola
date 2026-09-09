@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=22.13.0"
+    "node": ">=22.18.0"
   },
   "scripts": {
     "dev": "vinext dev",
@@ -12,7 +12,14 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "build:local": "vite build --config vite.local.config.ts && python3 local/package_single.py",
-    "dev:local": "vite --config vite.local.config.ts --host 127.0.0.1"
+    "dev:local": "vite --config vite.local.config.ts --host 127.0.0.1",
+    "case:validate": "node scripts/case-package/cli.mjs validate",
+    "case:build": "node scripts/case-package/cli.mjs build",
+    "prebuild:local": "node scripts/case-package/cli.mjs build case-packages/gmail",
+    "predev:local": "node scripts/case-package/cli.mjs build case-packages/gmail",
+    "prebuild": "node scripts/case-package/cli.mjs build case-packages/gmail",
+    "predev": "node scripts/case-package/cli.mjs build case-packages/gmail",
+    "test:case-package": "node scripts/check-case-package.mjs"
   },
   "dependencies": {
     "react": "19.2.6",

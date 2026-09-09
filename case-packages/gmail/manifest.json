@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "case_id": "gmail",
+  "title": "新用户查 Gmail 邮件",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

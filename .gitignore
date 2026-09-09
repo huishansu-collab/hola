@@ -45,3 +45,6 @@ next-env.d.ts
 
 # Raw service responses duplicate generated audio and are not source inputs
 /local/**/master-response.json
+
+# Rebuild Case package artifacts from sources
+/case-packages/*/build/

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:interaction-case:manifest:1",
+  "title": "Interaction Case manifest v1",
+  "type": "object",
+  "required": ["schema_version", "case_id", "title", "files"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "case_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 200},
+    "files": {
+      "type": "object",
+      "required": ["case", "timeline", "alignment", "brief", "script"],
+      "properties": {
+        "case": {"type": "string"},
+        "timeline": {"type": "string"},
+        "alignment": {"type": "string"},
+        "brief": {"type": "string"},
+        "script": {"type": "string"}
+      }
+    }
+  }
+}
