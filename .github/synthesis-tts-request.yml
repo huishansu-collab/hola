@@ -1,12 +1,4 @@
 cases:
-  - explicit-a1
-  - explicit-a2
-  - explicit-a3
-  - explicit-b1
-  - explicit-b2
-  - explicit-b3
-  - explicit-c1
-  - explicit-c2
-  - explicit-c3
-  - explicit-d1
-run: 7
+  - b3try1
+  - b3try2
+run: 8
