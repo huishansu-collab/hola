@@ -69,8 +69,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "承接句，句尾后约0.3秒；自然语速一个方案＋量化差值；常",
-          "start_at_ms": 4800,
-          "end_at_ms": 6400
+          "start_at_ms": 4400,
+          "end_at_ms": 5600
         },
         {
           "kind": "expression",
@@ -79,8 +79,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "规语速；禁止报多方案、禁止不确认直接切",
-          "start_at_ms": 8800,
-          "end_at_ms": 12400
+          "start_at_ms": 8000,
+          "end_at_ms": 11600
         },
         {
           "kind": "expression",
@@ -89,8 +89,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "暂不发声",
-          "start_at_ms": 13200,
-          "end_at_ms": 13600
+          "start_at_ms": 12400,
+          "end_at_ms": 12800
         },
         {
           "kind": "expression",
@@ -99,8 +99,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "报结果＋下一步动作；常规语速保持静默",
-          "start_at_ms": 13600,
-          "end_at_ms": 15600
+          "start_at_ms": 12800,
+          "end_at_ms": 14800
         }
       ]
     },
@@ -129,29 +129,29 @@
           "kind": "state",
           "label": "先应一声再查，不冷场出一个方案＋差",
           "description": "先应一声再查，不冷场出一个方案＋差",
-          "start_at_ms": 4800,
-          "end_at_ms": 6400
+          "start_at_ms": 4400,
+          "end_at_ms": 5600
         },
         {
           "kind": "state",
           "label": "值；切路线要动方向盘，须用户点头，不报三条让人挑",
           "description": "值；切路线要动方向盘，须用户点头，不报三条让人挑",
-          "start_at_ms": 8800,
-          "end_at_ms": 12400
+          "start_at_ms": 8000,
+          "end_at_ms": 11600
         },
         {
           "kind": "state",
           "label": "收到确认",
           "description": "收到确认",
-          "start_at_ms": 13200,
-          "end_at_ms": 13600
+          "start_at_ms": 12400,
+          "end_at_ms": 12800
         },
         {
           "kind": "state",
           "label": "已切换，顺手给第一步动作10秒无人说话，end_reason=silence_t",
           "description": "已切换，顺手给第一步动作10秒无人说话，end_reason=silence_timeout；导航播报继续不受收音关闭影响；灯环熄灭",
-          "start_at_ms": 13600,
-          "end_at_ms": 15600
+          "start_at_ms": 12800,
+          "end_at_ms": 14800
         }
       ]
     },

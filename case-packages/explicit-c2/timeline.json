@@ -26,7 +26,7 @@
           "label": "（触碰LIVINGEDGE）→手机亮光",
           "description": "行为：（触碰LIVINGEDGE）→手机亮光",
           "start_at_ms": 0,
-          "end_at_ms": 835
+          "end_at_ms": 400
         }
       ]
     },
@@ -37,8 +37,8 @@
           "kind": "action",
           "label": "（本例全程不出声）",
           "description": "（本例全程不出声）",
-          "start_at_ms": 3200,
-          "end_at_ms": 3600
+          "start_at_ms": 2800,
+          "end_at_ms": 3200
         }
       ]
     },
@@ -53,7 +53,7 @@
           "delivery": "",
           "annotation": "暂不发声",
           "start_at_ms": 0,
-          "end_at_ms": 1200
+          "end_at_ms": 400
         },
         {
           "kind": "expression",
@@ -63,7 +63,7 @@
           "delivery": "",
           "annotation": "暂不发声",
           "start_at_ms": 0,
-          "end_at_ms": 2800,
+          "end_at_ms": 2400,
           "lane": 1
         },
         {
@@ -73,8 +73,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "卡片文案：“未接来电2通：妈妈（响42秒）、物业（有语音留言）”",
-          "start_at_ms": 2800,
-          "end_at_ms": 3200
+          "start_at_ms": 2400,
+          "end_at_ms": 2800
         },
         {
           "kind": "expression",
@@ -83,8 +83,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "考核点：听出低语就判定不宜外放，答案改走屏幕，而不是压低音量念给他听；屏幕可比语音多给一档（响铃时长、有无留言），但不显示完整号码",
-          "start_at_ms": 3200,
-          "end_at_ms": 3600
+          "start_at_ms": 2800,
+          "end_at_ms": 3200
         },
         {
           "kind": "expression",
@@ -93,8 +93,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "保持静默",
-          "start_at_ms": 3600,
-          "end_at_ms": 6000
+          "start_at_ms": 3200,
+          "end_at_ms": 5600
         },
         {
           "kind": "expression",
@@ -103,7 +103,7 @@
           "trigger": "",
           "delivery": "",
           "annotation": "听完，不抢话",
-          "start_at_ms": 6000,
+          "start_at_ms": 5600,
           "end_at_ms": 9600
         },
         {
@@ -134,7 +134,7 @@
           "delivery": "",
           "annotation": "保持静默",
           "start_at_ms": 10400,
-          "end_at_ms": 12800
+          "end_at_ms": 12400
         },
         {
           "kind": "expression",
@@ -160,42 +160,42 @@
           "label": "触后≤50ms亮光，进入聆听态；工位周围有同事人声",
           "description": "触后≤50ms亮光，进入聆听态；工位周围有同事人声",
           "start_at_ms": 0,
-          "end_at_ms": 1200
+          "end_at_ms": 400
         },
         {
           "kind": "state",
           "label": "持续收听；“刚才”＝本机最近未接来电，读本地通话记录；输入音量远低于常态，先按低",
           "description": "持续收听；“刚才”＝本机最近未接来电，读本地通话记录；输入音量远低于常态，先按低语处理",
           "start_at_ms": 0,
-          "end_at_ms": 2800,
+          "end_at_ms": 2400,
           "lane": 1
         },
         {
           "kind": "state",
           "label": "本地读取即时完成：两条未接",
           "description": "本地读取即时完成：两条未接（妈妈、物业）；用户压低嗓子＋周围有人声＝这个场合不适合出声，本轮关掉语音输出，答案改走屏幕",
-          "start_at_ms": 2800,
-          "end_at_ms": 3200
+          "start_at_ms": 2400,
+          "end_at_ms": 2800
         },
         {
           "kind": "state",
           "label": "卡片已上屏，屏幕列出两条；反应延迟0ms",
           "description": "卡片已上屏，屏幕列出两条；反应延迟0ms（≤400ms）；不配提示音、不震动",
-          "start_at_ms": 3200,
-          "end_at_ms": 3600
+          "start_at_ms": 2800,
+          "end_at_ms": 3200
         },
         {
           "kind": "state",
           "label": "用户在读屏，无人声；不催、不因为没等到口头回应就补一句语音",
           "description": "用户在读屏，无人声；不催、不因为没等到口头回应就补一句语音",
-          "start_at_ms": 3600,
-          "end_at_ms": 6000
+          "start_at_ms": 3200,
+          "end_at_ms": 5600
         },
         {
           "kind": "state",
           "label": "追问不带上文，指向物业那条的语音留言；仍是低语，通道不变",
           "description": "追问不带上文，指向物业那条的语音留言；仍是低语，通道不变",
-          "start_at_ms": 6000,
+          "start_at_ms": 5600,
           "end_at_ms": 9600
         },
         {
@@ -217,13 +217,13 @@
           "label": "用户在读屏，无人声",
           "description": "用户在读屏，无人声",
           "start_at_ms": 10400,
-          "end_at_ms": 12800
+          "end_at_ms": 12400
         },
         {
           "kind": "state",
           "label": "收尾；“下午回”是用户自己的安排，不建提醒",
           "description": "收尾；“下午回”是用户自己的安排，不建提醒",
-          "start_at_ms": 12800,
+          "start_at_ms": 12400,
           "end_at_ms": 14800
         },
         {
@@ -243,15 +243,22 @@
           "label": "（本例不涉及外部工具）",
           "description": "（本例不涉及外部工具）",
           "start_at_ms": 0,
-          "end_at_ms": 1200
+          "end_at_ms": 400
         },
         {
           "kind": "state",
           "label": "（本例不涉及外部工具）",
           "description": "（本例不涉及外部工具）",
           "start_at_ms": 0,
-          "end_at_ms": 2800,
+          "end_at_ms": 2400,
           "lane": 1
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 2400,
+          "end_at_ms": 2800
         },
         {
           "kind": "state",
@@ -265,20 +272,13 @@
           "label": "（本例不涉及外部工具）",
           "description": "（本例不涉及外部工具）",
           "start_at_ms": 3200,
-          "end_at_ms": 3600
+          "end_at_ms": 5600
         },
         {
           "kind": "state",
           "label": "（本例不涉及外部工具）",
           "description": "（本例不涉及外部工具）",
-          "start_at_ms": 3600,
-          "end_at_ms": 6000
-        },
-        {
-          "kind": "state",
-          "label": "（本例不涉及外部工具）",
-          "description": "（本例不涉及外部工具）",
-          "start_at_ms": 6000,
+          "start_at_ms": 5600,
           "end_at_ms": 9600
         },
         {
@@ -300,13 +300,13 @@
           "label": "（本例不涉及外部工具）",
           "description": "（本例不涉及外部工具）",
           "start_at_ms": 10400,
-          "end_at_ms": 12800
+          "end_at_ms": 12400
         },
         {
           "kind": "state",
           "label": "（本例不涉及外部工具）",
           "description": "（本例不涉及外部工具）",
-          "start_at_ms": 12800,
+          "start_at_ms": 12400,
           "end_at_ms": 14800
         },
         {

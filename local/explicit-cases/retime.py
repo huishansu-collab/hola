@@ -18,6 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent
 HERE = Path(__file__).resolve().parent
 CUT = 0.8          # 被打断的那句播到录音的百分之多少
+WAIT = 10000       # 配了音之后，等待段最长留这么久（见下）
 spec = importlib.util.spec_from_file_location('explicit_import', HERE / 'import.py')
 imp = importlib.util.module_from_spec(spec); spec.loader.exec_module(imp)
 grid = lambda t: -(-int(t) // 400) * 400
@@ -43,19 +44,33 @@ def retime(cid):
     align = json.loads((ROOT / 'local' / cid / 'align.json').read_text('utf-8'))
     cut = {c['utterance_id']: c for c in align['clips']}
     dur = {k: v['source_end_ms'] - v['source_start_ms'] for k, v in cut.items()}
+    if d['static_context']['constraints'].get('timing_status') == 'aligned':
+        # 重排是从「文档示意时间」映射到「录音时间」的，对已经排过的包再排一次
+        # 等于拿结果当输入，间隔会被越压越短。先跑 import.py 退回 planned 再来。
+        raise SystemExit(f'{cid} 已经是 aligned，先跑 local/explicit-cases/import.py 退回 planned 再重排')
     old = sorted(d['utterances'], key=lambda u: (u['start_at_ms'], u['id']))
     stops = {i['assistant_id']: i for i in t.get('interruptions', [])}
     barge = {i['user_id']: i for i in t.get('interruptions', [])}
-    place, cursor, prev_end = {}, 0, 0
+    place, cursor, prev_end, squeezed = {}, 0, 0, []
     for u in old:
         gap = max(0, u['start_at_ms'] - prev_end)
+        # 文档里的等待是真实时长：B1 的计时 8 分钟、B2 的到家提醒 87 分钟。
+        # 没有音频时照写没问题，配了音就得渲染同样长的双声道母带（B2 会到 1 GB），
+        # 所以配音版把等待压到 10 秒——台词、顺序、标注都不动，只是等得短一点。
+        # 文档自己也这么干过：Z5 就给了详版和压缩版两张表。
+        if gap > WAIT:
+            squeezed.append(f"{u['id']} 前的等待 {gap / 1000:.0f} 秒压到 {WAIT // 1000} 秒")
+            gap = WAIT
         prev_end = max(prev_end, u['end_at_ms'])
         if u['id'] in barge:                       # 打断者：起点由被打断那句的停声点决定
             i = barge[u['id']]
             r = place[i['assistant_id']]
             a = max(r[0] + 400, r[2] - 400)
         else:
-            a = cursor + gap
+            # 助手起点必须落在 400 ms 刻度上。文档写的「接话延迟 0ms（≤400ms）」意思是
+            # 用户收声后的第一个刻度就接，所以一个微轮次以内的间隔不要再加一遍——
+            # 加了会变成 600～700ms，听着就慢半拍。
+            a = cursor + (gap if gap > 400 or u['speaker'] != 'assistant' else 0)
             if u['speaker'] == 'assistant': a = grid(a)
         length = dur[u['id']]
         if u['id'] in stops:                       # 被打断：只播到录音的 CUT，其余丢弃
@@ -69,8 +84,14 @@ def retime(cid):
     for u in old:
         anchors.append((u['start_at_ms'], place[u['id']][0]))
         anchors.append((u['end_at_ms'], place[u['id']][2]))
-    at = mapper(anchors)
     end_new = max(p[2] for p in place.values())
+    # 最后一句之后还有事情要发生（B2 是 87 分钟后到家触发提醒），同样压到 10 秒，
+    # 否则渲染出来的双声道母带全是静音，光文件就上 GB。
+    tail = d['meta_data']['media']['audio']['duration_ms'] - max(u['end_at_ms'] for u in old)
+    if tail > WAIT:
+        squeezed.append(f'最后一句之后的 {tail / 1000:.0f} 秒压到 {WAIT // 1000} 秒')
+        anchors.append((d['meta_data']['media']['audio']['duration_ms'], end_new + WAIT))
+    at = mapper(anchors)
     # 台词
     for u in d['utterances']:
         a, _, z = place[u['id']]
@@ -79,7 +100,8 @@ def retime(cid):
     d['static_context']['constraints'].update(
         timing_status='aligned', audio_status='generated',
         audio_note=('台词来自同一次整段对话生成，按语音识别对齐切分，原速播放；'
-                    '其余轨道按旧时间到新时间的分段线性映射跟随。'))
+                    '其余轨道按旧时间到新时间的分段线性映射跟随。'
+                    + ('；配音版把长等待压短了：' + '，'.join(squeezed) if squeezed else '')))
     # 打断：停声点、audio.stop 回执
     for i in t.get('interruptions', []):
         a, full, z = place[i['assistant_id']]
@@ -112,8 +134,22 @@ def retime(cid):
     for a in d['paralinguistic_annotation'] + d['custom_annotation'] + d['fdx_annotation']:
         a['start_at_ms'], a['end_at_ms'] = at(a['start_at_ms']), at(a['end_at_ms'])
     d['events'].sort(key=lambda e: (e['time_at_ms'], e['event_id'], 'query' not in e))
+    # 分层要把一条轨道上的所有片段放一起算：工具片段的时间在 Events 里，
+    # 单独分一次层的话，它会和同轨的状态片段一起占住第 0 层。
+    span = {}
+    for e in d['events']:
+        a, z = span.get(e['event_id'], (e['time_at_ms'], e['time_at_ms']))
+        span[e['event_id']] = (min(a, e['time_at_ms']), max(z, e['time_at_ms']))
     for tr in t['tracks']:
-        imp.lanes([c for c in tr['clips'] if 'start_at_ms' in c])
+        proxy = []
+        for c in tr['clips']:
+            if 'start_at_ms' in c: proxy.append({'clip': c, 'start_at_ms': c['start_at_ms'], 'end_at_ms': c['end_at_ms']})
+            elif c.get('event_id') in span:
+                proxy.append({'clip': c, 'start_at_ms': span[c['event_id']][0], 'end_at_ms': span[c['event_id']][1]})
+        imp.lanes(proxy)
+        for x in proxy:
+            x['clip'].pop('lane', None)
+            if x.get('lane'): x['clip']['lane'] = x['lane']
     # 时长要盖住最靠后的一件事：台词、标注片段、工具返回都算在内
     duration = grid(max([end_new] + [c['end_at_ms'] for tr in t['tracks'] for c in tr['clips']
                                      if 'end_at_ms' in c] + [e['time_at_ms'] for e in d['events']]) + 400)

@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 18000,
+        "duration_ms": 16800,
         "file": null,
         "tracks": [
           {
@@ -93,32 +93,32 @@
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "得带。十点后有阵雨，得下午三四点才停。",
-      "start_at_ms": 3200,
-      "end_at_ms": 7160
+      "start_at_ms": 2800,
+      "end_at_ms": 6760
     },
     {
       "id": "u003",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "中午那会儿也下？我约了王姐吃饭。",
-      "start_at_ms": 7160,
-      "end_at_ms": 10180
+      "start_at_ms": 6760,
+      "end_at_ms": 9780
     },
     {
       "id": "u004",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "中午雨最大。约的地方要是远，建议提前几分钟出门。",
-      "start_at_ms": 10800,
-      "end_at_ms": 15400
+      "start_at_ms": 10000,
+      "end_at_ms": 14600
     },
     {
       "id": "u005",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "行，知道了。",
-      "start_at_ms": 15400,
-      "end_at_ms": 16660
+      "start_at_ms": 14600,
+      "end_at_ms": 15860
     }
   ],
   "events": [

@@ -34,7 +34,7 @@
           "label": "（触碰LIVINGEDGE）→手机亮光",
           "description": "行为：（触碰LIVINGEDGE）→手机亮光",
           "start_at_ms": 0,
-          "end_at_ms": 400
+          "end_at_ms": 448
         }
       ]
     },
@@ -78,7 +78,7 @@
           "delivery": "",
           "annotation": "暂不发声",
           "start_at_ms": 0,
-          "end_at_ms": 400
+          "end_at_ms": 800
         },
         {
           "kind": "expression",
@@ -88,7 +88,7 @@
           "delivery": "",
           "annotation": "暂不发声",
           "start_at_ms": 0,
-          "end_at_ms": 3200,
+          "end_at_ms": 3600,
           "lane": 1
         },
         {
@@ -98,8 +98,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "接话延迟0ms（≤400ms）；轻声，自然拖长“嗯”，占满这一个微轮次；日程写入400ms就回，正好一声，不铺垫“你稍等一下”；准备：“改好了，明天周会十点半开始，日历更新了。”",
-          "start_at_ms": 3200,
-          "end_at_ms": 4400
+          "start_at_ms": 3600,
+          "end_at_ms": 4800
         },
         {
           "kind": "expression",
@@ -108,8 +108,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "首音“嗯……”已在上一行发出，本行接正式答案；常规语速；回读改后时间，让用户能当场纠错",
-          "start_at_ms": 4400,
-          "end_at_ms": 8000
+          "start_at_ms": 4800,
+          "end_at_ms": 8400
         },
         {
           "kind": "expression",
@@ -118,8 +118,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "考核点：不抢话。停顿算进这一行的时长；此刻若接话会打断用户的自我修正",
-          "start_at_ms": 8000,
-          "end_at_ms": 9600
+          "start_at_ms": 8400,
+          "end_at_ms": 10000
         },
         {
           "kind": "expression",
@@ -128,8 +128,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "听完，不抢话；丢弃“跟组里说一声”这条待办",
-          "start_at_ms": 9600,
-          "end_at_ms": 12800
+          "start_at_ms": 10000,
+          "end_at_ms": 15200
         },
         {
           "kind": "expression",
@@ -138,8 +138,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "接话延迟0ms（≤400ms）；轻声拖长“嗯”，占一个微轮次；不说“正在为你起草”；准备：“拟好了：‘明天周会改到10:30，其他不变。’发到‘产品组大群’？”",
-          "start_at_ms": 12800,
-          "end_at_ms": 13600
+          "start_at_ms": 15200,
+          "end_at_ms": 16400
         },
         {
           "kind": "expression",
@@ -148,8 +148,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "首音“嗯……”已在上一行发出，本行接念稿；常规语速；念稿部分略慢一档、群名重读；一次问清“内容＋群”，不拆成两轮",
-          "start_at_ms": 13600,
-          "end_at_ms": 19600
+          "start_at_ms": 16400,
+          "end_at_ms": 22000
         },
         {
           "kind": "expression",
@@ -158,8 +158,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "考核点：接话延迟0ms（≤400ms）；“嗯”是短音、不拖长——只表示收到指令，不等于发送成功；禁止在回执前说“发了”“已发送”",
-          "start_at_ms": 20000,
-          "end_at_ms": 20400
+          "start_at_ms": 22400,
+          "end_at_ms": 22800
         },
         {
           "kind": "expression",
@@ -168,8 +168,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "准备：“发出去了。”；回执刚到，本行只做本地组织，不再补声",
-          "start_at_ms": 20400,
-          "end_at_ms": 20800
+          "start_at_ms": 22800,
+          "end_at_ms": 23200
         },
         {
           "kind": "expression",
@@ -178,8 +178,9 @@
           "trigger": "",
           "delivery": "",
           "annotation": "常规语速；四个字收住；禁止发完再把通知全文念一遍",
-          "start_at_ms": 20800,
-          "end_at_ms": 21600
+          "start_at_ms": 22800,
+          "end_at_ms": 23600,
+          "lane": 1
         },
         {
           "kind": "expression",
@@ -188,8 +189,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "保持静默",
-          "start_at_ms": 22400,
-          "end_at_ms": 22800
+          "start_at_ms": 24400,
+          "end_at_ms": 24800
         }
       ]
     },
@@ -205,99 +206,100 @@
           "label": "触后≤50ms亮光，进入聆听态",
           "description": "触后≤50ms亮光，进入聆听态",
           "start_at_ms": 0,
-          "end_at_ms": 400
+          "end_at_ms": 800
         },
         {
           "kind": "state",
           "label": "持续收听；“往后挪半小时”和“十点半”是同一个结果，用户自带绝对时间，不用反推",
           "description": "持续收听；“往后挪半小时”和“十点半”是同一个结果，用户自带绝对时间，不用反推",
           "start_at_ms": 0,
-          "end_at_ms": 3200,
+          "end_at_ms": 3600,
           "lane": 1
         },
         {
           "kind": "state",
           "label": "结果返回，日程已改；明天只有一个周会，无需消歧；用户句尾就得出声，回读等回执落定",
           "description": "结果返回，日程已改；明天只有一个周会，无需消歧；用户句尾就得出声，回读等回执落定再说",
-          "start_at_ms": 3200,
-          "end_at_ms": 4400
+          "start_at_ms": 3600,
+          "end_at_ms": 4800
         },
         {
           "kind": "state",
           "label": "回执已到才报完成；首音已发，本行把改后时间回读出来",
           "description": "回执已到才报完成；首音已发，本行把改后时间回读出来",
-          "start_at_ms": 4400,
-          "end_at_ms": 8000
+          "start_at_ms": 4800,
+          "end_at_ms": 8400
         },
         {
           "kind": "state",
           "label": "句中犹豫：语调没落、意图未落地",
           "description": "句中犹豫：语调没落、意图未落地（谁说、怎么说都没给），0.8秒内不抢话继续等",
-          "start_at_ms": 8000,
-          "end_at_ms": 9600
+          "start_at_ms": 8400,
+          "end_at_ms": 10000
         },
         {
           "kind": "state",
           "label": "一句里自带修正：“算了”作废上半句，只留改后的——发群通知，不是逐个通知组员",
           "description": "一句里自带修正：“算了”作废上半句，只留改后的——发群通知，不是逐个通知组员",
-          "start_at_ms": 9600,
-          "end_at_ms": 12800
+          "start_at_ms": 10000,
+          "end_at_ms": 15200
         },
         {
           "kind": "state",
           "label": "拟稿完成；群按最近活跃的工作群命中“产品组大群”，但群选择要用户确认；用户句尾就",
           "description": "拟稿完成；群按最近活跃的工作群命中“产品组大群”，但群选择要用户确认；用户句尾就得出声，念稿等草稿落定再说",
-          "start_at_ms": 12800,
-          "end_at_ms": 13600
+          "start_at_ms": 15200,
+          "end_at_ms": 16400
         },
         {
           "kind": "state",
           "label": "对外发送＝不可撤销，必须念稿＋报群名等确认，不先发后问",
           "description": "对外发送＝不可撤销，必须念稿＋报群名等确认，不先发后问",
-          "start_at_ms": 13600,
-          "end_at_ms": 19600
+          "start_at_ms": 16400,
+          "end_at_ms": 22000
         },
         {
           "kind": "state",
           "label": "明确授权，立即发送",
           "description": "明确授权，立即发送",
-          "start_at_ms": 19600,
-          "end_at_ms": 20000
+          "start_at_ms": 22000,
+          "end_at_ms": 22400
         },
         {
           "kind": "state",
           "label": "发送中，等回执；此刻还不能说“发了”；授权说完就得出声，用一个短“嗯”确认收到",
           "description": "发送中，等回执；此刻还不能说“发了”；授权说完就得出声，用一个短“嗯”确认收到",
-          "start_at_ms": 20000,
-          "end_at_ms": 20400
+          "start_at_ms": 22400,
+          "end_at_ms": 22800
         },
         {
           "kind": "state",
           "label": "回执返回，确认已投递",
           "description": "回执返回，确认已投递",
-          "start_at_ms": 20400,
-          "end_at_ms": 20800
+          "start_at_ms": 22800,
+          "end_at_ms": 23200
         },
         {
           "kind": "state",
           "label": "回执已到才报完成",
           "description": "回执已到才报完成",
-          "start_at_ms": 20800,
-          "end_at_ms": 21600
+          "start_at_ms": 22800,
+          "end_at_ms": 23600,
+          "lane": 1
         },
         {
           "kind": "state",
           "label": "收尾信号，不用再答",
           "description": "收尾信号，不用再答",
-          "start_at_ms": 21600,
-          "end_at_ms": 22400
+          "start_at_ms": 23600,
+          "end_at_ms": 24400
         },
         {
           "kind": "state",
           "label": "用户明确收尾；end_reason=user_end；灯环熄灭",
           "description": "用户明确收尾；end_reason=user_end；灯环熄灭",
-          "start_at_ms": 22400,
-          "end_at_ms": 22800
+          "start_at_ms": 24400,
+          "end_at_ms": 24800
         }
       ]
     },

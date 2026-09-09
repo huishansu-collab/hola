@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 16000,
+        "duration_ms": 15200,
         "file": null,
         "tracks": [
           {
@@ -93,24 +93,24 @@
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "我看下路况啊。 有条快8分钟的：多2公里，但少5个红绿灯，现在切过去吗？",
-      "start_at_ms": 4800,
-      "end_at_ms": 11980
+      "start_at_ms": 4400,
+      "end_at_ms": 11580
     },
     {
       "id": "u003",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "切。",
-      "start_at_ms": 12780,
-      "end_at_ms": 13040
+      "start_at_ms": 12380,
+      "end_at_ms": 12640
     },
     {
       "id": "u004",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "切好了，前面路口右转。",
-      "start_at_ms": 13600,
-      "end_at_ms": 15380
+      "start_at_ms": 12800,
+      "end_at_ms": 14580
     }
   ],
   "events": [
@@ -118,14 +118,14 @@
       "event_id": "e01",
       "event_type": "function_call",
       "tool_name": "map.route/nav",
-      "time_at_ms": 4800,
+      "time_at_ms": 4400,
       "query": "{\"request\": \"map.route/nav发起→检索中map.route/\"}"
     },
     {
       "event_id": "e01",
       "event_type": "function_call",
       "tool_name": "map.route/nav",
-      "time_at_ms": 8800,
+      "time_at_ms": 8000,
       "results": {
         "note": "nav返回→备选1条，耗时8,000ms",
         "simulated": true
@@ -135,14 +135,14 @@
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "nav.apply",
-      "time_at_ms": 13600,
+      "time_at_ms": 12800,
       "query": "{\"request\": \"nav.apply→已切换（即时）\"}"
     },
     {
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "nav.apply",
-      "time_at_ms": 15600,
+      "time_at_ms": 14800,
       "results": {
         "note": "nav.apply→已切换（即时）",
         "simulated": true

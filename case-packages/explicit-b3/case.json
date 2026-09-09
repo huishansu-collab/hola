@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 23200,
+        "duration_ms": 25200,
         "file": null,
         "tracks": [
           {
@@ -105,87 +105,87 @@
       "speaker_id": "user_1",
       "text": "明天的周会往后挪半小时，挪到十点半。",
       "start_at_ms": 0,
-      "end_at_ms": 2880
+      "end_at_ms": 3580
     },
     {
       "id": "u002",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 3200,
-      "end_at_ms": 4300
+      "start_at_ms": 3600,
+      "end_at_ms": 4420
     },
     {
       "id": "u003",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "改好了，明天周会十点半开始，日历更新了。",
-      "start_at_ms": 4400,
-      "end_at_ms": 7680
+      "start_at_ms": 4800,
+      "end_at_ms": 8160
     },
     {
       "id": "u004",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "跟组里说一声……",
-      "start_at_ms": 7680,
-      "end_at_ms": 9320
+      "start_at_ms": 8160,
+      "end_at_ms": 9640
     },
     {
       "id": "u005",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "算了，你直接在群里发个通知：周会改十点半，其他不变。",
-      "start_at_ms": 9320,
-      "end_at_ms": 12720
+      "start_at_ms": 9640,
+      "end_at_ms": 15140
     },
     {
       "id": "u006",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 12800,
-      "end_at_ms": 13580
+      "start_at_ms": 15200,
+      "end_at_ms": 16220
     },
     {
       "id": "u007",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "拟好了：‘明天周会改到10:30，其他不变。’发到‘产品组大群’？",
-      "start_at_ms": 13600,
-      "end_at_ms": 19340
+      "start_at_ms": 16400,
+      "end_at_ms": 21940
     },
     {
       "id": "u008",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "发吧。",
-      "start_at_ms": 19340,
-      "end_at_ms": 19660
+      "start_at_ms": 21940,
+      "end_at_ms": 22320
     },
     {
       "id": "u009",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯。",
-      "start_at_ms": 20000,
-      "end_at_ms": 20280
+      "start_at_ms": 22400,
+      "end_at_ms": 22720
     },
     {
       "id": "u010",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "发出去了。",
-      "start_at_ms": 20800,
-      "end_at_ms": 21400
+      "start_at_ms": 22800,
+      "end_at_ms": 23360
     },
     {
       "id": "u011",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "嗯，ok。",
-      "start_at_ms": 21400,
-      "end_at_ms": 22180
+      "start_at_ms": 23360,
+      "end_at_ms": 24400
     }
   ],
   "events": [
@@ -200,7 +200,7 @@
       "event_id": "e01",
       "event_type": "function_call",
       "tool_name": "calendar.update",
-      "time_at_ms": 3200,
+      "time_at_ms": 3600,
       "results": {
         "note": "calendar.update(周会10:00→10:30)成功，耗时400ms",
         "simulated": true
@@ -210,14 +210,14 @@
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "im.draft",
-      "time_at_ms": 9600,
+      "time_at_ms": 10000,
       "query": "{\"request\": \"周会改期通知\"}"
     },
     {
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "im.draft",
-      "time_at_ms": 12800,
+      "time_at_ms": 15200,
       "results": {
         "note": "im.draft成功，耗时200ms",
         "simulated": true
@@ -227,14 +227,14 @@
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "im.send",
-      "time_at_ms": 20000,
+      "time_at_ms": 22400,
       "query": "{\"request\": \"产品组大群\"}"
     },
     {
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "im.send",
-      "time_at_ms": 20400,
+      "time_at_ms": 22800,
       "results": {
         "note": "im.send成功，耗时500ms，已发",
         "simulated": true

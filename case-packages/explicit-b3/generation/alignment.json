@@ -4,68 +4,68 @@
     {
       "utterance_id": "u001",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 460,
-      "source_end_ms": 3340
+      "source_start_ms": 140,
+      "source_end_ms": 3720
     },
     {
       "utterance_id": "u002",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 6300,
-      "source_end_ms": 7400
+      "source_start_ms": 5600,
+      "source_end_ms": 6420
     },
     {
       "utterance_id": "u003",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 8260,
-      "source_end_ms": 11540
+      "source_start_ms": 6680,
+      "source_end_ms": 10040
     },
     {
       "utterance_id": "u004",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 12600,
-      "source_end_ms": 14240
+      "source_start_ms": 10180,
+      "source_end_ms": 11660
     },
     {
       "utterance_id": "u005",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 16680,
-      "source_end_ms": 20080
+      "source_start_ms": 12000,
+      "source_end_ms": 17500
     },
     {
       "utterance_id": "u006",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 20880,
-      "source_end_ms": 21660
+      "source_start_ms": 18620,
+      "source_end_ms": 19640
     },
     {
       "utterance_id": "u007",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 21920,
-      "source_end_ms": 27660
+      "source_start_ms": 19820,
+      "source_end_ms": 25360
     },
     {
       "utterance_id": "u008",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 28200,
-      "source_end_ms": 28520
+      "source_start_ms": 25700,
+      "source_end_ms": 26080
     },
     {
       "utterance_id": "u009",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 28800,
-      "source_end_ms": 29080
+      "source_start_ms": 26380,
+      "source_end_ms": 26700
     },
     {
       "utterance_id": "u010",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 29300,
-      "source_end_ms": 29900
+      "source_start_ms": 28480,
+      "source_end_ms": 29040
     },
     {
       "utterance_id": "u011",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 30100,
-      "source_end_ms": 30880
+      "source_start_ms": 29320,
+      "source_end_ms": 30360
     }
   ]
 }
