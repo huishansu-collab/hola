@@ -4,32 +4,32 @@
     {
       "utterance_id": "u001",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 80,
-      "source_end_ms": 3280
+      "source_start_ms": 200,
+      "source_end_ms": 3160
     },
     {
       "utterance_id": "u002",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 3400,
-      "source_end_ms": 4910
+      "source_start_ms": 3520,
+      "source_end_ms": 4900
     },
     {
       "utterance_id": "u003",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 5000,
-      "source_end_ms": 7260
+      "source_start_ms": 5120,
+      "source_end_ms": 7140
     },
     {
       "utterance_id": "u004",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 8740,
-      "source_end_ms": 11260
+      "source_start_ms": 8860,
+      "source_end_ms": 11140
     },
     {
       "utterance_id": "u005",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 11980,
-      "source_end_ms": 16280
+      "source_start_ms": 12100,
+      "source_end_ms": 16160
     },
     {
       "utterance_id": "u006",
@@ -40,56 +40,56 @@
     {
       "utterance_id": "u007",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 17740,
-      "source_end_ms": 18780
+      "source_start_ms": 17860,
+      "source_end_ms": 18660
     },
     {
       "utterance_id": "u008",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 19000,
-      "source_end_ms": 21180
+      "source_start_ms": 19120,
+      "source_end_ms": 21060
     },
     {
       "utterance_id": "u009",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 22140,
-      "source_end_ms": 28860
+      "source_start_ms": 22260,
+      "source_end_ms": 28740
     },
     {
       "utterance_id": "u010",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 29180,
-      "source_end_ms": 30660
+      "source_start_ms": 29300,
+      "source_end_ms": 30540
     },
     {
       "utterance_id": "u011",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 30700,
-      "source_end_ms": 32580
+      "source_start_ms": 30820,
+      "source_end_ms": 32460
     },
     {
       "utterance_id": "u012",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 33540,
-      "source_end_ms": 36840
+      "source_start_ms": 33660,
+      "source_end_ms": 36720
     },
     {
       "utterance_id": "u013",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 37400,
-      "source_end_ms": 38740
+      "source_start_ms": 37520,
+      "source_end_ms": 38620
     },
     {
       "utterance_id": "u014",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 39300,
-      "source_end_ms": 41940
+      "source_start_ms": 39420,
+      "source_end_ms": 41820
     },
     {
       "utterance_id": "u015",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 42160,
-      "source_end_ms": 43608
+      "source_start_ms": 42280,
+      "source_end_ms": 43580
     }
   ]
 }

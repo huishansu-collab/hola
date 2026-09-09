@@ -3,32 +3,32 @@
  "clips": [
   {
    "utterance_id": "u001",
-   "source_start_ms": 80,
-   "source_end_ms": 3280,
+   "source_start_ms": 200,
+   "source_end_ms": 3160,
    "similarity": 1.0
   },
   {
    "utterance_id": "u002",
-   "source_start_ms": 3400,
-   "source_end_ms": 4910,
+   "source_start_ms": 3520,
+   "source_end_ms": 4900,
    "similarity": 1.0
   },
   {
    "utterance_id": "u003",
-   "source_start_ms": 5000,
-   "source_end_ms": 7260,
+   "source_start_ms": 5120,
+   "source_end_ms": 7140,
    "similarity": 1.0
   },
   {
    "utterance_id": "u004",
-   "source_start_ms": 8740,
-   "source_end_ms": 11260,
+   "source_start_ms": 8860,
+   "source_end_ms": 11140,
    "similarity": 1.0
   },
   {
    "utterance_id": "u005",
-   "source_start_ms": 11980,
-   "source_end_ms": 16280,
+   "source_start_ms": 12100,
+   "source_end_ms": 16160,
    "similarity": 1.0
   },
   {
@@ -39,56 +39,56 @@
   },
   {
    "utterance_id": "u007",
-   "source_start_ms": 17740,
-   "source_end_ms": 18780,
+   "source_start_ms": 17860,
+   "source_end_ms": 18660,
    "similarity": 1.0
   },
   {
    "utterance_id": "u008",
-   "source_start_ms": 19000,
-   "source_end_ms": 21180,
+   "source_start_ms": 19120,
+   "source_end_ms": 21060,
    "similarity": 1.0
   },
   {
    "utterance_id": "u009",
-   "source_start_ms": 22140,
-   "source_end_ms": 28860,
+   "source_start_ms": 22260,
+   "source_end_ms": 28740,
    "similarity": 1.0
   },
   {
    "utterance_id": "u010",
-   "source_start_ms": 29180,
-   "source_end_ms": 30660,
+   "source_start_ms": 29300,
+   "source_end_ms": 30540,
    "similarity": 1.0
   },
   {
    "utterance_id": "u011",
-   "source_start_ms": 30700,
-   "source_end_ms": 32580,
+   "source_start_ms": 30820,
+   "source_end_ms": 32460,
    "similarity": 1.0
   },
   {
    "utterance_id": "u012",
-   "source_start_ms": 33540,
-   "source_end_ms": 36840,
+   "source_start_ms": 33660,
+   "source_end_ms": 36720,
    "similarity": 1.0
   },
   {
    "utterance_id": "u013",
-   "source_start_ms": 37400,
-   "source_end_ms": 38740,
+   "source_start_ms": 37520,
+   "source_end_ms": 38620,
    "similarity": 1.0
   },
   {
    "utterance_id": "u014",
-   "source_start_ms": 39300,
-   "source_end_ms": 41940,
+   "source_start_ms": 39420,
+   "source_end_ms": 41820,
    "similarity": 1.0
   },
   {
    "utterance_id": "u015",
-   "source_start_ms": 42160,
-   "source_end_ms": 43608,
+   "source_start_ms": 42280,
+   "source_end_ms": 43580,
    "similarity": 1.0
   }
  ]

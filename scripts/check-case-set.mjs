@@ -161,19 +161,21 @@ for(const [id,s] of Object.entries(cases)){
   'backchannel: 附和词必须短于附和句');
  for(const c of backchannels)assert(c.b-c.a<=2000,`backchannel: ${c.label} 过长，已经不像附和`);
  assert(!types.includes('打断'),'backchannel: a backchannel is never annotated as an interruption');
+ const vented=users.slice(1);
  // Spacing: the user gets whole segments with no assistant voice at all.
  const silent=users.filter(u=>!assistant.some(c=>c.a<u.b&&c.b>u.a));
  assert(silent.length>=5,`backchannel: at least five user segments must go unanswered, got ${silent.length}`);
  // Spacing is the point: never two answered segments in a row.
  const answered=users.flatMap((u,i)=>assistant.some(c=>c.a<u.b&&c.b>u.a)?[i]:[]);
  for(let i=1;i<answered.length;i++)assert(answered[i]-answered[i-1]>=2,`backchannel: leave a whole user segment between backchannels (${answered.join(',')})`);
- const vented=users.slice(1);
+
  assert(!assistant.some(c=>c.a<vented[0].b&&c.b>vented[0].a),'backchannel: the first vented segment gets no backchannel');
  assert(!assistant.some(c=>c.a<vented[1].b&&c.b>vented[1].a),'backchannel: the second vented segment gets no backchannel either');
  // Venting is not an instruction.
  assert.equal(calls(s,'calendar.update').length,1,'backchannel: exactly one calendar write');
  const write=s.inputEvents.find(e=>e.event_id==='cal_1'&&e.query!==undefined);
- assert(write.time_at_ms<=users[0].b,'backchannel: the write follows the only instruction, not the venting');
+ // 工具起点要对齐 400ms 网格，必然略晚于人声结束；真正的不变量是它在指令之后、吐槽开始之前。
+ assert(write.time_at_ms>=users[0].b&&write.time_at_ms<vented[0].a,'backchannel: the write follows the only instruction, not the venting');
  assert(!s.inputEvents.some(e=>e.time_at_ms>vented[0].a),'backchannel: no tool call at all once venting starts');
  assert.equal(query(s,'cal_1').to,'明天 17:00');
  assert.equal(result(s,'cal_1').start_at,query(s,'cal_1').to,'backchannel: the result must echo the requested time');

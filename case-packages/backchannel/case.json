@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 37200,
+        "duration_ms": 35200,
         "file": null,
         "tracks": [
           {
@@ -40,7 +40,7 @@
       "backchannel_kinds": "附和词只有语气与应和，附和句带评价内容；随宣泄推进由词转句",
       "venting_is_not_instruction": "用户陈述的影响与规划不构成指令，不触发工具",
       "timing_note": "时序为设计值，语音尚未生成；边界按 400 毫秒步长排布。",
-      "audio_note": "十五段台词来自同一次整段对话生成，按识别对齐切分，原速播放。附和的重叠区间按实际录音重排，助手起点仍对齐 400 毫秒步长。"
+      "audio_note": "十五段台词来自同一次整段对话生成，按识别对齐切分，原速播放。附和的起声落在用户真实的换气处，助手起点仍对齐 400 毫秒步长。"
     },
     "tools": [
       {
@@ -83,7 +83,7 @@
       "speaker_id": "user_1",
       "text": "把明天下午三点跟老板的周会改到五点。",
       "start_at_ms": 0,
-      "end_at_ms": 3200
+      "end_at_ms": 2960
     },
     {
       "id": "u002",
@@ -91,111 +91,111 @@
       "speaker_id": "assistant",
       "text": "好，改到五点了。",
       "start_at_ms": 4400,
-      "end_at_ms": 5910
+      "end_at_ms": 5780
     },
     {
       "id": "u003",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "他这周都改第三回了。",
-      "start_at_ms": 6310,
-      "end_at_ms": 8570
+      "start_at_ms": 6180,
+      "end_at_ms": 8200
     },
     {
       "id": "u004",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "说改就改，一句话的事。",
-      "start_at_ms": 8970,
-      "end_at_ms": 11490
+      "start_at_ms": 8600,
+      "end_at_ms": 10880
     },
     {
       "id": "u005",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "上周五刚定好的时间，昨天改一次，今天又改。",
-      "start_at_ms": 11890,
-      "end_at_ms": 16190
+      "start_at_ms": 11280,
+      "end_at_ms": 15340
     },
     {
       "id": "u006",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗐",
-      "start_at_ms": 12800,
-      "end_at_ms": 13720
+      "start_at_ms": 12400,
+      "end_at_ms": 13320
     },
     {
       "id": "u007",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "是啊！",
-      "start_at_ms": 14000,
-      "end_at_ms": 15040
+      "start_at_ms": 13600,
+      "end_at_ms": 14400
     },
     {
       "id": "u008",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "我微信里还跟他确认过两遍。",
-      "start_at_ms": 16590,
-      "end_at_ms": 18770
+      "start_at_ms": 15740,
+      "end_at_ms": 17680
     },
     {
       "id": "u009",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "我下午本来排了两个客户，现在只能往后挪，然后见了他们还得把方案初稿收掉的。",
-      "start_at_ms": 19170,
-      "end_at_ms": 25890
+      "start_at_ms": 18080,
+      "end_at_ms": 24560
     },
     {
       "id": "u010",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "那真是够呛",
-      "start_at_ms": 22400,
-      "end_at_ms": 23880
+      "start_at_ms": 21600,
+      "end_at_ms": 22840
     },
     {
       "id": "u011",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "初稿本来今天就该动笔了。",
-      "start_at_ms": 26290,
-      "end_at_ms": 28170
+      "start_at_ms": 24960,
+      "end_at_ms": 26600
     },
     {
       "id": "u012",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "结果这一周，我光顾着跟着他改时间了。",
-      "start_at_ms": 28570,
-      "end_at_ms": 31870
+      "start_at_ms": 27000,
+      "end_at_ms": 30060
     },
     {
       "id": "u013",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "唉，光耗在这上头了。",
-      "start_at_ms": 29600,
-      "end_at_ms": 30940
+      "start_at_ms": 28000,
+      "end_at_ms": 29100
     },
     {
       "id": "u014",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "行了，我看看怎么调整吧。",
-      "start_at_ms": 32270,
-      "end_at_ms": 34910
+      "start_at_ms": 30460,
+      "end_at_ms": 32860
     },
     {
       "id": "u015",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "好，别太烦。",
-      "start_at_ms": 35600,
-      "end_at_ms": 37048
+      "start_at_ms": 33600,
+      "end_at_ms": 34900
     }
   ],
   "events": [
@@ -223,26 +223,26 @@
     {
       "fdx_type": "附和词",
       "role": "assistant",
-      "start_at_ms": 12800,
-      "end_at_ms": 13720
+      "start_at_ms": 12400,
+      "end_at_ms": 13320
     },
     {
       "fdx_type": "附和词",
       "role": "assistant",
-      "start_at_ms": 14000,
-      "end_at_ms": 15040
+      "start_at_ms": 13600,
+      "end_at_ms": 14400
     },
     {
       "fdx_type": "附和句",
       "role": "assistant",
-      "start_at_ms": 22400,
-      "end_at_ms": 23880
+      "start_at_ms": 21600,
+      "end_at_ms": 22840
     },
     {
       "fdx_type": "附和句",
       "role": "assistant",
-      "start_at_ms": 29600,
-      "end_at_ms": 30940
+      "start_at_ms": 28000,
+      "end_at_ms": 29100
     }
   ],
   "emotion_annotation": [],

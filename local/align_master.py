@@ -46,7 +46,7 @@ def rms_env(pcm, sr=16000, frame=0.02):
     return np.sqrt((pcm[:total * n].reshape(total, n) ** 2).mean(axis=1))
 
 
-def align_master(rec, path, lines, pad=0.18):
+def align_master(rec, path, lines, pad=0.06):
     """lines: [{'id','text'}] → 每句 [start,end]（秒）与识别匹配率"""
     import numpy as np
     pcm = decode16k(path); dur = len(pcm) / 16000
