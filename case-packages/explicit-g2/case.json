@@ -1,0 +1,216 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-g2",
+      "case_name": "G2 · 快递到哪了",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 31200,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "考查询等待时的垫话填充、结论先行、长数字落卡片不口播；查快递/查营业时间为远程服务，耗时为示意。",
+      "source": "《语音双工 - Explicit case》G2",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "memory.recall",
+          "description": "memory.recall(在途快递)，600ms内返回，下一句稍作",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "express.query",
+          "description": "express.query发起",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "poi.query",
+          "description": "poi.query(驿站)发起",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "我那个快递到哪了？",
+      "start_at_ms": 2000,
+      "end_at_ms": 3600
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "我查下那双鞋的快递信息啊。",
+      "start_at_ms": 4000,
+      "end_at_ms": 6800
+    },
+    {
+      "id": "u003",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "到楼下菜鸟驿站了，取件码我放锁屏上，去拿的时候点开就行。",
+      "start_at_ms": 8000,
+      "end_at_ms": 14000
+    },
+    {
+      "id": "u004",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "驿站几点关门来着？",
+      "start_at_ms": 14000,
+      "end_at_ms": 18800
+    },
+    {
+      "id": "u005",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "我看一下",
+      "start_at_ms": 18800,
+      "end_at_ms": 20400
+    },
+    {
+      "id": "u006",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "九点半，还有一个多小时，来得及。",
+      "start_at_ms": 23600,
+      "end_at_ms": 27200
+    },
+    {
+      "id": "u007",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "行，我遛弯儿顺便取了。",
+      "start_at_ms": 27200,
+      "end_at_ms": 30800
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "memory.recall",
+      "time_at_ms": 2000,
+      "query": "{\"request\": \"在途快递\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "memory.recall",
+      "time_at_ms": 3600,
+      "results": {
+        "note": "memory.recall(在途快递)，600ms内返回，下一句稍作",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "express.query",
+      "time_at_ms": 4000,
+      "query": "{\"request\": \"express.query发起\"}"
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "express.query",
+      "time_at_ms": 4400,
+      "results": {
+        "note": "文档未写返回",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "poi.query",
+      "time_at_ms": 14000,
+      "query": "{\"request\": \"驿站\"}"
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "poi.query",
+      "time_at_ms": 23600,
+      "results": {
+        "note": "poi.query成功，耗时3,000ms",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

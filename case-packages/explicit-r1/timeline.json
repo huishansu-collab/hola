@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（擦手按下LIVINGEDGE）→手机亮光",
+          "description": "行为：（擦手按下LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "听完，不抢话",
+          "description": "听完，不抢话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，不抢话",
+          "start_at_ms": 2000,
+          "end_at_ms": 3200
+        },
+        {
+          "kind": "expression",
+          "label": "简短承接，语速稍缓",
+          "description": "简短承接，语速稍缓；结果返回前不播报天气；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "简短承接，语速稍缓；结果返回前不播报天气；",
+          "start_at_ms": 3600,
+          "end_at_ms": 4400
+        },
+        {
+          "kind": "expression",
+          "label": "保持收听",
+          "description": "保持收听；本行统一按400ms标注，工具返回发生在行内",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持收听；本行统一按400ms标注，工具返回发生在行内",
+          "start_at_ms": 4400,
+          "end_at_ms": 4800
+        },
+        {
+          "kind": "expression",
+          "label": "应答＋主动播报合并",
+          "description": "应答＋主动播报合并；常规语速；行程提醒一句就收；生天气卡片；禁止展开面试建议、连续追问、擅自创建提醒；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "应答＋主动播报合并；常规语速；行程提醒一句就收；生天气卡片；禁止展开面试建议、连续追问、擅自创建提醒；",
+          "start_at_ms": 4800,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 12400,
+          "end_at_ms": 15200
+        },
+        {
+          "kind": "expression",
+          "label": "应答",
+          "description": "应答；一句话；常规语速；禁止创建成功前声称已设",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "应答；一句话；常规语速；禁止创建成功前声称已设",
+          "start_at_ms": 15200,
+          "end_at_ms": 15600
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默",
+          "description": "保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默",
+          "start_at_ms": 18000,
+          "end_at_ms": 18400
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "持续收听，提取查询今天天气的意图",
+          "description": "持续收听，提取查询今天天气的意图",
+          "start_at_ms": 2000,
+          "end_at_ms": 3200
+        },
+        {
+          "kind": "state",
+          "label": "信息完整，启动天气查询；边说边听",
+          "description": "信息完整，启动天气查询；边说边听",
+          "start_at_ms": 3600,
+          "end_at_ms": 4400
+        },
+        {
+          "kind": "state",
+          "label": "等待天气查询；4,600ms返回成功，提取晴、24–31度，并结合已有日历和路程",
+          "description": "等待天气查询；4,600ms返回成功，提取晴、24–31度，并结合已有日历和路程信息准备一句出门建议",
+          "start_at_ms": 4400,
+          "end_at_ms": 4800
+        },
+        {
+          "kind": "state",
+          "label": "播报天气结果及出门建议，同时收听",
+          "description": "播报天气结果及出门建议，同时收听",
+          "start_at_ms": 4800,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "state",
+          "label": "用户确认已知＋指令：要求提前提醒",
+          "description": "用户确认已知＋指令：要求提前提醒",
+          "start_at_ms": 12400,
+          "end_at_ms": 15200
+        },
+        {
+          "kind": "state",
+          "label": "提醒创建成功后再确认，回读提醒时间",
+          "description": "提醒创建成功后再确认，回读提醒时间",
+          "start_at_ms": 15200,
+          "end_at_ms": 15600
+        },
+        {
+          "kind": "state",
+          "label": "用户明确收尾",
+          "description": "用户明确收尾",
+          "start_at_ms": 15600,
+          "end_at_ms": 17200
+        },
+        {
+          "kind": "state",
+          "label": "用户收尾，识别结束，end_reason=user_end；灯环熄灭",
+          "description": "用户收尾，识别结束，end_reason=user_end；灯环熄灭",
+          "start_at_ms": 18000,
+          "end_at_ms": 18400
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "weather.today：3,600ms发起→4,600ms成功，耗时1,000ms"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

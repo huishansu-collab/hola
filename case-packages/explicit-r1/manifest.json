@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-r1",
+  "title": "R1 · 报天气顺带提了句下午的面试",
+  "group": "R 主动交互",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

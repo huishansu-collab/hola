@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-i2",
+  "title": "I2 · 口述消息，说错的当场改，拟稿只留对的",
+  "group": "I 工作与学习",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

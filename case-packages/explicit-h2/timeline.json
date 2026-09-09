@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 2000,
+          "end_at_ms": 3200
+        },
+        {
+          "kind": "expression",
+          "label": "home_wifi召回已完成，下一句直接操作，不垫话",
+          "description": "home_wifi召回已完成，下一句直接操作，不垫话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "home_wifi召回已完成，下一句直接操作，不垫话",
+          "start_at_ms": 3200,
+          "end_at_ms": 5600
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速",
+          "start_at_ms": 6000,
+          "end_at_ms": 9600
+        },
+        {
+          "kind": "expression",
+          "label": "预计0.3s内完成，短暂等待不垫话",
+          "description": "预计0.3s内完成，短暂等待不垫话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "预计0.3s内完成，短暂等待不垫话",
+          "start_at_ms": 10400,
+          "end_at_ms": 14400
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速",
+          "start_at_ms": 14800,
+          "end_at_ms": 18800
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声保持静默",
+          "description": "暂不发声保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声保持静默",
+          "start_at_ms": 19200,
+          "end_at_ms": 19600
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "\"给她连\"＝旁边有人，隐私保护，密码不念出声",
+          "description": "\"给她连\"＝旁边有人，隐私保护，密码不念出声",
+          "start_at_ms": 3200,
+          "end_at_ms": 5600
+        },
+        {
+          "kind": "state",
+          "label": "新指令＝查电量；情绪轻松",
+          "description": "新指令＝查电量；情绪轻松",
+          "start_at_ms": 10400,
+          "end_at_ms": 14400
+        },
+        {
+          "kind": "state",
+          "label": "电量58%；直接播报+推断动机",
+          "description": "电量58%；直接播报+推断动机",
+          "start_at_ms": 14800,
+          "end_at_ms": 18800
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号用户明确收尾，end_reason=user_end；灯环熄灭",
+          "description": "收尾信号用户明确收尾，end_reason=user_end；灯环熄灭",
+          "start_at_ms": 19200,
+          "end_at_ms": 19600
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "下发锁屏卡片（10秒后自动收起）",
+          "description": "下发锁屏卡片（10秒后自动收起）",
+          "start_at_ms": 6000,
+          "end_at_ms": 9600
+        },
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "memory.recallhome_wifi（用户自己录过）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "battery.query"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

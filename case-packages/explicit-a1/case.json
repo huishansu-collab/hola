@@ -1,0 +1,164 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-a1",
+      "case_name": "A1 · 出门前问要不要带伞",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 14000,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "按400ms微轮次对齐，连续状态合并展示；考首音400ms内接话、结论先行、用户收尾后不追加废话；时间与工具耗时均为示意。",
+      "source": "《语音双工 - Explicit case》A1",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "location",
+          "description": "location（常驻地缓存，即时）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "weather.query",
+          "description": "weather.query（北京，今天）发起",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "诶，帮我看下，今天要带伞不？",
+      "start_at_ms": 0,
+      "end_at_ms": 2400
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "得带。十点后有阵雨，得下午三四点才停。",
+      "start_at_ms": 2400,
+      "end_at_ms": 6000
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "中午那会儿也下？我约了王姐吃饭。",
+      "start_at_ms": 6000,
+      "end_at_ms": 8800
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "中午雨最大。约的地方要是远，建议提前几分钟出门。",
+      "start_at_ms": 8800,
+      "end_at_ms": 12400
+    },
+    {
+      "id": "u005",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "行，知道了。",
+      "start_at_ms": 12400,
+      "end_at_ms": 13200
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "location",
+      "time_at_ms": 0,
+      "query": "{\"request\": \"常驻地缓存，即时\"}"
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "weather.query",
+      "time_at_ms": 0,
+      "query": "{\"request\": \"北京，今天\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "location",
+      "time_at_ms": 400,
+      "results": {
+        "note": "location（常驻地缓存，即时）",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "weather.query",
+      "time_at_ms": 400,
+      "results": {
+        "note": "查询成功，耗时400ms（亮屏预取命中，用户开口前已返回）",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

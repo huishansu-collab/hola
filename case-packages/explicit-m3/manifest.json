@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-m3",
+  "title": "M3 · 同时开口，助手让",
+  "group": "M 轮次与话权",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

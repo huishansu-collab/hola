@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（躺着伸手触碰床头LIVINGEDGE）→手机亮光",
+          "description": "行为：（躺着伸手触碰床头LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 2000,
+          "end_at_ms": 4400
+        },
+        {
+          "kind": "expression",
+          "label": "共情句",
+          "description": "共情句；音量收着、答句放短；禁止\"建议早点休息、多喝水\"清单式安慰",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "共情句；音量收着、答句放短；禁止\"建议早点休息、多喝水\"清单式安慰",
+          "start_at_ms": 4800,
+          "end_at_ms": 7600
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 8400,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "expression",
+          "label": "共情＋轻收",
+          "description": "共情＋轻收；常规语速偏轻；禁止复盘方案、追问细节",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "共情＋轻收；常规语速偏轻；禁止复盘方案、追问细节",
+          "start_at_ms": 12000,
+          "end_at_ms": 23200
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 24400,
+          "end_at_ms": 28000
+        },
+        {
+          "kind": "expression",
+          "label": "短确认",
+          "description": "短确认；不趁机叮嘱早睡保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "短确认；不趁机叮嘱早睡保持静默",
+          "start_at_ms": 28400,
+          "end_at_ms": 30400
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒；卧室大灯已关、环境安静",
+          "description": "触碰唤醒；卧室大灯已关、环境安静",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "识别为情绪表达\"要被听见\"，不是要方案",
+          "description": "识别为情绪表达\"要被听见\"，不是要方案",
+          "start_at_ms": 2000,
+          "end_at_ms": 4400
+        },
+        {
+          "kind": "state",
+          "label": "一句共情＋留个口让他自己说；开一句半",
+          "description": "一句共情＋留个口让他自己说；开一句半",
+          "start_at_ms": 4800,
+          "end_at_ms": 7600
+        },
+        {
+          "kind": "state",
+          "label": "倾诉，不需要解决",
+          "description": "倾诉，不需要解决",
+          "start_at_ms": 8400,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "state",
+          "label": "共情＋轻收",
+          "description": "共情＋轻收",
+          "start_at_ms": 12000,
+          "end_at_ms": 23200
+        },
+        {
+          "kind": "state",
+          "label": "情绪话题里夹着正经任务，不漏接",
+          "description": "情绪话题里夹着正经任务，不漏接",
+          "start_at_ms": 24400,
+          "end_at_ms": 28000
+        },
+        {
+          "kind": "state",
+          "label": "短确认，锁屏卡片闹钟07:0010秒无人说话，end_reason=silenc",
+          "description": "短确认，锁屏卡片闹钟07:0010秒无人说话，end_reason=silence_timeout；情绪状态不写回长期记忆；灯环熄灭",
+          "start_at_ms": 28400,
+          "end_at_ms": 30400
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "alarm.create（07:00）→已设（即时）"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

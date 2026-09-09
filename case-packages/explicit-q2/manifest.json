@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-q2",
+  "title": "Q2 · 被怼“你咋这么啰嗦”",
+  "group": "Q 怎么表达",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

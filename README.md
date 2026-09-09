@@ -23,8 +23,9 @@ npm run build:local
 
 ## 功能
 
-- 十一个示例 Case：北京天气、演员与电视剧查询、回家叫车、订咖啡、短信提醒、新用户查 Gmail 邮件、播报中打断改口、路况服务超时降级、指代不明先澄清、吐槽时附和、查到无票主动打断。Gmail Case 已接入四段完整对话语音，时序按实际录音对齐。
-- 后五个 Case 尚未生成语音，时序为设计值，界面顶部会标注「语音待生成」；其余结构与已配音 Case 一致，可直接导出 JSON。
+- 十一个手写示例 Case：北京天气、演员与电视剧查询、回家叫车、订咖啡、短信提醒、新用户查 Gmail 邮件、播报中打断改口、路况服务超时降级、指代不明先澄清、吐槽时附和、查到无票主动打断。Gmail 与吐槽附和两个 Case 已接入完整对话语音，时序按实际录音对齐。
+- 另有 59 个 Case 从《语音双工 - Explicit case》文档导入（文档 58 条，其中 Z5 给了两张表，拆成两个包），按原文分组放在 Files 的 A–Z 文件夹里，均为 `planned` 包：台词、后台判断、工具调用与表达控制齐备，语音待生成。导入脚本见 `local/explicit-cases/`。
+- 未配音的 Case 时序为设计值，界面顶部会标注「语音待生成」；其余结构与已配音 Case 一致，可直接导出 JSON。
 - 附和与打断成对入库：两者都出现助手人声压在用户人声上，判据是用户有没有停——不停是附和（backchannel），停了是打断（preempt）。
 - 用户、用户控制、助手、表达控制、世界、后台判断、工具调用七条轨道；播放控制并入工具调用。
 - 每个 Case 独立保存缩放、适应窗口和音频预览开关状态。
@@ -48,7 +49,7 @@ npm run case:build -- case-packages/gmail
 
 ## 项目结构
 
-- `case-packages/`：独立 Case 源数据和源音频，目前已迁移 Gmail。
+- `case-packages/`：独立 Case 源数据和源音频。手写的 `gmail`、`backchannel`，以及文档导入的 `explicit-*`。
 - `lib/case-package/`：CLI 与浏览器共用的校验和音频构建。
 - `app/`：页面和样式。
 - `components/`：时间线、Case、音频与数据面板。
@@ -56,6 +57,7 @@ npm run case:build -- case-packages/gmail
 - `components/cases/`：结构化 Case 数据，每个目录含 `case.json` 与 `timeline.json`。
 - `components/json-case.ts`：纯 JSON 驱动 Case 的共用加载器。
 - `local/`：离线构建入口、音频生成与整理脚本、提示词及源音频。
+- `local/explicit-cases/`：从 Explicit case 文档抽表（`tables.py`）并生成 Case 包（`import.py`）；`parsed.json` 是抽出来的中间结果，改完脚本重跑即可整体重生成。
 - `scripts/`：数据与界面回归检查。
 
 ## 检查

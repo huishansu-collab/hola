@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（半夜摸黑按下LIVINGEDGE，压着声）→手机亮光",
+          "description": "行为：（半夜摸黑按下LIVINGEDGE，压着声）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 2000,
+          "end_at_ms": 4800
+        },
+        {
+          "kind": "expression",
+          "label": "低语跟随",
+          "description": "低语跟随；压到最短，零追加",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "低语跟随；压到最短，零追加",
+          "start_at_ms": 5200,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 7200,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "expression",
+          "label": "两字确认",
+          "description": "两字确认；低声保持静默（end_reason=silence_timeout）",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "两字确认；低声保持静默（end_reason=silence_timeout）",
+          "start_at_ms": 12000,
+          "end_at_ms": 13600
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "低语提问；环境：23:50、卧室、环境静",
+          "description": "低语提问；环境：23:50、卧室、环境静",
+          "start_at_ms": 2000,
+          "end_at_ms": 4800
+        },
+        {
+          "kind": "state",
+          "label": "读取本地日出缓存；结果返回后按深夜场景压低音量，只给结论；禁止追加“还需要为您设",
+          "description": "读取本地日出缓存；结果返回后按深夜场景压低音量，只给结论；禁止追加“还需要为您设个闹钟吗”",
+          "start_at_ms": 5200,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "state",
+          "label": "低语指令：定窗帘06:30打开",
+          "description": "低语指令：定窗帘06:30打开",
+          "start_at_ms": 7200,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "state",
+          "label": "深夜确认压到两个字10秒无人说话，识别自动结束，灯环熄灭；深夜不做任何追加、静默",
+          "description": "深夜确认压到两个字10秒无人说话，识别自动结束，灯环熄灭；深夜不做任何追加、静默收场",
+          "start_at_ms": 12000,
+          "end_at_ms": 13600
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "weather.query（明早日出）→06:00前后（本地缓存，即时）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "curtain.schedule（06:30）→已设（即时）"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

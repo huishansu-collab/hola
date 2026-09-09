@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（地铁上隔着口袋触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（地铁上隔着口袋触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 2000,
+          "end_at_ms": 5600
+        },
+        {
+          "kind": "expression",
+          "label": "确认句",
+          "description": "确认句；常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "确认句；常规语速",
+          "start_at_ms": 6000,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "expression",
+          "label": "不接茬，让人安静听保持静默",
+          "description": "不接茬，让人安静听保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "不接茬，让人安静听保持静默",
+          "start_at_ms": 10000,
+          "end_at_ms": 10800
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒；耳机在耳·播客播放中",
+          "description": "触碰唤醒；耳机在耳·播客播放中",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "\"那段\"按转写语义段首定位，不机械退30秒",
+          "description": "\"那段\"按转写语义段首定位，不机械退30秒",
+          "start_at_ms": 2000,
+          "end_at_ms": 5600
+        },
+        {
+          "kind": "state",
+          "label": "定位到\"记忆宫殿\"段首",
+          "description": "定位到\"记忆宫殿\"段首（−47秒），确认一句就退出不挡内容恢复播放",
+          "start_at_ms": 6000,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "state",
+          "label": "自说自话式反馈，不用回应10秒无人说话，end_reason=silence_t",
+          "description": "自说自话式反馈，不用回应10秒无人说话，end_reason=silence_timeout；播放继续不受收音关闭影响；灯环熄灭",
+          "start_at_ms": 10000,
+          "end_at_ms": 10800
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "podcast.seek→−47秒（即时·本地转写定位）podcast.play→恢复"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

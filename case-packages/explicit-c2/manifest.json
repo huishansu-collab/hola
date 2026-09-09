@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-c2",
+  "title": "C2 · 旁边有人，低声问\"谁找我\"",
+  "group": "C 联系人与消息",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

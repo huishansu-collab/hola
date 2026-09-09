@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（拿车钥匙换鞋，触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（拿车钥匙换鞋，触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "听完，不抢话",
+          "description": "听完，不抢话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，不抢话",
+          "start_at_ms": 2000,
+          "end_at_ms": 4400
+        },
+        {
+          "kind": "expression",
+          "label": "应答，常规语速",
+          "description": "应答，常规语速；结论放第一句；锁屏出卡「今日限行2/7」；禁止先展开时段范围再答",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "应答，常规语速；结论放第一句；锁屏出卡「今日限行2/7」；禁止先展开时段范围再答",
+          "start_at_ms": 4400,
+          "end_at_ms": 7600
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 8400,
+          "end_at_ms": 14000
+        },
+        {
+          "kind": "expression",
+          "label": "应答，常规语速",
+          "description": "应答，常规语速；回读新时间；禁止另建新条造成重复触发",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "应答，常规语速；回读新时间；禁止另建新条造成重复触发",
+          "start_at_ms": 14400,
+          "end_at_ms": 16400
+        },
+        {
+          "kind": "expression",
+          "label": "闭嘴，不复述保持静默灯环亮起（提醒）",
+          "description": "闭嘴，不复述保持静默灯环亮起（提醒）",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "闭嘴，不复述保持静默灯环亮起（提醒）",
+          "start_at_ms": 17200,
+          "end_at_ms": 17600
+        },
+        {
+          "kind": "expression",
+          "label": "主动播报（到达），常规语速",
+          "description": "主动播报（到达），常规语速；完整说；禁止展开无关店铺介绍、禁止当成已取完衣服",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "主动播报（到达），常规语速；完整说；禁止展开无关店铺介绍、禁止当成已取完衣服",
+          "start_at_ms": 19200,
+          "end_at_ms": 24400
+        },
+        {
+          "kind": "expression",
+          "label": "闭嘴保持静默",
+          "description": "闭嘴保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "闭嘴保持静默",
+          "start_at_ms": 25200,
+          "end_at_ms": 26400
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "提取限行查询意图；“开车走”是出行计划、非已在驾驶",
+          "description": "提取限行查询意图；“开车走”是出行计划、非已在驾驶",
+          "start_at_ms": 2000,
+          "end_at_ms": 4400
+        },
+        {
+          "kind": "state",
+          "label": "召回car_profile尾号3，与今日限行2/7比对不中，结论先行",
+          "description": "召回car_profile尾号3，与今日限行2/7比对不中，结论先行",
+          "start_at_ms": 4400,
+          "end_at_ms": 7600
+        },
+        {
+          "kind": "state",
+          "label": "用创建时间＋内容＋原时间定位“那条”；用户授权改期；“加班”仅本轮原因不写偏好",
+          "description": "用创建时间＋内容＋原时间定位“那条”；用户授权改期；“加班”仅本轮原因不写偏好",
+          "start_at_ms": 8400,
+          "end_at_ms": 14000
+        },
+        {
+          "kind": "state",
+          "label": "同一条改新时间，原今晚19:00不再触发",
+          "description": "同一条改新时间，原今晚19:00不再触发",
+          "start_at_ms": 14400,
+          "end_at_ms": 16400
+        },
+        {
+          "kind": "state",
+          "label": "用户收尾用户明确收尾，user_end；灯环熄灭",
+          "description": "用户收尾用户明确收尾，user_end；灯环熄灭（取干洗提醒保持明晚待触发）（次日19:00到点）挪过来的取干洗提醒到点→设备事件唤起；环境检测：下班步行·未在通话→可直接播报",
+          "start_at_ms": 17200,
+          "end_at_ms": 17600
+        },
+        {
+          "kind": "state",
+          "label": "召回Places：洁丰营业到21:00，补店铺位置与营业时间",
+          "description": "召回Places：洁丰营业到21:00，补店铺位置与营业时间",
+          "start_at_ms": 19200,
+          "end_at_ms": 24400
+        },
+        {
+          "kind": "state",
+          "label": "用户已响应提醒",
+          "description": "用户已响应提醒（非“已取完”）用户明确收尾，user_end；灯环熄灭（不额外生成重复提醒）",
+          "start_at_ms": 25200,
+          "end_at_ms": 26400
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "traffic.limit(今日)完成（本地日更缓存，即时）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "reminder.update(今晚19:00→明晚19:00)完成（即时）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e03",
+          "description": "reminder.fire(取干洗)到点（即时）"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

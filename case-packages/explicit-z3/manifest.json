@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-z3",
+  "title": "Z3 · 下午茶点咖啡：“老样子”，小赵隔桌喊了句加个shot",
+  "group": "Z 组合case",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

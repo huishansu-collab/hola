@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（站在路边看了眼电量，按下LIVINGEDGE）→手机亮光",
+          "description": "行为：（站在路边看了眼电量，按下LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "听完，不抢话",
+          "description": "听完，不抢话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，不抢话",
+          "start_at_ms": 800,
+          "end_at_ms": 5200
+        },
+        {
+          "kind": "expression",
+          "label": "句尾后约400ms接话",
+          "description": "句尾后约400ms接话；只确认收到，不提前宣告成功",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "句尾后约400ms接话；只确认收到，不提前宣告成功",
+          "start_at_ms": 5600,
+          "end_at_ms": 6400
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速；结果＋还能撑多久，一次说清；播出＝计划",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速；结果＋还能撑多久，一次说清；播出＝计划",
+          "start_at_ms": 6800,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 12800,
+          "end_at_ms": 16400
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速；不带解释",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速；不带解释",
+          "start_at_ms": 16800,
+          "end_at_ms": 18800
+        },
+        {
+          "kind": "expression",
+          "label": "不再出声保持静默保持静默保持静默",
+          "description": "不再出声保持静默保持静默保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "不再出声保持静默保持静默保持静默",
+          "start_at_ms": 19200,
+          "end_at_ms": 20000
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态；检测到电量5%",
+          "description": "触碰唤醒，进入聆听态；检测到电量5%",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "持续收听，提取两条指令",
+          "description": "持续收听，提取两条指令（发位置＋省电）；夜间、室外、电量5%→紧急优先级，先执行后播报；收信人取记忆里的紧急联系人（老公）",
+          "start_at_ms": 800,
+          "end_at_ms": 5200
+        },
+        {
+          "kind": "state",
+          "label": "首音先出，同步执行发位置、开省电；屏幕变暗，省电模式开启",
+          "description": "首音先出，同步执行发位置、开省电；屏幕变暗，省电模式开启",
+          "start_at_ms": 5600,
+          "end_at_ms": 6400
+        },
+        {
+          "kind": "state",
+          "label": "回执返回后才开口——先执行后播报；屏幕：位置已发",
+          "description": "回执返回后才开口——先执行后播报；屏幕：位置已发",
+          "start_at_ms": 6800,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "state",
+          "label": "送、省电已开启收到条件指令",
+          "description": "送、省电已开启收到条件指令（电量≤2%触发重发）",
+          "start_at_ms": 12800,
+          "end_at_ms": 16400
+        },
+        {
+          "kind": "state",
+          "label": "规则已建；复述触发数字",
+          "description": "规则已建；复述触发数字",
+          "start_at_ms": 16800,
+          "end_at_ms": 18800
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号用户明确收尾，识别结束，end_reason=user_end；灯环熄灭",
+          "description": "收尾信号用户明确收尾，识别结束，end_reason=user_end；灯环熄灭条件命中（电量≤2%），rule触发：自动重发位置；收信人沿用老公；静默执行，无需用户回应电量回升，触发条件不再成立，规则关闭；本次应急规则不写回长期记忆",
+          "start_at_ms": 19200,
+          "end_at_ms": 20000
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "省电模式on、亮度min（即时）",
+          "description": "省电模式on、亮度min（即时）",
+          "start_at_ms": 5600,
+          "end_at_ms": 6400
+        },
+        {
+          "kind": "state",
+          "label": "电量估算：5%＋省电模式→约40分钟（本地，即时）更新关注条件：电量≤2%→自动",
+          "description": "电量估算：5%＋省电模式→约40分钟（本地，即时）更新关注条件：电量≤2%→自动重发位置",
+          "start_at_ms": 12800,
+          "end_at_ms": 16400
+        },
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "loc.share(老公)发起→等待回执",
+          "lane": 1
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "rule.create(battery≤2%→loc.share)→条件已建（即时），后台监听中"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e03",
+          "description": "rule（battery≤2%）后台监听中，不受收音关闭影响rule.fire（battery≤2%→loc.share"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

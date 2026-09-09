@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-z2",
+  "title": "Z2 · 地铁上排下午：来不及就挪会，一句条件指令全办了",
+  "group": "Z 组合case",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

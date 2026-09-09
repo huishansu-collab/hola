@@ -1,0 +1,90 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-q3",
+      "case_name": "Q3 · “我升职了！”",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 18000,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "共情的正向面（分享喜悦）；分寸——真诚不过度、不趁机推销、不说教。",
+      "source": "《语音双工 - Explicit case》Q3",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": []
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "跟你说个事——我升职了！带团队了！",
+      "start_at_ms": 2000,
+      "end_at_ms": 4800
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "哇！这可是大事，恭喜啊！几个人的团队？",
+      "start_at_ms": 4800,
+      "end_at_ms": 8800
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "连我七个！下周一就到岗。",
+      "start_at_ms": 8800,
+      "end_at_ms": 10800
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "正经小队长了。请客那顿想好日子没？",
+      "start_at_ms": 11200,
+      "end_at_ms": 14000
+    },
+    {
+      "id": "u005",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "哈哈下周五就请！行了，到地铁了。",
+      "start_at_ms": 14800,
+      "end_at_ms": 17600
+    }
+  ],
+  "events": [],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-j2",
+  "title": "J2 · 站起来头晕",
+  "group": "J 突发与紧急",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

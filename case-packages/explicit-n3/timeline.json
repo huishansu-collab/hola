@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（窝在沙发里按下LIVINGEDGE）→手机亮光",
+          "description": "行为：（窝在沙发里按下LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 2000,
+          "end_at_ms": 5600
+        },
+        {
+          "kind": "expression",
+          "label": "结论式回答",
+          "description": "结论式回答；常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "结论式回答；常规语速",
+          "start_at_ms": 6000,
+          "end_at_ms": 8800
+        },
+        {
+          "kind": "expression",
+          "label": "听完，不抢话",
+          "description": "听完，不抢话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，不抢话",
+          "start_at_ms": 9600,
+          "end_at_ms": 12800
+        },
+        {
+          "kind": "expression",
+          "label": "回执＋续接原话题",
+          "description": "回执＋续接原话题；不显痕迹地接回",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "回执＋续接原话题；不显痕迹地接回",
+          "start_at_ms": 12800,
+          "end_at_ms": 18400
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 19200,
+          "end_at_ms": 21200
+        },
+        {
+          "kind": "expression",
+          "label": "追问句",
+          "description": "追问句；常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "追问句；常规语速",
+          "start_at_ms": 21600,
+          "end_at_ms": 23200
+        },
+        {
+          "kind": "expression",
+          "label": "不再追加保持静默（end_reason=user_end）",
+          "description": "不再追加保持静默（end_reason=user_end）",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "不再追加保持静默（end_reason=user_end）",
+          "start_at_ms": 24000,
+          "end_at_ms": 24800
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "收到询问：湿地公园周末客流",
+          "description": "收到询问：湿地公园周末客流",
+          "start_at_ms": 2000,
+          "end_at_ms": 5600
+        },
+        {
+          "kind": "state",
+          "label": "用户句中已提前发起客流查询；结果返回后提取分时客流结论",
+          "description": "用户句中已提前发起客流查询；结果返回后提取分时客流结论",
+          "start_at_ms": 6000,
+          "end_at_ms": 8800
+        },
+        {
+          "kind": "state",
+          "label": "识别话题切换：从公园转到闹钟；先办轻任务",
+          "description": "识别话题切换：从公园转到闹钟；先办轻任务",
+          "start_at_ms": 9600,
+          "end_at_ms": 12800
+        },
+        {
+          "kind": "state",
+          "label": "闹钟即时创建成功；用一句话接回已有客流结论，不展开新增信息",
+          "description": "闹钟即时创建成功；用一句话接回已有客流结论，不展开新增信息",
+          "start_at_ms": 12800,
+          "end_at_ms": 18400
+        },
+        {
+          "kind": "state",
+          "label": "用户确认：周六下午三点后去",
+          "description": "用户确认：周六下午三点后去",
+          "start_at_ms": 19200,
+          "end_at_ms": 21200
+        },
+        {
+          "kind": "state",
+          "label": "征询是否继续安排",
+          "description": "征询是否继续安排",
+          "start_at_ms": 21600,
+          "end_at_ms": 23200
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号用户明确收尾，识别结束，灯环熄灭",
+          "description": "收尾信号用户明确收尾，识别结束，灯环熄灭",
+          "start_at_ms": 24000,
+          "end_at_ms": 24800
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "poi.query（湿地公园周末客流）→成功，耗时800ms（用户句中发起）"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

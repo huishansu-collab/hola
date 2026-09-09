@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-j3",
+  "title": "J3 · 手机快没电，把位置发给家人",
+  "group": "J 突发与紧急",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

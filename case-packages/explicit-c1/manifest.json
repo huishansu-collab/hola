@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-c1",
+  "title": "C1 · 口述回消息，念稿念一半被打断",
+  "group": "C 联系人与消息",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

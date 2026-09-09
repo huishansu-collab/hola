@@ -16,7 +16,8 @@
     "types": [
       "node",
       "@cloudflare/workers-types",
-      "vinext/types"
+      "vinext/types",
+      "vite/client"
     ],
     "resolveJsonModule": true,
     "isolatedModules": true,

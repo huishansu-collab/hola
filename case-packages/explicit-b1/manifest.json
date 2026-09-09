@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-b1",
+  "title": "B1 · 定计时，说完就走开——到点了看环境再播报",
+  "group": "B 个人事务",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

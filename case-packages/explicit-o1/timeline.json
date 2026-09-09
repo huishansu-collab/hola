@@ -1,0 +1,225 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（按下LIVINGEDGE）→手机亮光",
+          "description": "行为：（按下LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 2000,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "expression",
+          "label": "复述＋确认句",
+          "description": "复述＋确认句；跟随中文输出",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "复述＋确认句；跟随中文输出",
+          "start_at_ms": 7600,
+          "end_at_ms": 12000
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 12800,
+          "end_at_ms": 13200
+        },
+        {
+          "kind": "expression",
+          "label": "结果＋日历去向",
+          "description": "结果＋日历去向；常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "结果＋日历去向；常规语速",
+          "start_at_ms": 14000,
+          "end_at_ms": 16800
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 17600,
+          "end_at_ms": 22000
+        },
+        {
+          "kind": "expression",
+          "label": "结论＋建议",
+          "description": "结论＋建议；常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "结论＋建议；常规语速",
+          "start_at_ms": 22400,
+          "end_at_ms": 27600
+        },
+        {
+          "kind": "expression",
+          "label": "不再追加保持静默（end_reason=user_end）",
+          "description": "不再追加保持静默（end_reason=user_end）",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "不再追加保持静默（end_reason=user_end）",
+          "start_at_ms": 28400,
+          "end_at_ms": 28800
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "混语解析：book＝预订、俺＝我；解析为订明天14:00–15:00、四人会议室",
+          "description": "混语解析：book＝预订、俺＝我；解析为订明天14:00–15:00、四人会议室",
+          "start_at_ms": 2000,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "state",
+          "label": "用户给出时间和人数后提前发起房间查询；结果返回，结合Memory把206作为默认",
+          "description": "用户给出时间和人数后提前发起房间查询；结果返回，结合Memory把206作为默认候选并请求确认",
+          "start_at_ms": 7600,
+          "end_at_ms": 12000
+        },
+        {
+          "kind": "state",
+          "label": "方言解析：“中”＝同意，作为预订授权信号",
+          "description": "方言解析：“中”＝同意，作为预订授权信号",
+          "start_at_ms": 12800,
+          "end_at_ms": 13200
+        },
+        {
+          "kind": "state",
+          "label": "预订成功；日历新增日程",
+          "description": "预订成功；日历新增日程",
+          "start_at_ms": 14000,
+          "end_at_ms": 16800
+        },
+        {
+          "kind": "state",
+          "label": "方言解析：“礼拜四儿”＝周四；补充周四去深圳出差",
+          "description": "方言解析：“礼拜四儿”＝周四；补充周四去深圳出差",
+          "start_at_ms": 17600,
+          "end_at_ms": 22000
+        },
+        {
+          "kind": "state",
+          "label": "用户句中已提前发起天气查询；400ms返回后组织明天与周四的结论和建议",
+          "description": "用户句中已提前发起天气查询；400ms返回后组织明天与周四的结论和建议",
+          "start_at_ms": 22400,
+          "end_at_ms": 27600
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号",
+          "description": "收尾信号（方言）用户明确收尾，识别结束，灯环熄灭",
+          "start_at_ms": 28400,
+          "end_at_ms": 28800
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "room.search（明天14:00–15:00，四人）→候选206（用户句中发起，示意耗时1,200ms）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "weather.query（深圳，明天＋周四）→成功，耗时400ms（用户句中发起）"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

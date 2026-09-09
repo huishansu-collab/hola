@@ -15,10 +15,10 @@
     "dev:local": "vite --config vite.local.config.ts --host 127.0.0.1",
     "case:validate": "node scripts/case-package/cli.mjs validate",
     "case:build": "node scripts/case-package/cli.mjs build",
-    "prebuild:local": "node scripts/case-package/cli.mjs build case-packages/gmail && node scripts/case-package/cli.mjs build case-packages/backchannel",
-    "predev:local": "node scripts/case-package/cli.mjs build case-packages/gmail && node scripts/case-package/cli.mjs build case-packages/backchannel",
-    "prebuild": "node scripts/case-package/cli.mjs build case-packages/gmail && node scripts/case-package/cli.mjs build case-packages/backchannel",
-    "predev": "node scripts/case-package/cli.mjs build case-packages/gmail && node scripts/case-package/cli.mjs build case-packages/backchannel",
+    "prebuild:local": "node scripts/case-package/build-all.mjs",
+    "predev:local": "node scripts/case-package/build-all.mjs",
+    "prebuild": "node scripts/case-package/build-all.mjs",
+    "predev": "node scripts/case-package/build-all.mjs",
     "test:case-package": "node scripts/check-case-package.mjs"
   },
   "dependencies": {

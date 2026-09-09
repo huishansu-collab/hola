@@ -5,7 +5,14 @@ import {caseTags,moveCase,type CaseFile,type Directory,type CaseDrop} from './ca
 export type {CaseFile} from './case-directory';
 import {Upload} from 'lucide-react';
 import {Folder,FolderOpen,NewCase,Plus} from './sf-symbols';
-const initial:Directory[]=[{id:'default',name:'我的案例',cases:[{id:'weather',name:'北京天气 / 跑步提醒'},{id:'actor',name:'演员名字 / 追问电视剧'},{id:'ride',name:'回家路况 / 呼叫快车'},{id:'coffee',name:'订咖啡 / 偏好与地址确认'},{id:'sms',name:'手机欠费短信 / Living Edge 提醒'},{id:'gmail',name:'新用户查 Gmail 邮件'},{id:'interrupt',name:'播报中打断改口 / 高铁车次重查'},{id:'retry',name:'路况服务超时 / 降级用历史记录'},{id:'clarify',name:'指代不明 / 先澄清再发送'},{id:'backchannel',name:'老板反复改周会 / 吐槽时附和'},{id:'preempt',name:'订高铁票 / 查到无票主动打断'}]}];
+import {packageFiles} from './case-packages';
+// 文档导进来的 Case 按原文的分组分文件夹，一组一个目录，名字跟着文档走。
+const groups=[...new Set(packageFiles.map(f=>f.group).filter(Boolean))];
+const mine:CaseFile[]=[{id:'weather',name:'北京天气 / 跑步提醒'},{id:'actor',name:'演员名字 / 追问电视剧'},{id:'ride',name:'回家路况 / 呼叫快车'},{id:'coffee',name:'订咖啡 / 偏好与地址确认'},{id:'sms',name:'手机欠费短信 / Living Edge 提醒'},{id:'gmail',name:'新用户查 Gmail 邮件'},{id:'interrupt',name:'播报中打断改口 / 高铁车次重查'},{id:'retry',name:'路况服务超时 / 降级用历史记录'},{id:'clarify',name:'指代不明 / 先澄清再发送'},{id:'backchannel',name:'老板反复改周会 / 吐槽时附和'},{id:'preempt',name:'订高铁票 / 查到无票主动打断'}];
+const initial:Directory[]=[{id:'default',name:'我的案例',cases:mine},
+ ...groups.map(group=>({id:'g-'+group.split(' ')[0].toLowerCase(),name:group,
+  cases:packageFiles.filter(f=>f.group===group).map(({id,name})=>({id,name}))}))];
+
 export function FilesPanel({active,onSelect,getScenario,onInspect,onImport,importedFiles}:{onImport:(file:File)=>Promise<CaseFile>;importedFiles:CaseFile[];getScenario:(id:string)=>Scenario|undefined;onInspect:()=>void;active:string;onSelect:(file:CaseFile)=>void}){
  const [folders,setFolders]=useState(initial),[folder,setFolder]=useState('default'),[open,setOpen]=useState<Record<string,boolean>>({default:true});
  const [creating,setCreating]=useState<'folder'|'case'|null>(null),[name,setName]=useState(''),[error,setError]=useState('');
@@ -39,7 +46,12 @@ export function FilesPanel({active,onSelect,getScenario,onInspect,onImport,impor
    if(raw){
     const data=JSON.parse(raw);
     if(Array.isArray(data)&&data.length&&data.every(f=>typeof f.id==='string'&&typeof f.name==='string'&&Array.isArray(f.cases)&&f.cases.every((c:CaseFile)=>typeof c.id==='string'&&typeof c.name==='string'))){
-     for(const builtin of initial[0].cases)if(!data.some(f=>f.cases.some((c:CaseFile)=>c.id===builtin.id)))data[0].cases.push({...builtin});
+     // 目录存在浏览器里，新增的分组和 Case 要补进已有目录，不能等用户清缓存才看得见。
+     for(const folder of initial){
+      const found=data.find((f:Directory)=>f.id===folder.id);
+      if(!found){data.push({...folder,cases:folder.cases.map(c=>({...c}))});continue}
+      for(const c of folder.cases)if(!data.some((f:Directory)=>f.cases.some((x:CaseFile)=>x.id===c.id)))found.cases.push({...c});
+     }
      directories=data.map((f:Directory)=>({...f,cases:f.cases.map(c=>({...c,tags:Array.isArray(c.tags)?c.tags.filter(tag=>caseTags.includes(tag)).slice(0,1):[]}))}));
     }
    }

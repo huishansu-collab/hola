@@ -5,8 +5,7 @@ import {SynthesisPanel} from '@/components/synthesis-panel';
 import { JsonOverlay, type InputEvent, type Controls } from '@/components/json-overlay';
 import { createActorCase } from '@/components/actor-case';
 import {createRideCase} from '@/components/ride-case';
-import gmailRuntime from '@/case-packages/gmail/build/runtime.json';
-import backchannelRuntime from '@/case-packages/backchannel/build/runtime.json';
+import {packageRuntimes} from '@/components/case-packages';
 import {packageToScenario} from '@/components/package-scenario';
 import {backchannelUnits,resolve as resolveBackchannel,applyNudge,exportOffsets,type Nudge} from '@/components/backchannel-editor';
 import {storedPackages,importPackage,importedScenario,type ImportedCase} from '@/components/case-package-store';
@@ -169,7 +168,7 @@ export default function Studio(){
  const [imported,setImported]=useState<Record<string,{item:ImportedCase;scenario:Scenario}>>({});
  const [packagesReady,setPackagesReady]=useState(false),[packageError,setPackageError]=useState('');
  useEffect(()=>{let live=true;storedPackages().then(items=>{if(live)setImported(Object.fromEntries(items.map(item=>[item.id,{item,scenario:importedScenario(item)}])))}).catch(()=>{if(live)setPackageError('已导入 Case 读取失败，请检查浏览器存储。')}).finally(()=>{if(live)setPackagesReady(true)});return()=>{live=false}},[]);
- const builtins=useMemo<Record<string,Scenario>>(()=>({gmail:packageToScenario(gmailRuntime,'package/gmail'),weather:reconcileCase('weather',streamingCase(weatherScenario)),actor:reconcileCase('actor',streamingCase(createActorCase())),ride:reconcileCase('ride',streamingCase(createRideCase())),coffee:reconcileCase('coffee',streamingCase(createCoffeeCase())),sms:reconcileCase('sms',streamingCase(createSmsCase())),interrupt:reconcileCase('interrupt',streamingCase(createInterruptCase())),retry:reconcileCase('retry',streamingCase(createRetryCase())),clarify:reconcileCase('clarify',streamingCase(createClarifyCase())),backchannel:packageToScenario(backchannelRuntime,'package/backchannel'),preempt:reconcileCase('preempt',streamingCase(createPreemptCase()))}),[]);
+ const builtins=useMemo<Record<string,Scenario>>(()=>({...Object.fromEntries(packageRuntimes.map(r=>[String(r.manifest.case_id),packageToScenario(r,`package/${r.manifest.case_id}`)])),weather:reconcileCase('weather',streamingCase(weatherScenario)),actor:reconcileCase('actor',streamingCase(createActorCase())),ride:reconcileCase('ride',streamingCase(createRideCase())),coffee:reconcileCase('coffee',streamingCase(createCoffeeCase())),sms:reconcileCase('sms',streamingCase(createSmsCase())),interrupt:reconcileCase('interrupt',streamingCase(createInterruptCase())),retry:reconcileCase('retry',streamingCase(createRetryCase())),clarify:reconcileCase('clarify',streamingCase(createClarifyCase())),preempt:reconcileCase('preempt',streamingCase(createPreemptCase()))}),[]);
  const scenarios=useMemo(()=>({...builtins,...Object.fromEntries(Object.entries(imported).map(([id,v])=>[id,v.scenario]))}),[builtins,imported]);
  const isWeather=!!scenarios[activeCase.id];
  const baseScenario=scenarios[activeCase.id]??scenarios.weather;

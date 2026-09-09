@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-g1",
+  "title": "G1 · 点外卖：\"还是上次那家\"",
+  "group": "G 生活服务",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

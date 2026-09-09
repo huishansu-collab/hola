@@ -1,0 +1,327 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（本例全程不出声）",
+          "description": "（本例全程不出声）",
+          "start_at_ms": 3600,
+          "end_at_ms": 4000
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 3200,
+          "lane": 1
+        },
+        {
+          "kind": "expression",
+          "label": "卡片文案：“未接来电2通：妈妈（响42秒）、物业（有语音留言）”",
+          "description": "卡片文案：“未接来电2通：妈妈（响42秒）、物业（有语音留言）”",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "卡片文案：“未接来电2通：妈妈（响42秒）、物业（有语音留言）”",
+          "start_at_ms": 3200,
+          "end_at_ms": 3600
+        },
+        {
+          "kind": "expression",
+          "label": "考核点：听出低语就判定不宜外放，答案改走屏幕，而不是压低音量念给他听",
+          "description": "考核点：听出低语就判定不宜外放，答案改走屏幕，而不是压低音量念给他听；屏幕可比语音多给一档（响铃时长、有无留言），但不显示完整号码",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "考核点：听出低语就判定不宜外放，答案改走屏幕，而不是压低音量念给他听；屏幕可比语音多给一档（响铃时长、有无留言），但不显示完整号码",
+          "start_at_ms": 3600,
+          "end_at_ms": 4000
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默",
+          "description": "保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默",
+          "start_at_ms": 4000,
+          "end_at_ms": 6400
+        },
+        {
+          "kind": "expression",
+          "label": "听完，不抢话",
+          "description": "听完，不抢话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，不抢话",
+          "start_at_ms": 6400,
+          "end_at_ms": 8400
+        },
+        {
+          "kind": "expression",
+          "label": "卡片文案：“物业留言大意：车位续费，这月底到期”",
+          "description": "卡片文案：“物业留言大意：车位续费，这月底到期”",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "卡片文案：“物业留言大意：车位续费，这月底到期”",
+          "start_at_ms": 8400,
+          "end_at_ms": 8800
+        },
+        {
+          "kind": "expression",
+          "label": "一句说完，不逐字上屏留言原文",
+          "description": "一句说完，不逐字上屏留言原文；禁止追问“要现在回电话吗”",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "一句说完，不逐字上屏留言原文；禁止追问“要现在回电话吗”",
+          "start_at_ms": 8800,
+          "end_at_ms": 9200
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默",
+          "description": "保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默",
+          "start_at_ms": 9200,
+          "end_at_ms": 11200
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默",
+          "description": "保持静默；不应一声“好”；通话记录属一次性信息，不写长期记忆",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默；不应一声“好”；通话记录属一次性信息，不写长期记忆",
+          "start_at_ms": 13200,
+          "end_at_ms": 13600
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触后≤50ms亮光，进入聆听态；工位周围有同事人声",
+          "description": "触后≤50ms亮光，进入聆听态；工位周围有同事人声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "持续收听；“刚才”＝本机最近未接来电，读本地通话记录；输入音量远低于常态，先按低",
+          "description": "持续收听；“刚才”＝本机最近未接来电，读本地通话记录；输入音量远低于常态，先按低语处理",
+          "start_at_ms": 0,
+          "end_at_ms": 3200,
+          "lane": 1
+        },
+        {
+          "kind": "state",
+          "label": "本地读取即时完成：两条未接",
+          "description": "本地读取即时完成：两条未接（妈妈、物业）；用户压低嗓子＋周围有人声＝这个场合不适合出声，本轮关掉语音输出，答案改走屏幕",
+          "start_at_ms": 3200,
+          "end_at_ms": 3600
+        },
+        {
+          "kind": "state",
+          "label": "卡片已上屏，屏幕列出两条；反应延迟0ms",
+          "description": "卡片已上屏，屏幕列出两条；反应延迟0ms（≤400ms）；不配提示音、不震动",
+          "start_at_ms": 3600,
+          "end_at_ms": 4000
+        },
+        {
+          "kind": "state",
+          "label": "用户在读屏，无人声；不催、不因为没等到口头回应就补一句语音",
+          "description": "用户在读屏，无人声；不催、不因为没等到口头回应就补一句语音",
+          "start_at_ms": 4000,
+          "end_at_ms": 6400
+        },
+        {
+          "kind": "state",
+          "label": "追问不带上文，指向物业那条的语音留言；仍是低语，通道不变",
+          "description": "追问不带上文，指向物业那条的语音留言；仍是低语，通道不变",
+          "start_at_ms": 6400,
+          "end_at_ms": 8400
+        },
+        {
+          "kind": "state",
+          "label": "本地留言已在手，提炼成一句；保留“到期时间”这个要行动的信息",
+          "description": "本地留言已在手，提炼成一句；保留“到期时间”这个要行动的信息",
+          "start_at_ms": 8400,
+          "end_at_ms": 8800
+        },
+        {
+          "kind": "state",
+          "label": "第二张卡片替换第一张，不叠新卡；仍不出声",
+          "description": "第二张卡片替换第一张，不叠新卡；仍不出声",
+          "start_at_ms": 8800,
+          "end_at_ms": 9200
+        },
+        {
+          "kind": "state",
+          "label": "用户在读屏，无人声",
+          "description": "用户在读屏，无人声",
+          "start_at_ms": 9200,
+          "end_at_ms": 11200
+        },
+        {
+          "kind": "state",
+          "label": "收尾；“下午回”是用户自己的安排，不建提醒",
+          "description": "收尾；“下午回”是用户自己的安排，不建提醒",
+          "start_at_ms": 11200,
+          "end_at_ms": 13200
+        },
+        {
+          "kind": "state",
+          "label": "用户明确收尾；end_reason=user_end；灯环熄灭",
+          "description": "用户明确收尾；end_reason=user_end；灯环熄灭",
+          "start_at_ms": 13200,
+          "end_at_ms": 13600
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 0,
+          "end_at_ms": 3200,
+          "lane": 1
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 3200,
+          "end_at_ms": 3600
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 3600,
+          "end_at_ms": 4000
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 4000,
+          "end_at_ms": 6400
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 6400,
+          "end_at_ms": 8400
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 8400,
+          "end_at_ms": 8800
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 8800,
+          "end_at_ms": 9200
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 9200,
+          "end_at_ms": 11200
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 11200,
+          "end_at_ms": 13200
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 13200,
+          "end_at_ms": 13600
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

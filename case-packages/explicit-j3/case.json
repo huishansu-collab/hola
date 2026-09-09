@@ -1,0 +1,208 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-j3",
+      "case_name": "J3 · 手机快没电，把位置发给家人",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 20400,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "场景设定：周五22:30，外面等车，电量5%。晚上在路边等车，手机就剩5%；让助手把位置发给老公、再省着点用，又加了个2%自动重发的兜底。工具调用：位置、规则考什么：多指令一次办；低电量场景的信息密度；条件兜底。（★标在关键行的时间列）💡终端可感知的world signal：时间：UTC+8周五22:30（夜间）•Location：室外（路边等车）；电量：5%→紧急优先级，先执行后播报•规则触发器",
+      "source": "《语音双工 - Explicit case》J3",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "loc.share",
+          "description": "loc.share(老公)发起→等待回执",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "rule.create",
+          "description": "rule.create(battery≤2%→loc.share)→条件已建（即时），后台监听中",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "rule.fire",
+          "description": "rule（battery≤2%）后台监听中，不受收音关闭影响rule.fire（battery≤2%→loc.share）→已重发（即时）rule.close｜完成（条件退出）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "手机快没电了——把位置发给老公，电省着点用。",
+      "start_at_ms": 800,
+      "end_at_ms": 5200
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好，这就发。",
+      "start_at_ms": 5600,
+      "end_at_ms": 6400
+    },
+    {
+      "id": "u003",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "位置发过去了。省电模式开了，屏幕调最暗，估计还能撑40分钟。",
+      "start_at_ms": 6800,
+      "end_at_ms": 12800
+    },
+    {
+      "id": "u004",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "行。要是掉到2%，自动再给他发一遍位置。",
+      "start_at_ms": 12800,
+      "end_at_ms": 16400
+    },
+    {
+      "id": "u005",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "记下了，掉到2%自动发。",
+      "start_at_ms": 16800,
+      "end_at_ms": 18800
+    },
+    {
+      "id": "u006",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "好，车来了。",
+      "start_at_ms": 19200,
+      "end_at_ms": 20000
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "loc.share",
+      "time_at_ms": 5600,
+      "query": "{\"request\": \"老公\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "loc.share",
+      "time_at_ms": 6800,
+      "results": {
+        "note": "loc.share(老公)成功，耗时400ms",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "rule.create",
+      "time_at_ms": 16800,
+      "query": "{\"request\": \"battery≤2%→loc.share\"}"
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "rule.create",
+      "time_at_ms": 18800,
+      "results": {
+        "note": "rule.create(battery≤2%→loc.share)→条件已建（即时），后台监听中",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "rule.fire",
+      "time_at_ms": 19200,
+      "query": "{\"request\": \"battery≤2%→loc.share\"}"
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "rule.fire",
+      "time_at_ms": 20000,
+      "results": {
+        "note": "rule（battery≤2%）后台监听中，不受收音关闭影响rule.fire（battery≤2%→loc.share）→已重发（即时）rule.close｜完成（条件退出）",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

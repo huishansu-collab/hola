@@ -1,0 +1,213 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-z4",
+      "case_name": "Z4 · 下班给妈递话：周六改周日，想吃的那道菜助手补上",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 38800,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "考改口消化（稿里不能有被改掉的日子）＋补话有出处（记忆召回）＋一句办两件各给结果。",
+      "source": "《语音双工 - Explicit case》Z4",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "im.draft",
+          "description": "im.draft(妈妈)即时（草稿未发）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "im.send",
+          "description": "im.send(妈妈)与calendar.update(周日12:00回家)：32,800ms发起→33,800ms均成功，各耗时1,000ms",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "跟我妈说一声，这周六回去吃饭……不对不对，周六得加班——周日，周日中午回去。让她别忙活，我就想吃她做的那个——",
+      "start_at_ms": 2000,
+      "end_at_ms": 12000
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯……",
+      "start_at_ms": 12400,
+      "end_at_ms": 13200
+    },
+    {
+      "id": "u003",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "酸菜白肉？上回视频你还念叨来着。",
+      "start_at_ms": 13600,
+      "end_at_ms": 16400
+    },
+    {
+      "id": "u004",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "对对对，就这个！就说想吃这个，让她少整俩菜，就我们仨。",
+      "start_at_ms": 16800,
+      "end_at_ms": 21200
+    },
+    {
+      "id": "u005",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "消息这么发：‘妈，周日中午回去吃饭，就想吃你做的酸菜白肉，别多做，就我们仨。’发了给你日历记上？",
+      "start_at_ms": 21200,
+      "end_at_ms": 29200
+    },
+    {
+      "id": "u006",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "发，日历也记上，周日中午十二点。",
+      "start_at_ms": 30000,
+      "end_at_ms": 32800
+    },
+    {
+      "id": "u007",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好。",
+      "start_at_ms": 32800,
+      "end_at_ms": 33200
+    },
+    {
+      "id": "u008",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "发了。日历记上周日中午，回家吃饭。",
+      "start_at_ms": 33600,
+      "end_at_ms": 36800
+    },
+    {
+      "id": "u009",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "行，车来了。",
+      "start_at_ms": 37600,
+      "end_at_ms": 38400
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "im.draft",
+      "time_at_ms": 21200,
+      "query": "{\"request\": \"妈妈\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "im.draft",
+      "time_at_ms": 29200,
+      "results": {
+        "note": "im.draft(妈妈)即时（草稿未发）",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "im.send",
+      "time_at_ms": 32800,
+      "query": "{\"request\": \"im.send、calendar.update执行中\"}"
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "im.send",
+      "time_at_ms": 32800,
+      "query": "{\"request\": \"妈妈\"}"
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "im.send",
+      "time_at_ms": 33600,
+      "results": {
+        "note": "im.send、calendar.update执行中",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "im.send",
+      "time_at_ms": 33600,
+      "results": {
+        "note": "两项操作均已返回成功",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-f2",
+  "title": "F2 · 按亮了却在自言自语——10秒自动灭",
+  "group": "F 闲聊与陪伴",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

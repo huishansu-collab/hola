@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（旁人拿起茶几上的手机，按下LIVINGEDGE）→手机亮光",
+          "description": "行为：（旁人拿起茶几上的手机，按下LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 1200,
+          "end_at_ms": 2400
+        },
+        {
+          "kind": "expression",
+          "label": "句尾后约400ms接话",
+          "description": "句尾后约400ms接话；常规语速；就一句，不展开",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "句尾后约400ms接话；常规语速；就一句，不展开",
+          "start_at_ms": 2800,
+          "end_at_ms": 4800
+        },
+        {
+          "kind": "expression",
+          "label": "听完，不抢话",
+          "description": "听完，不抢话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，不抢话",
+          "start_at_ms": 5200,
+          "end_at_ms": 9600
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速",
+          "start_at_ms": 10000,
+          "end_at_ms": 13600
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 14000,
+          "end_at_ms": 16000
+        },
+        {
+          "kind": "expression",
+          "label": "只确认收到，不提前宣告成功",
+          "description": "只确认收到，不提前宣告成功",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "只确认收到，不提前宣告成功",
+          "start_at_ms": 16400,
+          "end_at_ms": 16800
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速；报“办好了”在回执之后保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速；报“办好了”在回执之后保持静默",
+          "start_at_ms": 20400,
+          "end_at_ms": 22800
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "应触碰唤醒；唤醒者声纹＝家人",
+          "description": "应触碰唤醒；唤醒者声纹＝家人（老公，已录入）→查询类开放、账号修改类须机主在场确认",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "查询类指令，家人声纹命中，开放作答",
+          "description": "查询类指令，家人声纹命中，开放作答",
+          "start_at_ms": 1200,
+          "end_at_ms": 2400
+        },
+        {
+          "kind": "state",
+          "label": "查询类对家人开放，正常答",
+          "description": "查询类对家人开放，正常答",
+          "start_at_ms": 2800,
+          "end_at_ms": 4800
+        },
+        {
+          "kind": "state",
+          "label": "账号修改类：改的是机主的收货地址，权限收紧",
+          "description": "账号修改类：改的是机主的收货地址，权限收紧",
+          "start_at_ms": 5200,
+          "end_at_ms": 9600
+        },
+        {
+          "kind": "state",
+          "label": "不硬拒也不直接办；把确认路径说清楚；禁止家人一说就改",
+          "description": "不硬拒也不直接办；把确认路径说清楚；禁止家人一说就改",
+          "start_at_ms": 10000,
+          "end_at_ms": 13600
+        },
+        {
+          "kind": "state",
+          "label": "机主本人口头确认，声纹命中",
+          "description": "机主本人口头确认，声纹命中",
+          "start_at_ms": 14000,
+          "end_at_ms": 16000
+        },
+        {
+          "kind": "state",
+          "label": "确认到手立刻办，同步执行；屏幕显示",
+          "description": "确认到手立刻办，同步执行；屏幕显示",
+          "start_at_ms": 16400,
+          "end_at_ms": 16800
+        },
+        {
+          "kind": "state",
+          "label": "“订单地址修改中”回执返回后才开口——先执行后播报；屏幕显示“订单地址已更新”用",
+          "description": "“订单地址修改中”回执返回后才开口——先执行后播报；屏幕显示“订单地址已更新”用户明确收尾，识别结束，end_reason=user_end；灯环熄灭",
+          "start_at_ms": 20400,
+          "end_at_ms": 22800
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "用轨道",
+          "description": "用轨道",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "weather.tomorrow（唤醒时已预取）→缓存命中（0.3秒）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "order.address（改→老"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e03",
+          "description": "公公司）发起，与语音应答同步执行，等待外部回执order.address（改→老公公司）→成功回执（耗时3.8秒）"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

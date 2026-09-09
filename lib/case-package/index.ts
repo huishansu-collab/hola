@@ -86,9 +86,16 @@ export function validatePackage(input: unknown): CasePackage {
     'Case ID / 标题与 manifest 不一致',
   );
   const duration = d.meta_data?.media?.audio?.duration_ms;
+  const planning = d.static_context?.constraints?.timing_status === 'planned';
+  // Voiced cases stay inside ten minutes — that is a rendering and delivery
+  // limit. A planned case carries no audio and may legitimately span hours:
+  // a geofenced reminder that fires when you get home, a heavy job that
+  // reports back twenty minutes later.
   check(
-    ms(duration) && duration > 0 && duration <= 600000,
-    'Case 时长必须在 0–600 秒之间',
+    ms(duration) && duration > 0 && duration <= (planning ? 21600000 : 600000),
+    planning
+      ? 'Case 时长必须在 0–6 小时之间'
+      : 'Case 时长必须在 0–600 秒之间',
   );
   check(
     JSON.stringify(d.meta_data.media.audio.tracks) ===

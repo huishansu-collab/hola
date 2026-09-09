@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 2400,
+          "lane": 1
+        },
+        {
+          "kind": "expression",
+          "label": "接话延迟0ms（≤400ms）",
+          "description": "接话延迟0ms（≤400ms）；常规语速4.4字/秒；先结论后依据；禁止播整周天气",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "接话延迟0ms（≤400ms）；常规语速4.4字/秒；先结论后依据；禁止播整周天气",
+          "start_at_ms": 2400,
+          "end_at_ms": 6000
+        },
+        {
+          "kind": "expression",
+          "label": "听完，不抢话",
+          "description": "听完，不抢话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，不抢话",
+          "start_at_ms": 6000,
+          "end_at_ms": 8800
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速；两句收住；禁止反问“约在哪家”扩大话题",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速；两句收住；禁止反问“约在哪家”扩大话题",
+          "start_at_ms": 8800,
+          "end_at_ms": 12400
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默",
+          "description": "保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默",
+          "start_at_ms": 13200,
+          "end_at_ms": 13600
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触后≤50ms亮光，进入聆听态；亮屏即预取常驻地天气",
+          "description": "触后≤50ms亮光，进入聆听态；亮屏即预取常驻地天气",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "持续收听；提取“今天＋带伞”＝要降雨时段，不是整周预报",
+          "description": "持续收听；提取“今天＋带伞”＝要降雨时段，不是整周预报",
+          "start_at_ms": 0,
+          "end_at_ms": 2400,
+          "lane": 1
+        },
+        {
+          "kind": "state",
+          "label": "答案已在手，用户句尾即起播；先结论后依据",
+          "description": "答案已在手，用户句尾即起播；先结论后依据（第一个词就是“得带”）",
+          "start_at_ms": 2400,
+          "end_at_ms": 6000
+        },
+        {
+          "kind": "state",
+          "label": "追问中午雨情；“王姐”只是语境，不建联系人任务",
+          "description": "追问中午雨情；“王姐”只是语境，不建联系人任务",
+          "start_at_ms": 6000,
+          "end_at_ms": 8800
+        },
+        {
+          "kind": "state",
+          "label": "复用同一份逐小时数据，无需重查；只答被问的＋一句可行建议",
+          "description": "复用同一份逐小时数据，无需重查；只答被问的＋一句可行建议",
+          "start_at_ms": 8800,
+          "end_at_ms": 12400
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号，不用再答",
+          "description": "收尾信号，不用再答",
+          "start_at_ms": 12400,
+          "end_at_ms": 13200
+        },
+        {
+          "kind": "state",
+          "label": "用户明确收尾；end_reason=user_end；灯环熄灭",
+          "description": "用户明确收尾；end_reason=user_end；灯环熄灭",
+          "start_at_ms": 13200,
+          "end_at_ms": 13600
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "location（常驻地缓存，即时）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "weather.query（北京，今天）发起",
+          "lane": 1
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

@@ -1,0 +1,106 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-q1",
+      "case_name": "Q1 · 电梯里碰见大学室友",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 23200,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "纯闲聊的自然反应——接梗、惊讶、一次一个追问、轻幽默收尾，全程零工具。",
+      "source": "《语音双工 - Explicit case》Q1",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": []
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "你猜我今天在电梯里碰见谁了？",
+      "start_at_ms": 2000,
+      "end_at_ms": 4800
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "谁啊？",
+      "start_at_ms": 5200,
+      "end_at_ms": 5600
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "我大学室友！十年没见了，她居然就搬到我们隔壁小区了。",
+      "start_at_ms": 6000,
+      "end_at_ms": 10800
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "真的假的，这也太巧了。加上微信没？",
+      "start_at_ms": 11200,
+      "end_at_ms": 14000
+    },
+    {
+      "id": "u005",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "加了加了，约了这周末一起吃饭。",
+      "start_at_ms": 14400,
+      "end_at_ms": 17200
+    },
+    {
+      "id": "u006",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "十年的账，这顿饭得吃仨小时起步。",
+      "start_at_ms": 17600,
+      "end_at_ms": 20400
+    },
+    {
+      "id": "u007",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "哈哈可不。行了没事了。",
+      "start_at_ms": 20800,
+      "end_at_ms": 22800
+    }
+  ],
+  "events": [],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

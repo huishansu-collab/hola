@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-a3",
+  "title": "A3 · 查生僻字（描述字形）",
+  "group": "A 查东西",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

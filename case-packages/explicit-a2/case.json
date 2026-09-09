@@ -1,0 +1,212 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-a2",
+      "case_name": "A2 · 刷到条代购，连环问汇率，币种看岔当场改口",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 18000,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "按400ms微轮次对齐，连续状态合并展示；考上下文承接（\"那500呢\"币种沿用）与改口\"不对不对\"的处理；时间与工具耗时均为示意。",
+      "source": "《语音双工 - Explicit case》A2",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "rate.query",
+          "description": "rate.query（USD→CNY）发起",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "calc",
+          "description": "calc（500×7.09）即时完成",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "300美元是多少人民币来着？",
+      "start_at_ms": 0,
+      "end_at_ms": 2800
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯……",
+      "start_at_ms": 2800,
+      "end_at_ms": 3200
+    },
+    {
+      "id": "u003",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "2127元。",
+      "start_at_ms": 3200,
+      "end_at_ms": 4800
+    },
+    {
+      "id": "u004",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "那500呢？",
+      "start_at_ms": 4800,
+      "end_at_ms": 5600
+    },
+    {
+      "id": "u005",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "3545元。",
+      "start_at_ms": 6000,
+      "end_at_ms": 7600
+    },
+    {
+      "id": "u006",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "呃，不对不对，我看岔了，这标的是500日元。",
+      "start_at_ms": 7600,
+      "end_at_ms": 11200
+    },
+    {
+      "id": "u007",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯……",
+      "start_at_ms": 11200,
+      "end_at_ms": 11600
+    },
+    {
+      "id": "u008",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "日元就便宜多了，24.5元左右。",
+      "start_at_ms": 11600,
+      "end_at_ms": 14400
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "rate.query",
+      "time_at_ms": 0,
+      "query": "{\"request\": \"USD→CNY\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "rate.query",
+      "time_at_ms": 2800,
+      "results": {
+        "note": "rate.query（USD→CNY）成功，耗时300ms",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "calc",
+      "time_at_ms": 5600,
+      "query": "{\"request\": \"500×7.09\"}"
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "calc",
+      "time_at_ms": 6000,
+      "results": {
+        "note": "calc（500×7.09）即时完成",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "rate.query",
+      "time_at_ms": 7600,
+      "query": "{\"request\": \"JPY→CNY\"}"
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "rate.query",
+      "time_at_ms": 11200,
+      "results": {
+        "note": "rate.query（JPY→CNY）成功，耗时300ms",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": [
+    {
+      "label": "改口①",
+      "role": "user",
+      "start_at_ms": 7600,
+      "end_at_ms": 11200
+    }
+  ]
+}

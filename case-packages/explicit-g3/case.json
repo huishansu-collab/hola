@@ -1,0 +1,172 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-g3",
+      "case_name": "G3 · 炒着菜定计时，顺嘴问生抽拿啥代",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 532800,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "考噪音环境识别、多任务并行、生活问题短而能落地、到点播报在噪音下提音量；计时为本地即时，工具耗时为示意。",
+      "source": "《语音双工 - Explicit case》G3",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "timer.create",
+          "description": "timer.create(8:00)完成，即时",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "timer.fire",
+          "description": "计时后台继续，不受收音关闭影响timer.fire(8:00整)触发",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "帮我倒计时定八分钟，锅里炖着排骨呢。",
+      "start_at_ms": 2000,
+      "end_at_ms": 6000
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好，八分钟。",
+      "start_at_ms": 6000,
+      "end_at_ms": 7600
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "欸对了，生抽没了，拿啥能代一下？",
+      "start_at_ms": 8400,
+      "end_at_ms": 11200
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "可以老抽兑水一比一加糖，或者用蚝油",
+      "start_at_ms": 11600,
+      "end_at_ms": 15600
+    },
+    {
+      "id": "u005",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "那就老抽吧。",
+      "start_at_ms": 15600,
+      "end_at_ms": 18000
+    },
+    {
+      "id": "u006",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "来了来了。（关火）",
+      "start_at_ms": 521200,
+      "end_at_ms": 522400
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "timer.create",
+      "time_at_ms": 2000,
+      "query": "{\"request\": \"8:00\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "timer.create",
+      "time_at_ms": 6000,
+      "results": {
+        "note": "timer.create(8:00)完成，即时",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "timer.fire",
+      "time_at_ms": 498000,
+      "query": "{\"request\": \"8:00整\"}"
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "timer.fire",
+      "time_at_ms": 508000,
+      "results": {
+        "note": "计时后台继续，不受收音关闭影响timer.fire(8:00整)触发",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

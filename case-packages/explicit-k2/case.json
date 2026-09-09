@@ -1,0 +1,197 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-k2",
+      "case_name": "K2 · 老公拿起手机下指令",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 23200,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "场景设定：周三20:05，客厅，手机在茶几上。老公顺手拿起茶几上的手机，先问明天下不下雨，又要把她明天的快递改到自己公司；她在旁边一句\"改吧改吧\"。工具调用：查天气、快递考什么：权限分级（查询开放／修改须机主）；机主在场的口头确认流。（★标在关键行的时间列）💡终端可感知的world signal：Location：家（客厅，手机在茶几上）•唤醒者声纹：家人（老公，已录入）→查询类开放；账号修改类须",
+      "source": "《语音双工 - Explicit case》K2",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "weather.tomorrow",
+          "description": "weather.tomorrow（唤醒时已预取）→缓存命中（0.3秒）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "order.address",
+          "description": "order.address（改→老",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "third_party",
+      "speaker_id": "third_party_1",
+      "text": "明天下雨不？",
+      "start_at_ms": 1200,
+      "end_at_ms": 2400
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "不下，晴天，比今天还热点儿。",
+      "start_at_ms": 2800,
+      "end_at_ms": 4800
+    },
+    {
+      "id": "u003",
+      "speaker": "third_party",
+      "speaker_id": "third_party_1",
+      "text": "那把她明天那个快递的收货地址，改到我公司去。",
+      "start_at_ms": 5200,
+      "end_at_ms": 9600
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "改地址得她点个头——她在旁边吧？问她一声。",
+      "start_at_ms": 10000,
+      "end_at_ms": 13600
+    },
+    {
+      "id": "u005",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "改吧改吧，我让他弄的。",
+      "start_at_ms": 14000,
+      "end_at_ms": 16000
+    },
+    {
+      "id": "u006",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好。那我来改一下",
+      "start_at_ms": 16400,
+      "end_at_ms": 16800
+    },
+    {
+      "id": "u007",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "改好了，明天那单送他公司。",
+      "start_at_ms": 20400,
+      "end_at_ms": 22800
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "weather.tomorrow",
+      "time_at_ms": 2800,
+      "query": "{\"request\": \"唤醒时已预取\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "weather.tomorrow",
+      "time_at_ms": 4800,
+      "results": {
+        "note": "weather.tomorrow（唤醒时已预取）→缓存命中（0.3秒）",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "order.address",
+      "time_at_ms": 16400,
+      "query": "{\"request\": \"order.address（改→老\"}"
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "order.address",
+      "time_at_ms": 16800,
+      "results": {
+        "note": "order.address（改→老",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "order.address",
+      "time_at_ms": 20400,
+      "query": "{\"request\": \"改→老公公司\"}"
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "order.address",
+      "time_at_ms": 20800,
+      "results": {
+        "note": "文档未写返回",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

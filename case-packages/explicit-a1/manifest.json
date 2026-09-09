@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-a1",
+  "title": "A1 · 出门前问要不要带伞",
+  "group": "A 查东西",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-e2",
+  "title": "E2 · 播客里刚才那段，再放一遍",
+  "group": "E 听内容",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

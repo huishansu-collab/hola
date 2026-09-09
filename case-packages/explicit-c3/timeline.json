@@ -1,0 +1,327 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u009"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u008"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 3600,
+          "lane": 1
+        },
+        {
+          "kind": "expression",
+          "label": "准备：“有俩张伟——是运营部那个，还是你表哥？”",
+          "description": "准备：“有俩张伟——是运营部那个，还是你表哥？”；歧义就地判定、答案已在手，这一轮只做本地组织，保持静默考核点：接话延迟400ms",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "准备：“有俩张伟——是运营部那个，还是你表哥？”；歧义就地判定、答案已在手，这一轮只做本地组织，保持静默考核点：接话延迟400ms",
+          "start_at_ms": 3600,
+          "end_at_ms": 4000
+        },
+        {
+          "kind": "expression",
+          "label": "（句尾后第一个微轮次用于组织，未超上限）",
+          "description": "（句尾后第一个微轮次用于组织，未超上限）；常规语速；用身份区分而不是念全名和号码；一次问清，禁止默认“最近联系的那个”直接发",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "（句尾后第一个微轮次用于组织，未超上限）；常规语速；用身份区分而不是念全名和号码；一次问清，禁止默认“最近联系的那个”直接发",
+          "start_at_ms": 4000,
+          "end_at_ms": 6800
+        },
+        {
+          "kind": "expression",
+          "label": "接话延迟0ms（≤400ms）",
+          "description": "接话延迟0ms（≤400ms）；轻声拖长“嗯”，占一个微轮次；准备：“好，发运营部张伟：‘文件发你邮箱了，注意查收。’这么发？”",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "接话延迟0ms（≤400ms）；轻声拖长“嗯”，占一个微轮次；准备：“好，发运营部张伟：‘文件发你邮箱了，注意查收。’这么发？”",
+          "start_at_ms": 7600,
+          "end_at_ms": 8000
+        },
+        {
+          "kind": "expression",
+          "label": "首音“嗯……”已在上一行发出，本行接正式答案",
+          "description": "首音“嗯……”已在上一行发出，本行接正式答案；常规语速；念稿部分略慢一档、收件人重读",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "首音“嗯……”已在上一行发出，本行接正式答案；常规语速；念稿部分略慢一档、收件人重读",
+          "start_at_ms": 8000,
+          "end_at_ms": 12400
+        },
+        {
+          "kind": "expression",
+          "label": "听完，不抢话",
+          "description": "听完，不抢话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，不抢话",
+          "start_at_ms": 12400,
+          "end_at_ms": 14800
+        },
+        {
+          "kind": "expression",
+          "label": "接话延迟0ms（≤400ms）",
+          "description": "接话延迟0ms（≤400ms）；“嗯”是短音、不拖长——只表示收到改动，不等于发送成功；禁止在回执前说“发了”",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "接话延迟0ms（≤400ms）；“嗯”是短音、不拖长——只表示收到改动，不等于发送成功；禁止在回执前说“发了”",
+          "start_at_ms": 14800,
+          "end_at_ms": 15200
+        },
+        {
+          "kind": "expression",
+          "label": "准备：“‘文件发你邮箱了。’——改好了，发了哈。”",
+          "description": "准备：“‘文件发你邮箱了。’——改好了，发了哈。”；回执刚到，本行只做本地组织，不再补声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "准备：“‘文件发你邮箱了。’——改好了，发了哈。”；回执刚到，本行只做本地组织，不再补声",
+          "start_at_ms": 15200,
+          "end_at_ms": 15600
+        },
+        {
+          "kind": "expression",
+          "label": "考核点：常规语速",
+          "description": "考核点：常规语速；回读改后终版一遍并同时报“已发”，一句收；禁止改完再问“确定发吗”多绕一轮",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "考核点：常规语速；回读改后终版一遍并同时报“已发”，一句收；禁止改完再问“确定发吗”多绕一轮",
+          "start_at_ms": 15600,
+          "end_at_ms": 18400
+        },
+        {
+          "kind": "expression",
+          "label": "单字收尾，占一个最小微轮次",
+          "description": "单字收尾，占一个最小微轮次",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "单字收尾，占一个最小微轮次",
+          "start_at_ms": 18400,
+          "end_at_ms": 18800
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默，不追加“还要发给你表哥吗”",
+          "description": "保持静默，不追加“还要发给你表哥吗”",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默，不追加“还要发给你表哥吗”",
+          "start_at_ms": 18800,
+          "end_at_ms": 28800
+        },
+        {
+          "kind": "expression",
+          "label": "考核点：静默满10秒自动收，收前不播任何提示音或“还在吗”",
+          "description": "考核点：静默满10秒自动收，收前不播任何提示音或“还在吗”",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "考核点：静默满10秒自动收，收前不播任何提示音或“还在吗”",
+          "start_at_ms": 28800,
+          "end_at_ms": 29200
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触后≤50ms亮光，进入聆听态；人在停车场往车边走",
+          "description": "触后≤50ms亮光，进入聆听态；人在停车场往车边走",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "持续收听；意图完整",
+          "description": "持续收听；意图完整（对象＋内容），只差对象唯一性",
+          "start_at_ms": 0,
+          "end_at_ms": 3600,
+          "lane": 1
+        },
+        {
+          "kind": "state",
+          "label": "Recall通讯录命中两个“张伟”",
+          "description": "Recall通讯录命中两个“张伟”（运营部同事／表哥）：对外发送不可撤销，发错人代价高，不按“最近联系”猜；不起工具、没有等待，本轮不发语气词歧义就地问清，不",
+          "start_at_ms": 3600,
+          "end_at_ms": 4000
+        },
+        {
+          "kind": "state",
+          "label": "拟稿、不发送",
+          "description": "拟稿、不发送",
+          "start_at_ms": 4000,
+          "end_at_ms": 6800
+        },
+        {
+          "kind": "state",
+          "label": "“公司的”＝运营部张伟，对象确定",
+          "description": "“公司的”＝运营部张伟，对象确定",
+          "start_at_ms": 6800,
+          "end_at_ms": 7600
+        },
+        {
+          "kind": "state",
+          "label": "拟稿完成，同事口径，带一句提示语；对象一确定就得出声，念稿等草稿落定再说",
+          "description": "拟稿完成，同事口径，带一句提示语；对象一确定就得出声，念稿等草稿落定再说",
+          "start_at_ms": 7600,
+          "end_at_ms": 8000
+        },
+        {
+          "kind": "state",
+          "label": "回读收件人＋正文等确认，让用户能当场改人或改词；首音已发，本行接念稿",
+          "description": "回读收件人＋正文等确认，让用户能当场改人或改词；首音已发，本行接念稿",
+          "start_at_ms": 8000,
+          "end_at_ms": 12400
+        },
+        {
+          "kind": "state",
+          "label": "只删不加：删掉客套，保留“文件发你邮箱了。”",
+          "description": "只删不加：删掉客套，保留“文件发你邮箱了。”",
+          "start_at_ms": 12400,
+          "end_at_ms": 14800
+        },
+        {
+          "kind": "state",
+          "label": "收件人已确认过，本轮只改文案——改稿即视为确认，直接发，不再问第二遍；改口说完就",
+          "description": "收件人已确认过，本轮只改文案——改稿即视为确认，直接发，不再问第二遍；改口说完就得出声，用一个短“嗯”确认收到",
+          "start_at_ms": 14800,
+          "end_at_ms": 15200
+        },
+        {
+          "kind": "state",
+          "label": "回执返回，确认已投递",
+          "description": "回执返回，确认已投递",
+          "start_at_ms": 15200,
+          "end_at_ms": 15600
+        },
+        {
+          "kind": "state",
+          "label": "回执已到才报完成",
+          "description": "回执已到才报完成",
+          "start_at_ms": 15600,
+          "end_at_ms": 18400
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号，不用再答",
+          "description": "收尾信号，不用再答",
+          "start_at_ms": 18400,
+          "end_at_ms": 18800
+        },
+        {
+          "kind": "state",
+          "label": "无人说话，计静默；用户已走到车边开门",
+          "description": "无人说话，计静默；用户已走到车边开门（环境音不算重置）",
+          "start_at_ms": 18800,
+          "end_at_ms": 28800
+        },
+        {
+          "kind": "state",
+          "label": "距最后一次人声正好10.0秒；end_reason=silence_timeou",
+          "description": "距最后一次人声正好10.0秒；end_reason=silence_timeout；灯环熄灭",
+          "start_at_ms": 28800,
+          "end_at_ms": 29200
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "im.draft(张伟·运营部)发起"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "im.send(张伟·运营部)发起"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-o2",
+  "title": "O2 · “你声音有点大”——听懂话里有话",
+  "group": "O 语义理解",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

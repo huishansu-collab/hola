@@ -1,0 +1,341 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-z5b",
+      "case_name": "Z5B · 泡脚听评书：倒回没听真的那段，到点轻声提添水（表二）",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 64400,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "考跨会话续播＋内容指代＋计时跨过会话结束照样触发＋到点播报环境适配（安静场景收着说）。",
+      "source": "《语音双工 - Explicit case》Z5B",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "podcast.resume",
+          "description": "podcast.resume(隋唐第十二回24:00)完成1,000ms",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "timer.create",
+          "description": "timer.create(20min，到点提添热水)完成（即时）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "seek",
+          "description": "seek(段首)完成（媒体，即时）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "timer.fire",
+          "description": "timer.fire(添热水)到点（即时）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "volume.set",
+          "description": "volume.set（评书音量降档）→成功（即时）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "volume.restore",
+          "description": "volume.restore完成（即时）timer.close(添水计时)完成",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "接着放我那个《隋唐》，再定二十分钟，到点提我添热水。",
+      "start_at_ms": 2000,
+      "end_at_ms": 6800
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "接着昨儿第十二回放；二十分钟也定上了。",
+      "start_at_ms": 6800,
+      "end_at_ms": 10400
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "欸等会儿，刚那段没听真着——打头那两句再来一遍。",
+      "start_at_ms": 38000,
+      "end_at_ms": 42400
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "回这段开头了，从‘程咬金劫皇纲’那句起。",
+      "start_at_ms": 42400,
+      "end_at_ms": 46000
+    },
+    {
+      "id": "u005",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "哎对，就这儿。",
+      "start_at_ms": 46400,
+      "end_at_ms": 47600
+    },
+    {
+      "id": "u006",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "（评书音量压低，轻声）二十分钟了，该添热水了。",
+      "start_at_ms": 58400,
+      "end_at_ms": 61600
+    },
+    {
+      "id": "u007",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "好嘞。（拎壶添水）接着放吧。",
+      "start_at_ms": 62400,
+      "end_at_ms": 63600
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "podcast.resume",
+      "time_at_ms": 6800,
+      "query": "{\"request\": \"隋唐第十二回24:00\"}"
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "timer.create",
+      "time_at_ms": 6800,
+      "query": "{\"request\": \"20min，到点提添热水\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "podcast.resume",
+      "time_at_ms": 10400,
+      "results": {
+        "note": "podcast.resume(隋唐第十二回24:00)完成1,000ms",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "timer.create",
+      "time_at_ms": 10400,
+      "results": {
+        "note": "timer.create(20min，到点提添热水)完成（即时）",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "seek",
+      "time_at_ms": 42400,
+      "query": "{\"request\": \"段首\"}"
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "seek",
+      "time_at_ms": 46000,
+      "results": {
+        "note": "seek(段首)完成（媒体，即时）",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e04",
+      "event_type": "function_call",
+      "tool_name": "timer.fire",
+      "time_at_ms": 46400,
+      "query": "{\"request\": \"添热水\"}"
+    },
+    {
+      "event_id": "e04",
+      "event_type": "function_call",
+      "tool_name": "timer.fire",
+      "time_at_ms": 47600,
+      "results": {
+        "note": "timer.fire(添热水)到点（即时）",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e05",
+      "event_type": "function_call",
+      "tool_name": "timer.fire",
+      "time_at_ms": 58400,
+      "query": "{\"request\": \"timer.fire交付\"}"
+    },
+    {
+      "event_id": "e06",
+      "event_type": "function_call",
+      "tool_name": "volume.set",
+      "time_at_ms": 58400,
+      "query": "{\"request\": \"评书音量降档\"}"
+    },
+    {
+      "event_id": "e05",
+      "event_type": "function_call",
+      "tool_name": "timer.fire",
+      "time_at_ms": 61600,
+      "results": {
+        "note": "timer.fire交付",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e06",
+      "event_type": "function_call",
+      "tool_name": "volume.set",
+      "time_at_ms": 61600,
+      "results": {
+        "note": "volume.set（评书音量降档）→成功（即时）",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e07",
+      "event_type": "function_call",
+      "tool_name": "volume.restore",
+      "time_at_ms": 63600,
+      "query": "{\"request\": \"volume.restore完成（即时）timer.close(添水计时)完成\"}"
+    },
+    {
+      "event_id": "e07",
+      "event_type": "function_call",
+      "tool_name": "volume.restore",
+      "time_at_ms": 64000,
+      "results": {
+        "note": "volume.restore完成（即时）timer.close(添水计时)完成",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

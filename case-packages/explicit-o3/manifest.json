@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-o3",
+  "title": "O3 · “快点儿说”——听出催促收短",
+  "group": "O 语义理解",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

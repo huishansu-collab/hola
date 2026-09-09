@@ -1,0 +1,128 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-k1",
+      "case_name": "K1 · 地铁太吵，只听清半句",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 14800,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "场景设定：工作日18:40，地铁车厢，进站广播很响。车进站，广播正好盖过前半句话，助手只听清\"……几点\"；补问缺的那半句，答案配合锁屏卡片。工具调用：本地票夹查询考什么：噪声下的补问方式；输出通道配合（嘴短、屏全）。（★标在关键行的时间列）💡终端可感知的world signal：时间：UTC+8工作日18:40（晚高峰）•Location：地铁车厢；声学环境：进站广播＋车流，噪声盖过人声（中段识别",
+      "source": "《语音双工 - Explicit case》K1",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "tickets.lookup",
+          "description": "tickets.lookup（今晚电影票）→命中（本地票夹，0.3秒）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "帮我看下……（进站广播盖过人声）……几点。",
+      "start_at_ms": 800,
+      "end_at_ms": 3200
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "前半句没听清——看什么的几点？",
+      "start_at_ms": 3600,
+      "end_at_ms": 6000
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "电影！今晚那场电影几点开。",
+      "start_at_ms": 6400,
+      "end_at_ms": 8800
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "八点十五分开场。影厅和取票码放锁屏上了，进场直接刷。",
+      "start_at_ms": 9200,
+      "end_at_ms": 13600
+    },
+    {
+      "id": "u005",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "好。",
+      "start_at_ms": 14000,
+      "end_at_ms": 14400
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "tickets.lookup",
+      "time_at_ms": 9200,
+      "query": "{\"request\": \"今晚电影票\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "tickets.lookup",
+      "time_at_ms": 13600,
+      "results": {
+        "note": "tickets.lookup（今晚电影票）→命中（本地票夹，0.3秒）",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

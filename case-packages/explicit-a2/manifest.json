@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-a2",
+  "title": "A2 · 刷到条代购，连环问汇率，币种看岔当场改口",
+  "group": "A 查东西",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

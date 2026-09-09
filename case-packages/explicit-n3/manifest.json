@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-n3",
+  "title": "N3 · 岔开办件事，话题接得回",
+  "group": "N 对话微行为",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

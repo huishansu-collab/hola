@@ -1,0 +1,120 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-r3",
+      "case_name": "R3 · 咳嗽两声，不问\"你还好吗\"",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 13600,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "考非言语声不响应、不过度关心；等真正开口，正常指令照办。",
+      "source": "《语音双工 - Explicit case》R3",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "reminder.create",
+          "description": "reminder.create（喝水",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "咳、咳——",
+      "start_at_ms": 2000,
+      "end_at_ms": 2800
+    },
+    {
+      "id": "u002",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "呼——给我定个喝水提醒，一小时一次，到晚上十点。",
+      "start_at_ms": 4800,
+      "end_at_ms": 8800
+    },
+    {
+      "id": "u003",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "定好了，每小时提一次，到晚上十点。",
+      "start_at_ms": 9200,
+      "end_at_ms": 12000
+    },
+    {
+      "id": "u004",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "嗯。",
+      "start_at_ms": 12800,
+      "end_at_ms": 13200
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "reminder.create",
+      "time_at_ms": 9200,
+      "query": "{\"request\": \"reminder.create（喝水\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "reminder.create",
+      "time_at_ms": 12000,
+      "results": {
+        "note": "reminder.create（喝水",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

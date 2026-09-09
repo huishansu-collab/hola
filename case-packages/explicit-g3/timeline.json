@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（用手腕蹭下LIVINGEDGE，手上有油）→手机亮光",
+          "description": "行为：（用手腕蹭下LIVINGEDGE，手上有油）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "action",
+          "label": "（音量提高）八分钟了，排骨可以起锅了。",
+          "description": "（音量提高）八分钟了，排骨可以起锅了。",
+          "start_at_ms": 518000,
+          "end_at_ms": 520800
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 2000,
+          "end_at_ms": 6000
+        },
+        {
+          "kind": "expression",
+          "label": "短确认，常规语速，音量放大",
+          "description": "短确认，常规语速，音量放大",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "短确认，常规语速，音量放大",
+          "start_at_ms": 6000,
+          "end_at_ms": 7600
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 8400,
+          "end_at_ms": 11200
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速；两句封顶",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速；两句封顶",
+          "start_at_ms": 11600,
+          "end_at_ms": 15600
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 15600,
+          "end_at_ms": 18000
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默准备播报",
+          "description": "保持静默准备播报",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默准备播报",
+          "start_at_ms": 498000,
+          "end_at_ms": 508000
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速偏亮一档",
+          "description": "常规语速偏亮一档；说完即收",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速偏亮一档；说完即收",
+          "start_at_ms": 518000,
+          "end_at_ms": 520800
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 521200,
+          "end_at_ms": 522400
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默",
+          "description": "保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默",
+          "start_at_ms": 522400,
+          "end_at_ms": 532400
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态；灶上炖着排骨、油烟机响",
+          "description": "触碰唤醒，进入聆听态；灶上炖着排骨、油烟机响",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "指令＝计时8:00；识别到油烟机高速档噪声大，识别置信度正常",
+          "description": "指令＝计时8:00；识别到油烟机高速档噪声大，识别置信度正常",
+          "start_at_ms": 2000,
+          "end_at_ms": 6000
+        },
+        {
+          "kind": "state",
+          "label": "噪音下确认更短更清楚；句尾后0.3秒",
+          "description": "噪音下确认更短更清楚；句尾后0.3秒",
+          "start_at_ms": 6000,
+          "end_at_ms": 7600
+        },
+        {
+          "kind": "state",
+          "label": "新话题，与计时并行走；用户有点急",
+          "description": "新话题，与计时并行走；用户有点急（锅在火上）",
+          "start_at_ms": 8400,
+          "end_at_ms": 11200
+        },
+        {
+          "kind": "state",
+          "label": "直给可行的方案；计时线不受影响",
+          "description": "直给可行的方案；计时线不受影响",
+          "start_at_ms": 11600,
+          "end_at_ms": 15600
+        },
+        {
+          "kind": "state",
+          "label": "选定方案",
+          "description": "选定方案",
+          "start_at_ms": 15600,
+          "end_at_ms": 18000
+        },
+        {
+          "kind": "state",
+          "label": "10秒无人说话，自动结束，end_reason=silence_timeout；",
+          "description": "10秒无人说话，自动结束，end_reason=silence_timeout；灯环熄灭；计时后台继续走device_event唤起，进入聆听态；判断环境：没在通话·人在灶台（翻锅声）·非勿扰→可出声；油烟机吵，音量8→12",
+          "start_at_ms": 498000,
+          "end_at_ms": 508000
+        },
+        {
+          "kind": "state",
+          "label": "播报；音量临时提档，说完回落",
+          "description": "播报；音量临时提档，说完回落",
+          "start_at_ms": 518000,
+          "end_at_ms": 520800
+        },
+        {
+          "kind": "state",
+          "label": "10秒无人说话，自动结束，end_reason=silence_timeout",
+          "description": "10秒无人说话，自动结束，end_reason=silence_timeout",
+          "start_at_ms": 522400,
+          "end_at_ms": 532400
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "timer.create(8:00)完成，即时"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "计时后台继续，不受收音关闭影响timer.fire(8:00整)触发"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

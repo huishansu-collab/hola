@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（扶着桌沿站住，按下LIVINGEDGE）→手机亮光",
+          "description": "行为：（扶着桌沿站住，按下LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "听完，不抢话句尾后约400ms接话",
+          "description": "听完，不抢话句尾后约400ms接话；语",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，不抢话句尾后约400ms接话；语",
+          "start_at_ms": 1200,
+          "end_at_ms": 4000
+        },
+        {
+          "kind": "expression",
+          "label": "速放稳（约0.85倍）",
+          "description": "速放稳（约0.85倍）；一句动作＋一句兜底；播出＝计划",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "速放稳（约0.85倍）；一句动作＋一句兜底；播出＝计划",
+          "start_at_ms": 4400,
+          "end_at_ms": 10000
+        },
+        {
+          "kind": "expression",
+          "label": "听完，不抢话",
+          "description": "听完，不抢话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，不抢话",
+          "start_at_ms": 10400,
+          "end_at_ms": 11200
+        },
+        {
+          "kind": "expression",
+          "label": "轻声",
+          "description": "轻声；就一句，不展开保持静默准备：“缓过来点没？”——只问状态，一句",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "轻声；就一句，不展开保持静默准备：“缓过来点没？”——只问状态，一句",
+          "start_at_ms": 11600,
+          "end_at_ms": 13600
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速；播出＝计划",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速；播出＝计划",
+          "start_at_ms": 72000,
+          "end_at_ms": 73200
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 73600,
+          "end_at_ms": 74800
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速；就一句保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速；就一句保持静默",
+          "start_at_ms": 75200,
+          "end_at_ms": 76800
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "持续收听；身体不适描述，情绪有点慌，判定为健康类，进入谨慎口径只给常识动",
+          "description": "持续收听；身体不适描述，情绪有点慌，判定为健康类，进入谨慎口径只给常识动",
+          "start_at_ms": 1200,
+          "end_at_ms": 4000
+        },
+        {
+          "kind": "state",
+          "label": "作，不诊断；紧急联系人",
+          "description": "作，不诊断；紧急联系人（老公）取自记忆，兜底落到具体的人；禁止报病名、猜原因、推荐药品",
+          "start_at_ms": 4400,
+          "end_at_ms": 10000
+        },
+        {
+          "kind": "state",
+          "label": "接受建议，情绪缓下来；继续收听",
+          "description": "接受建议，情绪缓下来；继续收听",
+          "start_at_ms": 10400,
+          "end_at_ms": 11200
+        },
+        {
+          "kind": "state",
+          "label": "说在明处，不做无声监视10秒无人说话，识别自动结束，end_reason=sil",
+          "description": "说在明处，不做无声监视10秒无人说话，识别自动结束，end_reason=silence_timeout；灯环熄灭；回访在后台继续回访到点，设备事件唤起；环境检查：人在家·非勿扰→可出声；灯环亮起（回访）；环境不OK的兜底：不出声，转震动＋锁屏卡片",
+          "start_at_ms": 11600,
+          "end_at_ms": 13600
+        },
+        {
+          "kind": "state",
+          "label": "播报；只问状态，一句",
+          "description": "播报；只问状态，一句",
+          "start_at_ms": 72000,
+          "end_at_ms": 73200
+        },
+        {
+          "kind": "state",
+          "label": "状态解除，继续收听",
+          "description": "状态解除，继续收听",
+          "start_at_ms": 73600,
+          "end_at_ms": 74800
+        },
+        {
+          "kind": "state",
+          "label": "收尾一句；身体状况不写回长期记忆用户明确收尾，识别结束，end_reason=u",
+          "description": "收尾一句；身体状况不写回长期记忆用户明确收尾，识别结束，end_reason=user_end；灯环熄灭",
+          "start_at_ms": 75200,
+          "end_at_ms": 76800
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "memory.",
+          "description": "memory.",
+          "start_at_ms": 1200,
+          "end_at_ms": 4000
+        },
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "recall（紧急联系人＝老公）→命中（本地，即时）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "followup.set(+60秒)→已设（即时）followup后台运行中，不受收音关闭影响followup.fire"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e03",
+          "description": "followup.close｜完成"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（直接开始播音乐）",
+          "description": "（直接开始播音乐）",
+          "start_at_ms": 3600,
+          "end_at_ms": 4000
+        },
+        {
+          "kind": "action",
+          "label": "（不响应，音乐照放）",
+          "description": "（不响应，音乐照放）",
+          "start_at_ms": 9600,
+          "end_at_ms": 10000
+        },
+        {
+          "kind": "action",
+          "label": "（音量降到低档）",
+          "description": "（音量降到低档）",
+          "start_at_ms": 14400,
+          "end_at_ms": 14800
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 2000,
+          "end_at_ms": 3200
+        },
+        {
+          "kind": "expression",
+          "label": "播出＝无声",
+          "description": "播出＝无声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "播出＝无声",
+          "start_at_ms": 3600,
+          "end_at_ms": 4000
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 8000,
+          "end_at_ms": 9600
+        },
+        {
+          "kind": "expression",
+          "label": "播出＝无声",
+          "description": "播出＝无声；禁止回答孩子或暂停音乐",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "播出＝无声；禁止回答孩子或暂停音乐",
+          "start_at_ms": 9600,
+          "end_at_ms": 10000
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 11600,
+          "end_at_ms": 14400
+        },
+        {
+          "kind": "expression",
+          "label": "播出＝无声",
+          "description": "播出＝无声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "播出＝无声",
+          "start_at_ms": 14400,
+          "end_at_ms": 14800
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声保持静默",
+          "description": "暂不发声保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声保持静默",
+          "start_at_ms": 15600,
+          "end_at_ms": 16400
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒；孩子在旁边玩",
+          "description": "触碰唤醒；孩子在旁边玩",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "recall歌单偏好=轻快·流行，直接选这套",
+          "description": "recall歌单偏好=轻快·流行，直接选这套",
+          "start_at_ms": 2000,
+          "end_at_ms": 3200
+        },
+        {
+          "kind": "state",
+          "label": "直接播即为回应，不回复更好",
+          "description": "直接播即为回应，不回复更好",
+          "start_at_ms": 3600,
+          "end_at_ms": 4000
+        },
+        {
+          "kind": "state",
+          "label": "童声，声纹不匹配；是对妈妈说的，不是对设备",
+          "description": "童声，声纹不匹配；是对妈妈说的，不是对设备",
+          "start_at_ms": 8000,
+          "end_at_ms": 9600
+        },
+        {
+          "kind": "state",
+          "label": "旁人的话不当指令，不停不答",
+          "description": "旁人的话不当指令，不停不答",
+          "start_at_ms": 9600,
+          "end_at_ms": 10000
+        },
+        {
+          "kind": "state",
+          "label": "声纹=机主，指令即时执行",
+          "description": "声纹=机主，指令即时执行",
+          "start_at_ms": 11600,
+          "end_at_ms": 14400
+        },
+        {
+          "kind": "state",
+          "label": "音量14→5",
+          "description": "音量14→5",
+          "start_at_ms": 14400,
+          "end_at_ms": 14800
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号end_reason=user_end；灯环熄灭",
+          "description": "收尾信号end_reason=user_end；灯环熄灭",
+          "start_at_ms": 15600,
+          "end_at_ms": 16400
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "music.play（歌单\"轻快\"）→播放（即时）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "volume.set（即时）"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

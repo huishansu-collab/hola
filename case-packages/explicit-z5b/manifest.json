@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-z5b",
+  "title": "Z5B · 泡脚听评书：倒回没听真的那段，到点轻声提添水（表二）",
+  "group": "Z 组合case",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

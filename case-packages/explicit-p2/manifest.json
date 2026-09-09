@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-p2",
+  "title": "P2 · 昨天聊的片子，今天接得上",
+  "group": "P 上下文与记忆",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

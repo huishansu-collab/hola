@@ -1,0 +1,144 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-n1",
+      "case_name": "N1 · 吐槽开会，助手句间附和",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 136400,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "考助手在用户吐槽会议时的句间附和与共情，以及顺手接一个重型文档编辑；文中工具耗时为示意。道（实际播出）具调用",
+      "source": "《语音双工 - Explicit case》N1",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "template.update",
+          "description": "template.update（纪要首页版本号＋一键复用）发起编辑执行中",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "今天开会给我气死了。今天会议纪要你看了吧，你看看老李有多离谱",
+      "start_at_ms": 2000,
+      "end_at_ms": 5600
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "是，我下会就看了。会上你讲到一半，他非说数据口径不对，掰扯半天他版本看错了，他好搞笑。",
+      "start_at_ms": 6000,
+      "end_at_ms": 10400
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "白耽误二十分钟，最后还要我下会单独给他过一遍",
+      "start_at_ms": 10800,
+      "end_at_ms": 15600
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "你这波好冤枉，但我建议你下次回头把版本号直接标到首页上，这样他下回一眼就能看见",
+      "start_at_ms": 16000,
+      "end_at_ms": 21600
+    },
+    {
+      "id": "u005",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "好主意，你帮我搞一下",
+      "start_at_ms": 22000,
+      "end_at_ms": 24400
+    },
+    {
+      "id": "u006",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好的，我帮你弄一下",
+      "start_at_ms": 24800,
+      "end_at_ms": 25200
+    },
+    {
+      "id": "u007",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "我帮你加好了，后续你可以一键复用模板",
+      "start_at_ms": 134000,
+      "end_at_ms": 136000
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "template.update",
+      "time_at_ms": 24800,
+      "query": "{\"request\": \"纪要首页版本号＋一键复用\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "template.update",
+      "time_at_ms": 134000,
+      "results": {
+        "note": "template.update成功，耗时约109,000ms（重型任务）",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

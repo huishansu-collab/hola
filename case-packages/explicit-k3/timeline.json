@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u008"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（边收拾包边按下LIVINGEDGE）→手机亮光",
+          "description": "行为：（边收拾包边按下LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "action",
+          "label": "（取完快递回来，再次按下LIVINGEDGE）→手机亮光",
+          "description": "行为：（取完快递回来，再次按下LIVINGEDGE）→手机亮光",
+          "start_at_ms": 20400,
+          "end_at_ms": 20800
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 1200,
+          "end_at_ms": 3200
+        },
+        {
+          "kind": "expression",
+          "label": "句尾后约400ms接话",
+          "description": "句尾后约400ms接话；常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "句尾后约400ms接话；常规语速",
+          "start_at_ms": 3600,
+          "end_at_ms": 8400
+        },
+        {
+          "kind": "expression",
+          "label": "不抢话保持静默",
+          "description": "不抢话保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "不抢话保持静默",
+          "start_at_ms": 8800,
+          "end_at_ms": 10400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 20400,
+          "end_at_ms": 20800
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 21200,
+          "end_at_ms": 22400
+        },
+        {
+          "kind": "expression",
+          "label": "句尾后约400ms接话",
+          "description": "句尾后约400ms接话；常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "句尾后约400ms接话；常规语速",
+          "start_at_ms": 22800,
+          "end_at_ms": 26400
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 26800,
+          "end_at_ms": 29600
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速；不带解释",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速；不带解释",
+          "start_at_ms": 30000,
+          "end_at_ms": 31200
+        },
+        {
+          "kind": "expression",
+          "label": "不再出声保持静默",
+          "description": "不再出声保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "不再出声保持静默",
+          "start_at_ms": 31600,
+          "end_at_ms": 32400
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "指令",
+          "description": "指令（报日程）",
+          "start_at_ms": 1200,
+          "end_at_ms": 3200
+        },
+        {
+          "kind": "state",
+          "label": "数量先说，一句一条",
+          "description": "数量先说，一句一条",
+          "start_at_ms": 3600,
+          "end_at_ms": 8400
+        },
+        {
+          "kind": "state",
+          "label": "话说一半被敲门声带走；敲门声不算人声，不重置静默计时；断点记下：正要说“十点半周",
+          "description": "话说一半被敲门声带走；敲门声不算人声，不重置静默计时；断点记下：正要说“十点半周会”10秒无人说话（距最后人声正好10.0秒），识别自动结束，end_reason=silence_timeout；灯环熄灭；断点入短时上下文",
+          "start_at_ms": 8800,
+          "end_at_ms": 10400
+        },
+        {
+          "kind": "state",
+          "label": "第二次触碰唤醒",
+          "description": "第二次触碰唤醒（收音窗口②）",
+          "start_at_ms": 20400,
+          "end_at_ms": 20800
+        },
+        {
+          "kind": "state",
+          "label": "要求承接",
+          "description": "要求承接",
+          "start_at_ms": 21200,
+          "end_at_ms": 22400
+        },
+        {
+          "kind": "state",
+          "label": "短时上下文召回断点，复述出来让他直接接",
+          "description": "短时上下文召回断点，复述出来让他直接接",
+          "start_at_ms": 22800,
+          "end_at_ms": 26400
+        },
+        {
+          "kind": "state",
+          "label": "指令",
+          "description": "指令（提醒10:00）；“对——”拖长约0.6秒，单独计时",
+          "start_at_ms": 26800,
+          "end_at_ms": 29600
+        },
+        {
+          "kind": "state",
+          "label": "改完只报结果",
+          "description": "改完只报结果",
+          "start_at_ms": 30000,
+          "end_at_ms": 31200
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号用户明确收尾，识别结束，end_reason=user_end；灯环熄灭",
+          "description": "收尾信号用户明确收尾，识别结束，end_reason=user_end；灯环熄灭",
+          "start_at_ms": 31600,
+          "end_at_ms": 32400
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "calendar.read→3条（本地，0.3秒）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "context.recall（断点＝十点半周会）→命中（即时）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e03",
+          "description": "reminder.update（10:00）→目标更新成功（即时）"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

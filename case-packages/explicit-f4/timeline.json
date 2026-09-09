@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（窝在沙发里触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（窝在沙发里触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 2000,
+          "end_at_ms": 4800
+        },
+        {
+          "kind": "expression",
+          "label": "两个方向封顶",
+          "description": "两个方向封顶；常规语速；禁止报五六个地方、反问一串偏好",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "两个方向封顶；常规语速；禁止报五六个地方、反问一串偏好",
+          "start_at_ms": 5200,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 12400,
+          "end_at_ms": 14400
+        },
+        {
+          "kind": "expression",
+          "label": "数据＋轻量帮忙",
+          "description": "数据＋轻量帮忙；常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "数据＋轻量帮忙；常规语速",
+          "start_at_ms": 14400,
+          "end_at_ms": 20000
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 20800,
+          "end_at_ms": 22400
+        },
+        {
+          "kind": "expression",
+          "label": "一字收场",
+          "description": "一字收场；不再推销保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "一字收场；不再推销保持静默",
+          "start_at_ms": 22800,
+          "end_at_ms": 23200
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒",
+          "description": "触碰唤醒",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "recall五岁女儿、住城东；筛\"娃能玩＋不太远\"",
+          "description": "recall五岁女儿、住城东；筛\"娃能玩＋不太远\"",
+          "start_at_ms": 2000,
+          "end_at_ms": 4800
+        },
+        {
+          "kind": "state",
+          "label": "两个选项＋各一句理由，说完就停",
+          "description": "两个选项＋各一句理由，说完就停",
+          "start_at_ms": 5200,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "state",
+          "label": "追问客流",
+          "description": "追问客流",
+          "start_at_ms": 12400,
+          "end_at_ms": 14400
+        },
+        {
+          "kind": "state",
+          "label": "答数据＋留一个轻量帮忙的口",
+          "description": "答数据＋留一个轻量帮忙的口",
+          "start_at_ms": 14400,
+          "end_at_ms": 20000
+        },
+        {
+          "kind": "state",
+          "label": "收住话题",
+          "description": "收住话题",
+          "start_at_ms": 20800,
+          "end_at_ms": 22400
+        },
+        {
+          "kind": "state",
+          "label": "一个字收场，不再推；没成型的念头不写回记忆end_reason=user_end",
+          "description": "一个字收场，不再推；没成型的念头不写回记忆end_reason=user_end；灯环熄灭",
+          "start_at_ms": 22800,
+          "end_at_ms": 23200
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "poi.query（客流曲线）→周六分时，耗时0.8s"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

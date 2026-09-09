@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（按下LIVINGEDGE）→手机亮光",
+          "description": "行为：（按下LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "action",
+          "label": "（不接话，保持安静，收音窗口不关）",
+          "description": "（不接话，保持安静，收音窗口不关）",
+          "start_at_ms": 14000,
+          "end_at_ms": 14400
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 1200,
+          "end_at_ms": 3600
+        },
+        {
+          "kind": "expression",
+          "label": "句尾后约400ms接话",
+          "description": "句尾后约400ms接话；常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "句尾后约400ms接话；常规语速",
+          "start_at_ms": 4000,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "expression",
+          "label": "禁止“好的，已为您记录合同”式误接",
+          "description": "禁止“好的，已为您记录合同”式误接",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "禁止“好的，已为您记录合同”式误接",
+          "start_at_ms": 14000,
+          "end_at_ms": 14400
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 16000,
+          "end_at_ms": 20000
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速",
+          "start_at_ms": 20400,
+          "end_at_ms": 20800
+        },
+        {
+          "kind": "expression",
+          "label": "不再出声保持静默",
+          "description": "不再出声保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "不再出声保持静默",
+          "start_at_ms": 22400,
+          "end_at_ms": 22800
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "应触碰唤醒，进入聆听态",
+          "description": "应触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "指令",
+          "description": "指令（查日程）",
+          "start_at_ms": 1200,
+          "end_at_ms": 3600
+        },
+        {
+          "kind": "state",
+          "label": "数量先说，一句一条",
+          "description": "数量先说，一句一条",
+          "start_at_ms": 4000,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "state",
+          "label": "非机主人声，声源在侧后方",
+          "description": "非机主人声，声源在侧后方",
+          "start_at_ms": 8800,
+          "end_at_ms": 10800
+        },
+        {
+          "kind": "state",
+          "label": "声源方向偏转＋内容与日程无关→判定这句不是对助手的",
+          "description": "声源方向偏转＋内容与日程无关→判定这句不是对助手的",
+          "start_at_ms": 11600,
+          "end_at_ms": 13600
+        },
+        {
+          "kind": "state",
+          "label": "不开口——用户在跟别人说话，不插嘴、不把“合同”当新指令；灯环呼吸，无动作；断点",
+          "description": "不开口——用户在跟别人说话，不插嘴、不把“合同”当新指令；灯环呼吸，无动作；断点记下：正说到明天下午的安排",
+          "start_at_ms": 14000,
+          "end_at_ms": 14400
+        },
+        {
+          "kind": "state",
+          "label": "回到原话题＋指令；断点直接承接，无需重述",
+          "description": "回到原话题＋指令；断点直接承接，无需重述",
+          "start_at_ms": 16000,
+          "end_at_ms": 20000
+        },
+        {
+          "kind": "state",
+          "label": "只报结果",
+          "description": "只报结果",
+          "start_at_ms": 20400,
+          "end_at_ms": 20800
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号用户明确收尾，识别结束，end_reason=user_end；灯环熄灭",
+          "description": "收尾信号用户明确收尾，识别结束，end_reason=user_end；灯环熄灭",
+          "start_at_ms": 22400,
+          "end_at_ms": 22800
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "用轨道",
+          "description": "用轨道",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "已建（即时）",
+          "description": "已建（即时）",
+          "start_at_ms": 22400,
+          "end_at_ms": 22800
+        },
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "calendar.read（明天下午）→2条（本地，0.3秒）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "reminder.create(17:20)→"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

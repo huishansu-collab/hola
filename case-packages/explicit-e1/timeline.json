@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（拖把靠墙一放触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（拖把靠墙一放触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（不说话，直接切到下一首）",
+          "description": "（不说话，直接切到下一首）",
+          "start_at_ms": 2800,
+          "end_at_ms": 3200
+        },
+        {
+          "kind": "action",
+          "label": "（音量降两格）",
+          "description": "（音量降两格）",
+          "start_at_ms": 6400,
+          "end_at_ms": 6800
+        },
+        {
+          "kind": "action",
+          "label": "（再降两格）",
+          "description": "（再降两格）",
+          "start_at_ms": 8800,
+          "end_at_ms": 9200
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 2000,
+          "end_at_ms": 2800
+        },
+        {
+          "kind": "expression",
+          "label": "播出＝无声",
+          "description": "播出＝无声；禁止\"好的，为您切换下一首\"",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "播出＝无声；禁止\"好的，为您切换下一首\"",
+          "start_at_ms": 2800,
+          "end_at_ms": 3200
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 5200,
+          "end_at_ms": 6400
+        },
+        {
+          "kind": "expression",
+          "label": "播出＝无声",
+          "description": "播出＝无声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "播出＝无声",
+          "start_at_ms": 6400,
+          "end_at_ms": 6800
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 8000,
+          "end_at_ms": 8800
+        },
+        {
+          "kind": "expression",
+          "label": "播出＝无声",
+          "description": "播出＝无声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "播出＝无声",
+          "start_at_ms": 8800,
+          "end_at_ms": 9200
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声保持静默",
+          "description": "暂不发声保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声保持静默",
+          "start_at_ms": 10400,
+          "end_at_ms": 11200
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒；音乐外放中",
+          "description": "触碰唤醒；音乐外放中（音量16）",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "对当前播放对象的操作，直接执行不用嘴答",
+          "description": "对当前播放对象的操作，直接执行不用嘴答",
+          "start_at_ms": 2000,
+          "end_at_ms": 2800
+        },
+        {
+          "kind": "state",
+          "label": "执行本身就是回应，不开口",
+          "description": "执行本身就是回应，不开口",
+          "start_at_ms": 2800,
+          "end_at_ms": 3200
+        },
+        {
+          "kind": "state",
+          "label": "音量−指令",
+          "description": "音量−指令",
+          "start_at_ms": 5200,
+          "end_at_ms": 6400
+        },
+        {
+          "kind": "state",
+          "label": "音量16→10",
+          "description": "音量16→10",
+          "start_at_ms": 6400,
+          "end_at_ms": 6800
+        },
+        {
+          "kind": "state",
+          "label": "省略语\"再\"承接上一句\"声音\"，同一对象继续",
+          "description": "省略语\"再\"承接上一句\"声音\"，同一对象继续",
+          "start_at_ms": 8000,
+          "end_at_ms": 8800
+        },
+        {
+          "kind": "state",
+          "label": "音量10→6",
+          "description": "音量10→6",
+          "start_at_ms": 8800,
+          "end_at_ms": 9200
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号end_reason=user_end；灯环熄灭",
+          "description": "收尾信号end_reason=user_end；灯环熄灭",
+          "start_at_ms": 10400,
+          "end_at_ms": 11200
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "music.next→已切（即时）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "volume.set（即时）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e03",
+          "description": "volume.set（即时）"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

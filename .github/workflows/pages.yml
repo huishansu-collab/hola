@@ -32,10 +32,9 @@ jobs:
       - run: npm ci
       - name: ffmpeg(音频转码要用)
         run: command -v ffmpeg >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg; }
-      - name: 校验两个 Case 包
+      - name: 校验全部 Case 包
         run: |
-          npm run case:validate -- case-packages/gmail
-          npm run case:validate -- case-packages/backchannel
+          for d in case-packages/*/; do npm run --silent case:validate -- "$d"; done
       - name: 构建单文件页面
         run: npm run build:local
       - name: 内嵌音频转 FLAC 并放进站点目录

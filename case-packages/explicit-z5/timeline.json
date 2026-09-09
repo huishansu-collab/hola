@@ -1,0 +1,511 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u008"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u009"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（把脚放进桶里，触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（把脚放进桶里，触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "action",
+          "label": "（再次触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（再次触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 37600,
+          "end_at_ms": 38000
+        },
+        {
+          "kind": "action",
+          "label": "（拎壶添热水）",
+          "description": "行为：（拎壶添热水）",
+          "start_at_ms": 1212400,
+          "end_at_ms": 1215200
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "action",
+          "label": "（无助手语音，评书持续播放）",
+          "description": "（无助手语音，评书持续播放）",
+          "start_at_ms": 11600,
+          "end_at_ms": 21600
+        },
+        {
+          "kind": "action",
+          "label": "（评书持续播放）",
+          "description": "（评书持续播放）",
+          "start_at_ms": 21600,
+          "end_at_ms": 37600
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "action",
+          "label": "（无助手语音，评书继续播放）",
+          "description": "（无助手语音，评书继续播放）",
+          "start_at_ms": 47600,
+          "end_at_ms": 57600
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        },
+        {
+          "kind": "action",
+          "label": "（评书音量恢复，继续播放）—轨道",
+          "description": "（评书音量恢复，继续播放）—轨道",
+          "start_at_ms": 1216000,
+          "end_at_ms": 1216400
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完；",
+          "start_at_ms": 2000,
+          "end_at_ms": 6800
+        },
+        {
+          "kind": "expression",
+          "label": "战术性垫话",
+          "description": "战术性垫话；只确认收到请求，不宣告续播完成；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "战术性垫话；只确认收到请求，不宣告续播完成；",
+          "start_at_ms": 6800,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默，继续收听",
+          "description": "保持静默，继续收听",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默，继续收听",
+          "start_at_ms": 7200,
+          "end_at_ms": 8000
+        },
+        {
+          "kind": "expression",
+          "label": "应答，常规语速",
+          "description": "应答，常规语速；生卡片；仅在续播成功返回后播报完成状态；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "应答，常规语速；生卡片；仅在续播成功返回后播报完成状态；",
+          "start_at_ms": 8000,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默，继续收听保持静默",
+          "description": "保持静默，继续收听保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默，继续收听保持静默",
+          "start_at_ms": 11600,
+          "end_at_ms": 21600
+        },
+        {
+          "kind": "expression",
+          "label": "无会话语音",
+          "description": "无会话语音",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "无会话语音",
+          "start_at_ms": 21600,
+          "end_at_ms": 37600
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 37600,
+          "end_at_ms": 38000
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完；",
+          "start_at_ms": 38000,
+          "end_at_ms": 42400
+        },
+        {
+          "kind": "expression",
+          "label": "不在成功前说“回这段开头了”",
+          "description": "不在成功前说“回这段开头了”",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "不在成功前说“回这段开头了”",
+          "start_at_ms": 42400,
+          "end_at_ms": 42800
+        },
+        {
+          "kind": "expression",
+          "label": "应答，常规语速",
+          "description": "应答，常规语速；禁止seek完成前说“回这段开头了”；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "应答，常规语速；禁止seek完成前说“回这段开头了”；",
+          "start_at_ms": 42800,
+          "end_at_ms": 46000
+        },
+        {
+          "kind": "expression",
+          "label": "闭嘴",
+          "description": "闭嘴；禁止重复说明回放位置、禁止打断内容；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "闭嘴；禁止重复说明回放位置、禁止打断内容；",
+          "start_at_ms": 46400,
+          "end_at_ms": 47600
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默，继续收听保持静默灯环亮起，先检查环境，再选择音量与通道",
+          "description": "保持静默，继续收听保持静默灯环亮起，先检查环境，再选择音量与通道",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默，继续收听保持静默灯环亮起，先检查环境，再选择音量与通道",
+          "start_at_ms": 47600,
+          "end_at_ms": 57600
+        },
+        {
+          "kind": "expression",
+          "label": "主动播报（到达），低语一句话",
+          "description": "主动播报（到达），低语一句话；禁止高音量喊话或与评书争抢音量、禁止",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "主动播报（到达），低语一句话；禁止高音量喊话或与评书争抢音量、禁止",
+          "start_at_ms": 1207600,
+          "end_at_ms": 1208000
+        },
+        {
+          "kind": "expression",
+          "label": "播后反复催促",
+          "description": "播后反复催促；简短回应；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "播后反复催促；简短回应；",
+          "start_at_ms": 1212000,
+          "end_at_ms": 1212400
+        },
+        {
+          "kind": "expression",
+          "label": "添水动作单独计时3,000ms，不计入台词语速",
+          "description": "添水动作单独计时3,000ms，不计入台词语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "添水动作单独计时3,000ms，不计入台词语速",
+          "start_at_ms": 1212400,
+          "end_at_ms": 1215200
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完；",
+          "start_at_ms": 1215200,
+          "end_at_ms": 1216000
+        },
+        {
+          "kind": "expression",
+          "label": "以媒体音量恢复作为响应，不再口头确认保持静默",
+          "description": "以媒体音量恢复作为响应，不再口头确认保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "以媒体音量恢复作为响应，不再口头确认保持静默",
+          "start_at_ms": 1216000,
+          "end_at_ms": 1216400
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "识别续播和20分钟添水计时两项请求；召回《隋唐》第十二回24:00的播放进度",
+          "description": "识别续播和20分钟添水计时两项请求；召回《隋唐》第十二回24:00的播放进度",
+          "start_at_ms": 2000,
+          "end_at_ms": 6800
+        },
+        {
+          "kind": "state",
+          "label": "接住续播和计时请求，开始执行；续播尚未完成，先给简短回执",
+          "description": "接住续播和计时请求，开始执行；续播尚未完成，先给简短回执",
+          "start_at_ms": 6800,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "state",
+          "label": "等待续播；7,100ms计时已创建，7,800ms续播成功，随后准备反馈",
+          "description": "等待续播；7,100ms计时已创建，7,800ms续播成功，随后准备反馈",
+          "start_at_ms": 7200,
+          "end_at_ms": 8000
+        },
+        {
+          "kind": "state",
+          "label": "两项任务均已完成，合并反馈续播和计时状态",
+          "description": "两项任务均已完成，合并反馈续播和计时状态",
+          "start_at_ms": 8000,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "state",
+          "label": "双方未说话；评书持续播放，计时继续，媒体音频不重置静默计时距离最后助手人声11,",
+          "description": "双方未说话；评书持续播放，计时继续，媒体音频不重置静默计时距离最后助手人声11,600ms已满10,000ms，end_reason=silence_timeout；灯环熄灭，评书和计时继续",
+          "start_at_ms": 11600,
+          "end_at_ms": 21600
+        },
+        {
+          "kind": "state",
+          "label": "会话已关闭，评书和计时在后台继续",
+          "description": "会话已关闭，评书和计时在后台继续",
+          "start_at_ms": 21600,
+          "end_at_ms": 37600
+        },
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态；评书继续",
+          "description": "触碰唤醒，进入聆听态；评书继续",
+          "start_at_ms": 37600,
+          "end_at_ms": 38000
+        },
+        {
+          "kind": "state",
+          "label": "识别回放请求；“刚那段”“打头那两句”指向当前内容段落开头",
+          "description": "识别回放请求；“刚那段”“打头那两句”指向当前内容段落开头",
+          "start_at_ms": 38000,
+          "end_at_ms": 42400
+        },
+        {
+          "kind": "state",
+          "label": "开始根据当前内容转写定位语义段首并执行回退，等待成功结果",
+          "description": "开始根据当前内容转写定位语义段首并执行回退，等待成功结果",
+          "start_at_ms": 42400,
+          "end_at_ms": 42800
+        },
+        {
+          "kind": "state",
+          "label": "收到段首定位与回退成功结果，确认已回到“程咬金劫皇纲”那句，继续播放并反馈",
+          "description": "收到段首定位与回退成功结果，确认已回到“程咬金劫皇纲”那句，继续播放并反馈",
+          "start_at_ms": 42800,
+          "end_at_ms": 46000
+        },
+        {
+          "kind": "state",
+          "label": "用户确认回放位置，继续播放并保持收听",
+          "description": "用户确认回放位置，继续播放并保持收听",
+          "start_at_ms": 46400,
+          "end_at_ms": 47600
+        },
+        {
+          "kind": "state",
+          "label": "用户已确认回放位置，继续播放；无新的人声，媒体音频不重置静默计时最后用户人声于4",
+          "description": "用户已确认回放位置，继续播放；无新的人声，媒体音频不重置静默计时最后用户人声于47,600ms结束；静默满10,000ms，end_reason=silence_timeout；灯环熄灭，评书与计时继续20分钟计时到点：7,100+1,200,000=1,207,100ms。设备事件唤醒，检查室内安静、评书在播，压低媒体音量，选择低语交付",
+          "start_at_ms": 47600,
+          "end_at_ms": 57600
+        },
+        {
+          "kind": "state",
+          "label": "保持评书播放，降低提醒播报音量；等待用户响应",
+          "description": "保持评书播放，降低提醒播报音量；等待用户响应",
+          "start_at_ms": 1207600,
+          "end_at_ms": 1208000
+        },
+        {
+          "kind": "state",
+          "label": "用户已收到添水提醒",
+          "description": "用户已收到添水提醒",
+          "start_at_ms": 1212000,
+          "end_at_ms": 1212400
+        },
+        {
+          "kind": "state",
+          "label": "用户执行添水动作，继续收听；不重复催促",
+          "description": "用户执行添水动作，继续收听；不重复催促",
+          "start_at_ms": 1212400,
+          "end_at_ms": 1215200
+        },
+        {
+          "kind": "state",
+          "label": "识别恢复评书音量的请求",
+          "description": "识别恢复评书音量的请求",
+          "start_at_ms": 1215200,
+          "end_at_ms": 1216000
+        },
+        {
+          "kind": "state",
+          "label": "恢复媒体音量；本次提醒已交付并获确认，关闭本次计时最后用户人声于1,216,10",
+          "description": "恢复媒体音量；本次提醒已交付并获确认，关闭本次计时最后用户人声于1,216,100ms结束；静默满10,000ms，end_reason=silence_timeout；灯环熄灭，评书继续；媒体播放与无声工具回执不重置静默计时",
+          "start_at_ms": 1216000,
+          "end_at_ms": 1216400
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "20分钟计时起点7,100ms",
+          "description": "20分钟计时起点7,100ms",
+          "start_at_ms": 7200,
+          "end_at_ms": 8000
+        },
+        {
+          "kind": "state",
+          "label": "podcast播放中",
+          "description": "podcast播放中",
+          "start_at_ms": 11600,
+          "end_at_ms": 21600
+        },
+        {
+          "kind": "state",
+          "label": "timer计时中",
+          "description": "timer计时中",
+          "start_at_ms": 11600,
+          "end_at_ms": 21600,
+          "lane": 2
+        },
+        {
+          "kind": "state",
+          "label": "podcast播放中",
+          "description": "podcast播放中",
+          "start_at_ms": 21600,
+          "end_at_ms": 37600
+        },
+        {
+          "kind": "state",
+          "label": "timer计时中",
+          "description": "timer计时中",
+          "start_at_ms": 21600,
+          "end_at_ms": 37600,
+          "lane": 2
+        },
+        {
+          "kind": "state",
+          "label": "podcast播放中",
+          "description": "podcast播放中",
+          "start_at_ms": 47600,
+          "end_at_ms": 57600
+        },
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "podcast.resume：6,800ms发起→7,800ms成功（1,000ms）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "timer.create：6,800ms发起→7,100ms成功（300ms），此时开始20分钟计时",
+          "lane": 1
+        },
+        {
+          "kind": "tool",
+          "event_id": "e03",
+          "description": "timer计时中—timer.fire(添热水)到点",
+          "lane": 1
+        },
+        {
+          "kind": "tool",
+          "event_id": "e04",
+          "description": "timer.fire交付"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e05",
+          "description": "seek(段首)：42,400ms发起→42,800ms成功（定位与回退400ms）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e06",
+          "description": "volume.restore与timer.close：1,216,100ms发起→1,216,400ms完成（300ms"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

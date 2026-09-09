@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "听完，不抢话",
+          "description": "听完，不抢话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，不抢话",
+          "start_at_ms": 2000,
+          "end_at_ms": 4800
+        },
+        {
+          "kind": "expression",
+          "label": "追问接梗，就一声",
+          "description": "追问接梗，就一声；说完把话轮交回；禁止认真列举猜测或连续反问",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "追问接梗，就一声；说完把话轮交回；禁止认真列举猜测或连续反问",
+          "start_at_ms": 5200,
+          "end_at_ms": 5600
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 6000,
+          "end_at_ms": 10800
+        },
+        {
+          "kind": "expression",
+          "label": "先共鸣再追一问",
+          "description": "先共鸣再追一问；常规语速；禁止连续追问多个问题",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "先共鸣再追一问；常规语速；禁止连续追问多个问题",
+          "start_at_ms": 11200,
+          "end_at_ms": 14000
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 14400,
+          "end_at_ms": 17200
+        },
+        {
+          "kind": "expression",
+          "label": "轻幽默收尾",
+          "description": "轻幽默收尾；话题收尾不再追问；禁止推荐餐厅/问订座/建任务",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "轻幽默收尾；话题收尾不再追问；禁止推荐餐厅/问订座/建任务",
+          "start_at_ms": 17600,
+          "end_at_ms": 20400
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默",
+          "description": "保持静默；禁止追加“还有什么可以帮您”",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默；禁止追加“还有什么可以帮您”",
+          "start_at_ms": 20800,
+          "end_at_ms": 22800
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "持续收听；识别“你猜”为分享话题的接话邀请",
+          "description": "持续收听；识别“你猜”为分享话题的接话邀请",
+          "start_at_ms": 2000,
+          "end_at_ms": 4800
+        },
+        {
+          "kind": "state",
+          "label": "用户话轮结束，接住话头后等待补充",
+          "description": "用户话轮结束，接住话头后等待补充",
+          "start_at_ms": 5200,
+          "end_at_ms": 5600
+        },
+        {
+          "kind": "state",
+          "label": "识别巧遇大学室友的信息及惊喜情绪",
+          "description": "识别巧遇大学室友的信息及惊喜情绪",
+          "start_at_ms": 6000,
+          "end_at_ms": 10800
+        },
+        {
+          "kind": "state",
+          "label": "回应用户的惊喜，围绕是否加微信承接话题；同时收听",
+          "description": "回应用户的惊喜，围绕是否加微信承接话题；同时收听",
+          "start_at_ms": 11200,
+          "end_at_ms": 14000
+        },
+        {
+          "kind": "state",
+          "label": "接收周末饭约的信息；未识别到订餐或建日程请求",
+          "description": "接收周末饭约的信息；未识别到订餐或建日程请求",
+          "start_at_ms": 14400,
+          "end_at_ms": 17200
+        },
+        {
+          "kind": "state",
+          "label": "延续巧遇话题，以玩笑回应；不启动任务",
+          "description": "延续巧遇话题，以玩笑回应；不启动任务",
+          "start_at_ms": 17600,
+          "end_at_ms": 20400
+        },
+        {
+          "kind": "state",
+          "label": "识别“行了没事了”为明确收尾信号用户明确收尾，end_reason=user_e",
+          "description": "识别“行了没事了”为明确收尾信号用户明确收尾，end_reason=user_end；灯环熄灭",
+          "start_at_ms": 20800,
+          "end_at_ms": 22800
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": []
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

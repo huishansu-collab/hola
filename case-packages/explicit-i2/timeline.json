@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 400,
+          "end_at_ms": 12000
+        },
+        {
+          "kind": "expression",
+          "label": "念稿确认",
+          "description": "念稿确认",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "念稿确认",
+          "start_at_ms": 12000,
+          "end_at_ms": 16000
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 18400,
+          "end_at_ms": 20800
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速",
+          "start_at_ms": 20800,
+          "end_at_ms": 25600
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 25600,
+          "end_at_ms": 26000
+        },
+        {
+          "kind": "expression",
+          "label": "简短报结果，不重复念稿",
+          "description": "简短报结果，不重复念稿",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "简短报结果，不重复念稿",
+          "start_at_ms": 26000,
+          "end_at_ms": 27200
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默",
+          "description": "保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默",
+          "start_at_ms": 27200,
+          "end_at_ms": 37200
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "口述＋当场改口",
+          "description": "口述＋当场改口（周三→周四）；recall老周＝周建军（供应商），定收信人",
+          "start_at_ms": 400,
+          "end_at_ms": 12000
+        },
+        {
+          "kind": "state",
+          "label": "念稿等确认，不直接发送",
+          "description": "念稿等确认，不直接发送",
+          "start_at_ms": 12000,
+          "end_at_ms": 16000
+        },
+        {
+          "kind": "state",
+          "label": "改稿｜加礼貌语",
+          "description": "改稿｜加礼貌语",
+          "start_at_ms": 18400,
+          "end_at_ms": 20800
+        },
+        {
+          "kind": "state",
+          "label": "改稿视为确认，发送＋报结果",
+          "description": "改稿视为确认，发送＋报结果",
+          "start_at_ms": 20800,
+          "end_at_ms": 25600
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号",
+          "description": "收尾信号",
+          "start_at_ms": 25600,
+          "end_at_ms": 26000
+        },
+        {
+          "kind": "state",
+          "label": "成功回执已到，消息任务完成",
+          "description": "成功回执已到，消息任务完成",
+          "start_at_ms": 26000,
+          "end_at_ms": 27200
+        },
+        {
+          "kind": "state",
+          "label": "10秒无人说话，自动结束，end_reason=silence_timeout",
+          "description": "10秒无人说话，自动结束，end_reason=silence_timeout",
+          "start_at_ms": 27200,
+          "end_at_ms": 37200
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "memory.recall(联系人，模糊搜索周**)"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "im.draft(周建军)即时完成"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e03",
+          "description": "im.send成功，耗时800ms"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

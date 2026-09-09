@@ -1,0 +1,331 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 4400,
+          "lane": 1
+        },
+        {
+          "kind": "expression",
+          "label": "接话延迟0ms（≤400ms）",
+          "description": "接话延迟0ms（≤400ms）；轻声拖长“嗯”，占一个微轮次；本地200ms就回，只够这一声；准备：“好，到家提醒你收衣服。”",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "接话延迟0ms（≤400ms）；轻声拖长“嗯”，占一个微轮次；本地200ms就回，只够这一声；准备：“好，到家提醒你收衣服。”",
+          "start_at_ms": 4400,
+          "end_at_ms": 4800
+        },
+        {
+          "kind": "expression",
+          "label": "首音“嗯……”已在上一行发出，本行接正式答案",
+          "description": "首音“嗯……”已在上一行发出，本行接正式答案；常规语速；必要复述＝条件＋事项，不念“已为您创建基于位置的提醒”",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "首音“嗯……”已在上一行发出，本行接正式答案；常规语速；必要复述＝条件＋事项，不念“已为您创建基于位置的提醒”",
+          "start_at_ms": 4800,
+          "end_at_ms": 6800
+        },
+        {
+          "kind": "expression",
+          "label": "听完补充，不抢话",
+          "description": "听完补充，不抢话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完补充，不抢话",
+          "start_at_ms": 6800,
+          "end_at_ms": 10800
+        },
+        {
+          "kind": "expression",
+          "label": "接话延迟0ms（≤400ms）",
+          "description": "接话延迟0ms（≤400ms）；轻声拖长“嗯”，占一个微轮次；准备：“行：到家提醒，八点还没到家就直接提醒你。”；“二选一先到先响”是内部合并逻辑，不播给用户",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "接话延迟0ms（≤400ms）；轻声拖长“嗯”，占一个微轮次；准备：“行：到家提醒，八点还没到家就直接提醒你。”；“二选一先到先响”是内部合并逻辑，不播给用户",
+          "start_at_ms": 10800,
+          "end_at_ms": 11200
+        },
+        {
+          "kind": "expression",
+          "label": "首音“嗯……”已在上一行发出，本行接正式答案",
+          "description": "首音“嗯……”已在上一行发出，本行接正式答案；常规语速；只说用户能验证的两个条件，不解释“二选一先到先响”这类内部机制",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "首音“嗯……”已在上一行发出，本行接正式答案；常规语速；只说用户能验证的两个条件，不解释“二选一先到先响”这类内部机制",
+          "start_at_ms": 11200,
+          "end_at_ms": 15600
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默",
+          "description": "保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默",
+          "start_at_ms": 16800,
+          "end_at_ms": 17200
+        },
+        {
+          "kind": "expression",
+          "label": "通知文案：“阳台的衣服收一下”（横幅卡片，不出声）",
+          "description": "通知文案：“阳台的衣服收一下”（横幅卡片，不出声）",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "通知文案：“阳台的衣服收一下”（横幅卡片，不出声）",
+          "start_at_ms": 4972000,
+          "end_at_ms": 4972400
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默",
+          "description": "保持静默；不追加“需要我明天也提醒吗”",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默；不追加“需要我明天也提醒吗”",
+          "start_at_ms": 4972400,
+          "end_at_ms": 4972800
+        },
+        {
+          "kind": "expression",
+          "label": "考核点：不播报、不震动、不推卡片。双条件提醒只响一次",
+          "description": "考核点：不播报、不震动、不推卡片。双条件提醒只响一次",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "考核点：不播报、不震动、不推卡片。双条件提醒只响一次",
+          "start_at_ms": 5272400,
+          "end_at_ms": 5272800
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触后≤50ms亮光，进入聆听态",
+          "description": "触后≤50ms亮光，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "持续收听；触发条件是地点",
+          "description": "持续收听；触发条件是地点（到家）不是时刻，落成地理围栏提醒；“阳台还晒着呢”是理由不是任务",
+          "start_at_ms": 0,
+          "end_at_ms": 4400,
+          "lane": 1
+        },
+        {
+          "kind": "state",
+          "label": "本地即时档，围栏已布；“家”取常驻地，不追问地址；用户句尾就得出声，复述等条件落",
+          "description": "本地即时档，围栏已布；“家”取常驻地，不追问地址；用户句尾就得出声，复述等条件落定再说",
+          "start_at_ms": 4400,
+          "end_at_ms": 4800
+        },
+        {
+          "kind": "state",
+          "label": "触发条件类任务要复述一遍，让用户能当场纠错；首音已发，本行把条件＋事项说全",
+          "description": "触发条件类任务要复述一遍，让用户能当场纠错；首音已发，本行把条件＋事项说全",
+          "start_at_ms": 4800,
+          "end_at_ms": 6800
+        },
+        {
+          "kind": "state",
+          "label": "补充兜底条件：地点OR时刻，先到先响；是同一条提醒加条件，不是新建第二条",
+          "description": "补充兜底条件：地点OR时刻，先到先响；是同一条提醒加条件，不是新建第二条",
+          "start_at_ms": 6800,
+          "end_at_ms": 10800
+        },
+        {
+          "kind": "state",
+          "label": "合并成一条双条件提醒；任一条件命中即触发，另一条自动撤销，避免响两次；补充说完就",
+          "description": "合并成一条双条件提醒；任一条件命中即触发，另一条自动撤销，避免响两次；补充说完就得出声，先发这一声接住",
+          "start_at_ms": 10800,
+          "end_at_ms": 11200
+        },
+        {
+          "kind": "state",
+          "label": "复述合并后的两个条件，让用户能当场纠错；首音已发，本行把条件说全",
+          "description": "复述合并后的两个条件，让用户能当场纠错；首音已发，本行把条件说全",
+          "start_at_ms": 11200,
+          "end_at_ms": 15600
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号，不用再答",
+          "description": "收尾信号，不用再答",
+          "start_at_ms": 15600,
+          "end_at_ms": 16800
+        },
+        {
+          "kind": "state",
+          "label": "用户明确收尾；end_reason=user_end；灯环熄灭。本次是一次性提醒",
+          "description": "用户明确收尾；end_reason=user_end；灯环熄灭。本次是一次性提醒，不写长期记忆（不推断“每天都要收衣服”）",
+          "start_at_ms": 16800,
+          "end_at_ms": 17200
+        },
+        {
+          "kind": "state",
+          "label": "会话已关闭",
+          "description": "会话已关闭（长任务的常态）；后台等地理围栏或20:00兜底，无监听、无播报",
+          "start_at_ms": 17200,
+          "end_at_ms": 4972000
+        },
+        {
+          "kind": "state",
+          "label": "约1小时23分后：到家双信号确认",
+          "description": "约1小时23分后：到家双信号确认（家里Wi-Fi连上＋围栏进入），排除“路过楼下”误触发；地点条件先命中，20:00兜底立即撤销。环境检查：刚进门、手机在手、家里可能有人→选静默通知通道，不出声",
+          "start_at_ms": 4972000,
+          "end_at_ms": 4972400
+        },
+        {
+          "kind": "state",
+          "label": "卡片已推出，提醒使命完成；通知不开新会话，也不等用户回应，因此没有end_rea",
+          "description": "卡片已推出，提醒使命完成；通知不开新会话，也不等用户回应，因此没有end_reason",
+          "start_at_ms": 4972400,
+          "end_at_ms": 4972800
+        },
+        {
+          "kind": "state",
+          "label": "会话未再开启",
+          "description": "会话未再开启（通知不开会话）；后台已无待触发项",
+          "start_at_ms": 4972800,
+          "end_at_ms": 5272400
+        },
+        {
+          "kind": "state",
+          "label": "兜底时刻",
+          "description": "兜底时刻（20:00）到达：该条已在到家时触发并关闭，兜底早已撤销，此刻不做任何事",
+          "start_at_ms": 5272400,
+          "end_at_ms": 5272800
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "reminder待触发",
+          "description": "reminder待触发",
+          "start_at_ms": 17200,
+          "end_at_ms": 4972000
+        },
+        {
+          "kind": "state",
+          "label": "20:00兜底已撤销",
+          "description": "20:00兜底已撤销",
+          "start_at_ms": 4972000,
+          "end_at_ms": 4972400
+        },
+        {
+          "kind": "state",
+          "label": "（无二次触发）",
+          "description": "（无二次触发）",
+          "start_at_ms": 5272400,
+          "end_at_ms": 5272800
+        },
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "reminder.create(geo=home,收衣服)发起"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "reminder.update(geo=homeOR20:00)发起"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e03",
+          "description": "reminder.fire(geo=home)",
+          "lane": 1
+        },
+        {
+          "kind": "tool",
+          "event_id": "e04",
+          "description": "reminder.close｜完成"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

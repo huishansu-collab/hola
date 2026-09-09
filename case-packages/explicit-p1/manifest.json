@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-p1",
+  "title": "P1 · “那天晚上”对得上周五",
+  "group": "P 上下文与记忆",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

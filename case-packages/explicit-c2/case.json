@@ -1,0 +1,93 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-c2",
+      "case_name": "C2 · 旁边有人，低声问\"谁找我\"",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 14000,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "按400ms微轮次对齐，连续状态合并展示；考低语触发的通道切换（不出声、改走屏幕）、隐私内容不外放、把来电与留言归纳成大意；时间为示意（本例无工具调用）。",
+      "source": "《语音双工 - Explicit case》C2",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": []
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "刚才谁给我打电话？",
+      "start_at_ms": 0,
+      "end_at_ms": 3200
+    },
+    {
+      "id": "u002",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "物业说啥了？",
+      "start_at_ms": 6400,
+      "end_at_ms": 8400
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "行，我下午回。",
+      "start_at_ms": 11200,
+      "end_at_ms": 13200
+    }
+  ],
+  "events": [],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [
+    {
+      "type": "低语",
+      "role": "user",
+      "start_at_ms": 0,
+      "end_at_ms": 3200
+    },
+    {
+      "type": "低语",
+      "role": "user",
+      "start_at_ms": 6400,
+      "end_at_ms": 8400
+    },
+    {
+      "type": "低语",
+      "role": "user",
+      "start_at_ms": 11200,
+      "end_at_ms": 13200
+    }
+  ],
+  "custom_annotation": []
+}

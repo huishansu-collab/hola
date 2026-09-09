@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（车厢里按下LIVINGEDGE）→手机亮光",
+          "description": "行为：（车厢里按下LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "听完，暂不发声",
+          "description": "听完，暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，暂不发声",
+          "start_at_ms": 800,
+          "end_at_ms": 3200
+        },
+        {
+          "kind": "expression",
+          "label": "句尾后约400ms接话",
+          "description": "句尾后约400ms接话；轻声；语速不加快",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "句尾后约400ms接话；轻声；语速不加快",
+          "start_at_ms": 3600,
+          "end_at_ms": 6000
+        },
+        {
+          "kind": "expression",
+          "label": "听完，不抢话",
+          "description": "听完，不抢话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，不抢话",
+          "start_at_ms": 6400,
+          "end_at_ms": 8800
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速；播出＝计划",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速；播出＝计划",
+          "start_at_ms": 9200,
+          "end_at_ms": 13600
+        },
+        {
+          "kind": "expression",
+          "label": "不再出声保持静默",
+          "description": "不再出声保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "不再出声保持静默",
+          "start_at_ms": 14000,
+          "end_at_ms": 14400
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "识别不全：整句约12字，中段被进站广播盖住，只余“……几点”；停顿约1.0秒，单",
+          "description": "识别不全：整句约12字，中段被进站广播盖住，只余“……几点”；停顿约1.0秒，单独计时，不摊语速",
+          "start_at_ms": 800,
+          "end_at_ms": 3200
+        },
+        {
+          "kind": "state",
+          "label": "只补问缺的半句，不让用户整句重来；禁止“请您再说一遍”式整句重来",
+          "description": "只补问缺的半句，不让用户整句重来；禁止“请您再说一遍”式整句重来",
+          "start_at_ms": 3600,
+          "end_at_ms": 6000
+        },
+        {
+          "kind": "state",
+          "label": "补全：电影场次；用户提高音量盖噪声",
+          "description": "补全：电影场次；用户提高音量盖噪声",
+          "start_at_ms": 6400,
+          "end_at_ms": 8800
+        },
+        {
+          "kind": "state",
+          "label": "嘴短、屏全：语音只给关键数；锁屏卡片",
+          "description": "嘴短、屏全：语音只给关键数；锁屏卡片（票券）；今晚已购票（大悦城店），本地票夹直接命中",
+          "start_at_ms": 9200,
+          "end_at_ms": 13600
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号用户明确收尾，识别结束，end_reason=user_end；灯环熄灭",
+          "description": "收尾信号用户明确收尾，识别结束，end_reason=user_end；灯环熄灭",
+          "start_at_ms": 14000,
+          "end_at_ms": 14400
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "tickets.lookup（今晚电影票）→命中（本地票夹，0.3秒）"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

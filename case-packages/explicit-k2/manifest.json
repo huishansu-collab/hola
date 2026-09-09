@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-k2",
+  "title": "K2 · 老公拿起手机下指令",
+  "group": "K 人多环境乱",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

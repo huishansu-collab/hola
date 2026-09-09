@@ -1,0 +1,248 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-b3",
+      "case_name": "B3 · 挪周会，顺手发群通知",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 22800,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "按400ms微轮次对齐，连续状态合并展示；考改口承接（旧指令作废）、对外发送前先念稿指认一次、发完只报结果；时间与工具耗时均为示意。",
+      "source": "《语音双工 - Explicit case》B3",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "calendar.update",
+          "description": "calendar.update(周会10:00→10:30)发起",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "im.draft",
+          "description": "im.draft(周会改期通知)发起",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "im.send",
+          "description": "im.send(产品组大群)发起",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "明天的周会往后挪半小时，挪到十点半。",
+      "start_at_ms": 0,
+      "end_at_ms": 3200
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯……",
+      "start_at_ms": 3200,
+      "end_at_ms": 3600
+    },
+    {
+      "id": "u003",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "改好了，明天周会十点半开始，日历更新了。",
+      "start_at_ms": 3600,
+      "end_at_ms": 6800
+    },
+    {
+      "id": "u004",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "跟组里说一声……",
+      "start_at_ms": 6800,
+      "end_at_ms": 8800
+    },
+    {
+      "id": "u005",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "算了，你直接在群里发个通知：周会改十点半，其他不变。",
+      "start_at_ms": 8800,
+      "end_at_ms": 13200
+    },
+    {
+      "id": "u006",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯……",
+      "start_at_ms": 13200,
+      "end_at_ms": 13600
+    },
+    {
+      "id": "u007",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "拟好了：‘明天周会改到10:30，其他不变。’发到‘产品组大群’？",
+      "start_at_ms": 13600,
+      "end_at_ms": 18800
+    },
+    {
+      "id": "u008",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "发吧。",
+      "start_at_ms": 18800,
+      "end_at_ms": 19200
+    },
+    {
+      "id": "u009",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯。",
+      "start_at_ms": 19200,
+      "end_at_ms": 19600
+    },
+    {
+      "id": "u010",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "发出去了。",
+      "start_at_ms": 20000,
+      "end_at_ms": 20800
+    },
+    {
+      "id": "u011",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "嗯，ok。",
+      "start_at_ms": 20800,
+      "end_at_ms": 22000
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "calendar.update",
+      "time_at_ms": 0,
+      "query": "{\"request\": \"周会10:00→10:30\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "calendar.update",
+      "time_at_ms": 3200,
+      "results": {
+        "note": "calendar.update(周会10:00→10:30)成功，耗时400ms",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "im.draft",
+      "time_at_ms": 8800,
+      "query": "{\"request\": \"周会改期通知\"}"
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "im.draft",
+      "time_at_ms": 13200,
+      "results": {
+        "note": "im.draft成功，耗时200ms",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "im.send",
+      "time_at_ms": 19200,
+      "query": "{\"request\": \"产品组大群\"}"
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "im.send",
+      "time_at_ms": 19600,
+      "results": {
+        "note": "im.send成功，耗时500ms，已发",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

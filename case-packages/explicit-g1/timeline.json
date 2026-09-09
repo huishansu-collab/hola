@@ -1,0 +1,299 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u010"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（看了眼时间，触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（看了眼时间，触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u008"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u009"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "近7天有4天中午点外卖，均为老碗面馆·油泼面加蛋",
+          "description": "近7天有4天中午点外卖，均为老碗面馆·油泼面加蛋",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "近7天有4天中午点外卖，均为老碗面馆·油泼面加蛋",
+          "start_at_ms": 4400,
+          "end_at_ms": 5600
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速",
+          "start_at_ms": 5600,
+          "end_at_ms": 8800
+        },
+        {
+          "kind": "expression",
+          "label": "听完，不抢话",
+          "description": "听完，不抢话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完，不抢话",
+          "start_at_ms": 8800,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "expression",
+          "label": "语速0.85倍，期间平台返回共26元",
+          "description": "语速0.85倍，期间平台返回共26元",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "语速0.85倍，期间平台返回共26元",
+          "start_at_ms": 11600,
+          "end_at_ms": 15200
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速；念清金额＋地址",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速；念清金额＋地址",
+          "start_at_ms": 15200,
+          "end_at_ms": 18800
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 18800,
+          "end_at_ms": 19600
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速；不提前说\"成功\"",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速；不提前说\"成功\"",
+          "start_at_ms": 19600,
+          "end_at_ms": 20000
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速",
+          "start_at_ms": 21600,
+          "end_at_ms": 25200
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声保持静默",
+          "description": "暂不发声保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声保持静默",
+          "start_at_ms": 25200,
+          "end_at_ms": 25600
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "指令＝外卖·指代历史；",
+          "description": "指令＝外卖·指代历史；",
+          "start_at_ms": 2000,
+          "end_at_ms": 4400
+        },
+        {
+          "kind": "state",
+          "label": "战术性垫话，等待memory返回",
+          "description": "战术性垫话，等待memory返回",
+          "start_at_ms": 4400,
+          "end_at_ms": 5600
+        },
+        {
+          "kind": "state",
+          "label": "把召回结果念出来对一遍，获取确认",
+          "description": "把召回结果念出来对一遍，获取确认",
+          "start_at_ms": 5600,
+          "end_at_ms": 8800
+        },
+        {
+          "kind": "state",
+          "label": "指令=确认，额外要求加购一瓶冰峰",
+          "description": "指令=确认，额外要求加购一瓶冰峰",
+          "start_at_ms": 8800,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "state",
+          "label": "需求确认，开始建单；战术性啰嗦等待接口返回总价；memory_recall",
+          "description": "需求确认，开始建单；战术性啰嗦等待接口返回总价；memory_recall(外卖收获地址)",
+          "start_at_ms": 11600,
+          "end_at_ms": 15200
+        },
+        {
+          "kind": "state",
+          "label": "recall默认地址＝公司前台，与当前POI匹配；涉钱必念金额＋地址再下单，禁止",
+          "description": "recall默认地址＝公司前台，与当前POI匹配；涉钱必念金额＋地址再下单，禁止静默扣款",
+          "start_at_ms": 15200,
+          "end_at_ms": 18800
+        },
+        {
+          "kind": "state",
+          "label": "明确授权付款",
+          "description": "明确授权付款",
+          "start_at_ms": 18800,
+          "end_at_ms": 19600
+        },
+        {
+          "kind": "state",
+          "label": "承接执行，不提前宣称成功",
+          "description": "承接执行，不提前宣称成功",
+          "start_at_ms": 19600,
+          "end_at_ms": 20000
+        },
+        {
+          "kind": "state",
+          "label": "支付中，保持收听",
+          "description": "支付中，保持收听",
+          "start_at_ms": 19600,
+          "end_at_ms": 21600,
+          "lane": 1
+        },
+        {
+          "kind": "state",
+          "label": "支付回执收到，主动通知用户；不临时的冰峰不改\"常点\"",
+          "description": "支付回执收到，主动通知用户；不临时的冰峰不改\"常点\"",
+          "start_at_ms": 21600,
+          "end_at_ms": 25200
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号用户明确收尾，end_reason=user_end；灯环熄灭",
+          "description": "收尾信号用户明确收尾，end_reason=user_end；灯环熄灭",
+          "start_at_ms": 25200,
+          "end_at_ms": 25600
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "支付执行中",
+          "description": "支付执行中",
+          "start_at_ms": 19600,
+          "end_at_ms": 21600
+        },
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "memory.recall(最近常点的外卖)"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "order.pay发起",
+          "lane": 1
+        },
+        {
+          "kind": "tool",
+          "event_id": "e03",
+          "description": "order.build(油泼面加蛋+冰峰,前台)发起"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

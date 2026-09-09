@@ -1,0 +1,241 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-z6",
+      "case_name": "Z6 · 出差前夜：加湿器、改闹钟、问首班地铁——全程压着嗓",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 40400,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "考深夜情境适配（音量／句长全程压着）＋惯例被临时覆盖（6:40→5:50仅一次）＋闲聊的收放。",
+      "source": "《语音双工 - Explicit case》Z6",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "home.humidifier",
+          "description": "home.humidifier：9,600ms发起→10,600ms成功（1,000ms）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "alarm.override",
+          "description": "alarm.override：9,600ms发起→9,900ms成功（300ms）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "metro.firstTrain",
+          "description": "metro.firstTrain(附近站，本地缓存)：23,400ms发起→23,700ms返回（300ms）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "加湿器开上。明早那趟高铁七点的，闹钟改到五点五十。",
+      "start_at_ms": 2000,
+      "end_at_ms": 9600
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好。",
+      "start_at_ms": 9600,
+      "end_at_ms": 10000
+    },
+    {
+      "id": "u003",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "（同样压低）开了。闹钟明早五点五十，就改这一次，后天照旧六点四十。",
+      "start_at_ms": 10400,
+      "end_at_ms": 18400
+    },
+    {
+      "id": "u004",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "首班地铁几点来着？赶得上不？",
+      "start_at_ms": 19200,
+      "end_at_ms": 23200
+    },
+    {
+      "id": "u005",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "首班五点四十七。赶不赶得上，还得看去车站的路和进站时间。",
+      "start_at_ms": 23600,
+      "end_at_ms": 32000
+    },
+    {
+      "id": "u006",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "嚯……比鸡起得都早。",
+      "start_at_ms": 32400,
+      "end_at_ms": 35200
+    },
+    {
+      "id": "u007",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "可不，天没亮就得出门。睡吧。",
+      "start_at_ms": 35600,
+      "end_at_ms": 39600
+    },
+    {
+      "id": "u008",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "嗯。",
+      "start_at_ms": 39600,
+      "end_at_ms": 40000
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "home.humidifier",
+      "time_at_ms": 9600,
+      "query": "{\"request\": \"home.humidifier：9,600ms发起→10,600ms成功（1,000ms）\"}"
+    },
+    {
+      "event_id": "e04",
+      "event_type": "function_call",
+      "tool_name": "alarm.override",
+      "time_at_ms": 9600,
+      "query": "{\"request\": \"alarm.override：9,600ms发起→9,900ms成功（300ms）\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "home.humidifier",
+      "time_at_ms": 10000,
+      "query": "{\"request\": \"home.humidifier执行中\"}"
+    },
+    {
+      "event_id": "e04",
+      "event_type": "function_call",
+      "tool_name": "alarm.override",
+      "time_at_ms": 10000,
+      "results": {
+        "note": "文档未写返回",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "home.humidifier",
+      "time_at_ms": 10400,
+      "results": {
+        "note": "home.humidifier执行中",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "home.humidifier",
+      "time_at_ms": 10400,
+      "results": {
+        "note": "home.humidifier与alarm.override均已成功",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "metro.firstTrain",
+      "time_at_ms": 23200,
+      "query": "{\"request\": \"附近站，本地缓存\"}"
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "metro.firstTrain",
+      "time_at_ms": 23600,
+      "results": {
+        "note": "metro.firstTrain已返回",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

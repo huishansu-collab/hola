@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-f1",
+  "title": "F1 · 躺下说了句\"今天可累坏了\"",
+  "group": "F 闲聊与陪伴",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

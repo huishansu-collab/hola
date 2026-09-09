@@ -1,0 +1,307 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u008"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（扒了口饭，按下LIVINGEDGE）→手机亮光",
+          "description": "行为：（扒了口饭，按下LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 1600,
+          "end_at_ms": 5600
+        },
+        {
+          "kind": "expression",
+          "label": "句尾后约400ms接话",
+          "description": "句尾后约400ms接话；常规语速",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "句尾后约400ms接话；常规语速",
+          "start_at_ms": 6000,
+          "end_at_ms": 8000
+        },
+        {
+          "kind": "expression",
+          "label": "只吐出两个字就停",
+          "description": "只吐出两个字就停",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "只吐出两个字就停",
+          "start_at_ms": 9600,
+          "end_at_ms": 10000
+        },
+        {
+          "kind": "expression",
+          "label": "两句就收",
+          "description": "两句就收",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "两句就收",
+          "start_at_ms": 12000,
+          "end_at_ms": 16000
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完",
+          "start_at_ms": 16400,
+          "end_at_ms": 17600
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速；一句确认",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速；一句确认",
+          "start_at_ms": 18000,
+          "end_at_ms": 20400
+        },
+        {
+          "kind": "expression",
+          "label": "不再出声保持静默",
+          "description": "不再出声保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "不再出声保持静默",
+          "start_at_ms": 20800,
+          "end_at_ms": 23200
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "闲聊式商量",
+          "description": "闲聊式商量",
+          "start_at_ms": 1600,
+          "end_at_ms": 5600
+        },
+        {
+          "kind": "state",
+          "label": "顺着接，一句",
+          "description": "顺着接，一句",
+          "start_at_ms": 6000,
+          "end_at_ms": 8000
+        },
+        {
+          "kind": "state",
+          "label": "双方同一瞬间出声：0.3秒内停声让位；沉默约1.6秒后同时开口；明确闭嘴等；禁止",
+          "description": "双方同一瞬间出声：0.3秒内停声让位；沉默约1.6秒后同时开口；明确闭嘴等；禁止俩人都停又同时重启的“让位循环”",
+          "start_at_ms": 9600,
+          "end_at_ms": 10000
+        },
+        {
+          "kind": "state",
+          "label": "与助手同起，用户优先；话权归用户",
+          "description": "与助手同起，用户优先；话权归用户",
+          "start_at_ms": 9600,
+          "end_at_ms": 11600,
+          "lane": 1
+        },
+        {
+          "kind": "state",
+          "label": "断点续说：先接用户的，再从自己被掐掉的半句接着说，不从头讲",
+          "description": "断点续说：先接用户的，再从自己被掐掉的半句接着说，不从头讲",
+          "start_at_ms": 12000,
+          "end_at_ms": 16000
+        },
+        {
+          "kind": "state",
+          "label": "确认，情绪轻松",
+          "description": "确认，情绪轻松",
+          "start_at_ms": 16400,
+          "end_at_ms": 17600
+        },
+        {
+          "kind": "state",
+          "label": "顺手一个轻提议",
+          "description": "顺手一个轻提议",
+          "start_at_ms": 18000,
+          "end_at_ms": 20400
+        },
+        {
+          "kind": "state",
+          "label": "收尾信号用户明确收尾，识别结束，end_reason=user_end；灯环熄灭",
+          "description": "收尾信号用户明确收尾，识别结束，end_reason=user_end；灯环熄灭",
+          "start_at_ms": 20800,
+          "end_at_ms": 23200
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 1600,
+          "end_at_ms": 5600
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 6000,
+          "end_at_ms": 8000
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 9600,
+          "end_at_ms": 10000
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 9600,
+          "end_at_ms": 11600,
+          "lane": 2
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 12000,
+          "end_at_ms": 16000
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 16400,
+          "end_at_ms": 17600
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）",
+          "start_at_ms": 18000,
+          "end_at_ms": 20400
+        },
+        {
+          "kind": "state",
+          "label": "（本例不涉及外部工具）—（本例不涉及外部工具）",
+          "description": "（本例不涉及外部工具）—（本例不涉及外部工具）",
+          "start_at_ms": 20800,
+          "end_at_ms": 23200
+        },
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "用户开口，停播当前语音",
+          "lane": 1
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [
+    {
+      "user_id": "u004",
+      "assistant_id": "u002",
+      "detected_at_ms": 9600,
+      "stop_command_at_ms": 9600,
+      "fade_start_at_ms": 9600,
+      "stop_at_ms": 10000,
+      "timing_basis": "文档给的是「≤400 ms 停声」，这里按一个微轮次落表"
+    }
+  ],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

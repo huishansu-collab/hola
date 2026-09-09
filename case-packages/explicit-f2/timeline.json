@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（一边翻包一边触碰LIVINGEDGE，眼睛还在包里）→手机亮光",
+          "description": "行为：（一边翻包一边触碰LIVINGEDGE，眼睛还在包里）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": []
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 2000,
+          "end_at_ms": 4400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声；禁止\"您是在找钥匙吗\"主动搭腔保持静默保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声；禁止\"您是在找钥匙吗\"主动搭腔保持静默保持静默",
+          "start_at_ms": 6000,
+          "end_at_ms": 8000
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒；用户视线不朝设备",
+          "description": "触碰唤醒；用户视线不朝设备",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "音量低·无指令结构·视线不朝设备→判定自言自语，不接话不反问",
+          "description": "音量低·无指令结构·视线不朝设备→判定自言自语，不接话不反问",
+          "start_at_ms": 2000,
+          "end_at_ms": 4400
+        },
+        {
+          "kind": "state",
+          "label": "仍是自语门铃响，用户离开玄关去开门；门铃属环境音，不重置静默计时10秒无人说话，",
+          "description": "仍是自语门铃响，用户离开玄关去开门；门铃属环境音，不重置静默计时10秒无人说话，end_reason=silence_timeout；全程零开口，静默超时收场；灯环熄灭",
+          "start_at_ms": 6000,
+          "end_at_ms": 8000
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": []
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

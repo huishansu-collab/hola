@@ -1,0 +1,357 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u008"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（扶栏杆，触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（扶栏杆，触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "听完整条条件指令，不抢话",
+          "description": "听完整条条件指令，不抢话；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完整条条件指令，不抢话；",
+          "start_at_ms": 2000,
+          "end_at_ms": 14000
+        },
+        {
+          "kind": "expression",
+          "label": "回执（承接·说明），常规语速",
+          "description": "回执（承接·说明），常规语速；禁止半天不吭声；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "回执（承接·说明），常规语速；禁止半天不吭声；",
+          "start_at_ms": 14000,
+          "end_at_ms": 15200
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默，继续收听",
+          "description": "保持静默，继续收听",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默，继续收听",
+          "start_at_ms": 15200,
+          "end_at_ms": 17600
+        },
+        {
+          "kind": "expression",
+          "label": "回执（填充）",
+          "description": "回执（填充）；禁止编造路况数值或反复填充；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "回执（填充）；禁止编造路况数值或反复填充；",
+          "start_at_ms": 17600,
+          "end_at_ms": 19600
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默，继续收听",
+          "description": "保持静默，继续收听",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默，继续收听",
+          "start_at_ms": 19600,
+          "end_at_ms": 22000
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默，继续收听",
+          "description": "保持静默，继续收听",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默，继续收听",
+          "start_at_ms": 22000,
+          "end_at_ms": 23200
+        },
+        {
+          "kind": "expression",
+          "label": "应答＋追问，完整说",
+          "description": "应答＋追问，完整说；先报路线与日程结果再读草稿征询；禁止条件成立后重复问要不要挪、禁止未确认就发；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "应答＋追问，完整说；先报路线与日程结果再读草稿征询；禁止条件成立后重复问要不要挪、禁止未确认就发；",
+          "start_at_ms": 23200,
+          "end_at_ms": 35200
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完；",
+          "start_at_ms": 36000,
+          "end_at_ms": 40800
+        },
+        {
+          "kind": "expression",
+          "label": "最短回执，只表示收到请求",
+          "description": "最短回执，只表示收到请求；助手台词1字，发声0.2s（约5.0字/秒）",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "最短回执，只表示收到请求；助手台词1字，发声0.2s（约5.0字/秒）",
+          "start_at_ms": 40800,
+          "end_at_ms": 41200
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默，继续收听",
+          "description": "保持静默，继续收听",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默，继续收听",
+          "start_at_ms": 40800,
+          "end_at_ms": 41600,
+          "lane": 1
+        },
+        {
+          "kind": "expression",
+          "label": "应答，常规语速",
+          "description": "应答，常规语速；分别确认两项；禁止回执未回就声称已发／已收藏；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "应答，常规语速；分别确认两项；禁止回执未回就声称已发／已收藏；",
+          "start_at_ms": 41600,
+          "end_at_ms": 45200
+        },
+        {
+          "kind": "expression",
+          "label": "闭嘴，不复述任务",
+          "description": "闭嘴，不复述任务；保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "闭嘴，不复述任务；保持静默",
+          "start_at_ms": 46000,
+          "end_at_ms": 46400
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "召回Places滨江中心、Contacts刘洋定终点与收件人；记下条件：仅当耗时",
+          "description": "召回Places滨江中心、Contacts刘洋定终点与收件人；记下条件：仅当耗时＞45min才改日程＋通知",
+          "start_at_ms": 2000,
+          "end_at_ms": 14000
+        },
+        {
+          "kind": "state",
+          "label": "信息完整，启动路线查询；条件结果未定，暂不改日程",
+          "description": "信息完整，启动路线查询；条件结果未定，暂不改日程",
+          "start_at_ms": 14000,
+          "end_at_ms": 15200
+        },
+        {
+          "kind": "state",
+          "label": "路线查询中，继续收听",
+          "description": "路线查询中，继续收听",
+          "start_at_ms": 15200,
+          "end_at_ms": 17600
+        },
+        {
+          "kind": "state",
+          "label": "查询已进行3.6s，尚未完成；提供一次进度承接，不把未返回信息说成确定路况",
+          "description": "查询已进行3.6s，尚未完成；提供一次进度承接，不把未返回信息说成确定路况",
+          "start_at_ms": 17600,
+          "end_at_ms": 19600
+        },
+        {
+          "kind": "state",
+          "label": "等待路线结果；条件未定，暂不修改日程",
+          "description": "等待路线结果；条件未定，暂不修改日程",
+          "start_at_ms": 19600,
+          "end_at_ms": 22000
+        },
+        {
+          "kind": "state",
+          "label": "路线返回约50分钟且跨江拥堵，超过45分钟，条件成立；发起日程改期，生成未发送的",
+          "description": "路线返回约50分钟且跨江拥堵，超过45分钟，条件成立；发起日程改期，生成未发送的通知草稿",
+          "start_at_ms": 22000,
+          "end_at_ms": 23200
+        },
+        {
+          "kind": "state",
+          "label": "日程已改期成功；播报路线、改期结果与未发送草稿，等待确认",
+          "description": "日程已改期成功；播报路线、改期结果与未发送草稿，等待确认",
+          "start_at_ms": 23200,
+          "end_at_ms": 35200
+        },
+        {
+          "kind": "state",
+          "label": "识别发送授权；追加将客户地址存入微信收藏的请求",
+          "description": "识别发送授权；追加将客户地址存入微信收藏的请求",
+          "start_at_ms": 36000,
+          "end_at_ms": 40800
+        },
+        {
+          "kind": "state",
+          "label": "收到发送授权，启动消息发送与地址收藏，等待回执",
+          "description": "收到发送授权，启动消息发送与地址收藏，等待回执",
+          "start_at_ms": 40800,
+          "end_at_ms": 41200
+        },
+        {
+          "kind": "state",
+          "label": "地址已收藏，等待消息发送成功回执",
+          "description": "地址已收藏，等待消息发送成功回执",
+          "start_at_ms": 40800,
+          "end_at_ms": 41600,
+          "lane": 1
+        },
+        {
+          "kind": "state",
+          "label": "消息发送与地址收藏均返回成功，反馈两项结果",
+          "description": "消息发送与地址收藏均返回成功，反馈两项结果",
+          "start_at_ms": 41600,
+          "end_at_ms": 45200
+        },
+        {
+          "kind": "state",
+          "label": "识别“妥了”为收尾信号用户明确收尾，end_reason=user_end；灯环",
+          "description": "识别“妥了”为收尾信号用户明确收尾，end_reason=user_end；灯环熄灭",
+          "start_at_ms": 46000,
+          "end_at_ms": 46400
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "route.eta执行中",
+          "lane": 1
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "route.eta执行中",
+          "lane": 1
+        },
+        {
+          "kind": "tool",
+          "event_id": "e03",
+          "description": "route.eta执行中",
+          "lane": 1
+        },
+        {
+          "kind": "tool",
+          "event_id": "e04",
+          "description": "route.eta(公司→滨江中心)：14,000ms发起，耗时8,000ms"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e05",
+          "description": "im.draft仅生成草稿",
+          "lane": 1
+        },
+        {
+          "kind": "tool",
+          "event_id": "e06",
+          "description": "im.send执行中",
+          "lane": 1
+        },
+        {
+          "kind": "tool",
+          "event_id": "e07",
+          "description": "im.send：40,600ms发起→41,600ms成功（1,000ms）",
+          "lane": 2
+        },
+        {
+          "kind": "tool",
+          "event_id": "e08",
+          "description": "calendar.update：22,000ms发起→23,000ms成功（耗时1,000ms）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e09",
+          "description": "favorite.add：40,600ms发起→40,900ms成功（300ms）"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

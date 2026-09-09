@@ -1,0 +1,160 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-m3",
+      "case_name": "M3 · 同时开口，助手让",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 23600,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "场景设定：周四12:20，工位，边吃饭边商量。商量周末聚餐的理由，一阵沉默后两人同一瞬间开口——助手0.3秒内停住让用户先说，回头再从断点把自己那半句补完。工具调用：无（纯对话）考什么：同时开口的让位（≤0.3秒停）；让位后的断点续说。（★标在关键行的时间列）音频轨道（实际播出）应用",
+      "source": "《语音双工 - Explicit case》M3",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "audio.stop",
+          "description": "用户打断时停止当前助手语音",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "帮我想个周末聚餐的理由……就说庆祝项目上线？",
+      "start_at_ms": 1600,
+      "end_at_ms": 5600
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "行啊，上线庆功，正当理由。",
+      "start_at_ms": 6000,
+      "end_at_ms": 10000
+    },
+    {
+      "id": "u004",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "对了——时间就定周六中午。",
+      "start_at_ms": 9600,
+      "end_at_ms": 11600
+    },
+    {
+      "id": "u003",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "要不——",
+      "start_at_ms": 11600,
+      "end_at_ms": 12000
+    },
+    {
+      "id": "u005",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "周六中午，记下了。刚我想说：要不加一句‘家属也来’？",
+      "start_at_ms": 12000,
+      "end_at_ms": 16000
+    },
+    {
+      "id": "u006",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "哈哈行，加上。",
+      "start_at_ms": 16400,
+      "end_at_ms": 17600
+    },
+    {
+      "id": "u007",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "那理由我给你写一句发群里？",
+      "start_at_ms": 18000,
+      "end_at_ms": 20400
+    },
+    {
+      "id": "u008",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "先不用，回头我自己发。行了。",
+      "start_at_ms": 20800,
+      "end_at_ms": 23200
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "audio.stop",
+      "time_at_ms": 9600,
+      "query": "{\"request\": \"打断 u002\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "audio.stop",
+      "time_at_ms": 10000,
+      "results": {
+        "status": "stopped",
+        "stopped_at_ms": 10000,
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": [
+    {
+      "label": "同时开口",
+      "role": "user",
+      "start_at_ms": 9600,
+      "end_at_ms": 11600
+    }
+  ]
+}

@@ -1,0 +1,216 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-z1",
+      "case_name": "Z1 · 早出门问限行直接了当；挪过去的提醒，第二天到点自己响",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 26800,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "考回答直接了当（结论第一句）＋跨会话记忆召回＋隔天任务启动（定任务与执行任务隔一天，两段都要对）。",
+      "source": "《语音双工 - Explicit case》Z1",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "traffic.limit",
+          "description": "traffic.limit(今日)完成（本地日更缓存，即时）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "reminder.update",
+          "description": "reminder.update(今晚19:00→明晚19:00)完成（即时）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "reminder.fire",
+          "description": "reminder.fire(取干洗)到点（即时）",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "看下今儿限行不，我开车走。",
+      "start_at_ms": 2000,
+      "end_at_ms": 4400
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "能开。你尾号3，今儿限2和7，不挨着你。",
+      "start_at_ms": 4400,
+      "end_at_ms": 7600
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "对了，昨儿定的今晚取干洗那条，挪到明晚七点吧，今儿得加班。",
+      "start_at_ms": 8400,
+      "end_at_ms": 14000
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "挪了，明晚七点提你取干洗。",
+      "start_at_ms": 14400,
+      "end_at_ms": 16400
+    },
+    {
+      "id": "u005",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "行",
+      "start_at_ms": 17200,
+      "end_at_ms": 17600
+    },
+    {
+      "id": "u006",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "到七点了——取干洗。洁丰开到九点，正好在你回家路上，顺路就取了。",
+      "start_at_ms": 19200,
+      "end_at_ms": 24400
+    },
+    {
+      "id": "u007",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "哎对，这就去。",
+      "start_at_ms": 25200,
+      "end_at_ms": 26400
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "traffic.limit",
+      "time_at_ms": 4400,
+      "query": "{\"request\": \"今日\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "traffic.limit",
+      "time_at_ms": 7600,
+      "results": {
+        "note": "traffic.limit(今日)完成（本地日更缓存，即时）",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "reminder.update",
+      "time_at_ms": 14400,
+      "query": "{\"request\": \"今晚19:00→明晚19:00\"}"
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "reminder.update",
+      "time_at_ms": 16400,
+      "results": {
+        "note": "reminder.update(今晚19:00→明晚19:00)完成（即时）",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "reminder.fire",
+      "time_at_ms": 17200,
+      "query": "{\"request\": \"取干洗\"}"
+    },
+    {
+      "event_id": "e03",
+      "event_type": "function_call",
+      "tool_name": "reminder.fire",
+      "time_at_ms": 17600,
+      "results": {
+        "note": "reminder.fire(取干洗)到点（即时）",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-r3",
+  "title": "R3 · 咳嗽两声，不问\"你还好吗\"",
+  "group": "R 主动交互",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

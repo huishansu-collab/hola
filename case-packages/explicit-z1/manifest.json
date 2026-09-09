@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-z1",
+  "title": "Z1 · 早出门问限行直接了当；挪过去的提醒，第二天到点自己响",
+  "group": "Z 组合case",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

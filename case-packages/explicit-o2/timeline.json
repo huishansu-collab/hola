@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（按下LIVINGEDGE）→手机亮光",
+          "description": "行为：（按下LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 2000,
+          "end_at_ms": 3600
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速",
+          "description": "常规语速；播报中",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "常规语速；播报中",
+          "start_at_ms": 4000,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "expression",
+          "label": "单独成行的打断",
+          "description": "单独成行的打断；识别话里有话",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "单独成行的打断；识别话里有话",
+          "start_at_ms": 7200,
+          "end_at_ms": 8400
+        },
+        {
+          "kind": "expression",
+          "label": "低声续念",
+          "description": "低声续念；断点续播",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "低声续念；断点续播",
+          "start_at_ms": 8800,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "expression",
+          "label": "不再追加保持静默（end_reason=user_end）",
+          "description": "不再追加保持静默（end_reason=user_end）",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "不再追加保持静默（end_reason=user_end）",
+          "start_at_ms": 12400,
+          "end_at_ms": 13600
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "收到指令：查询下午安排",
+          "description": "收到指令：查询下午安排",
+          "start_at_ms": 2000,
+          "end_at_ms": 3600
+        },
+        {
+          "kind": "state",
+          "label": "用户句中已提前发起日程查询；结果返回后开始播报，播报未完成",
+          "description": "用户句中已提前发起日程查询；结果返回后开始播报，播报未完成",
+          "start_at_ms": 4000,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "state",
+          "label": "竞争打断",
+          "description": "竞争打断（末尾重叠约0.2s）；按间接指令解为“降低音量”，原日程播报继续不重来",
+          "start_at_ms": 7200,
+          "end_at_ms": 8400
+        },
+        {
+          "kind": "state",
+          "label": "音量降两档",
+          "description": "音量降两档（即时）；从“三点半评审会”断点续播，不从头重复",
+          "start_at_ms": 8800,
+          "end_at_ms": 11600
+        },
+        {
+          "kind": "state",
+          "label": "低声；收尾信号用户明确收尾，识别结束，灯环熄灭",
+          "description": "低声；收尾信号用户明确收尾，识别结束，灯环熄灭",
+          "start_at_ms": 12400,
+          "end_at_ms": 13600
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "calendar.read（下午）→三条，耗时400ms（用户句中发起）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "volume.set（音量-2档）→成功（即时）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e03",
+          "description": "用户开口，停播当前语音"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [
+    {
+      "user_id": "u003",
+      "assistant_id": "u002",
+      "detected_at_ms": 7200,
+      "stop_command_at_ms": 7200,
+      "fade_start_at_ms": 7200,
+      "stop_at_ms": 7600,
+      "timing_basis": "文档给的是「≤400 ms 停声」，这里按一个微轮次落表"
+    }
+  ],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

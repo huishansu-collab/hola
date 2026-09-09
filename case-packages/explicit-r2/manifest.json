@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-r2",
+  "title": "R2 · 主动一句没人接，就不再说",
+  "group": "R 主动交互",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

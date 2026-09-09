@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-i1",
+  "title": "I1 · 散会口述三条要点",
+  "group": "I 工作与学习",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

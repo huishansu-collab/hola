@@ -1,0 +1,73 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-f2",
+      "case_name": "F2 · 按亮了却在自言自语——10秒自动灭",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 8400,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "考自言自语识别（不接话不反问）与\"无响应满10秒自动结束\"完整走一遍；本例无工具调用。",
+      "source": "《语音双工 - Explicit case》F2",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": []
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "我钥匙搁哪儿了……",
+      "start_at_ms": 2000,
+      "end_at_ms": 4400
+    },
+    {
+      "id": "u002",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "（继续翻包，小声）包里也没有啊……",
+      "start_at_ms": 6000,
+      "end_at_ms": 8000
+    }
+  ],
+  "events": [],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [
+    {
+      "type": "低语",
+      "role": "user",
+      "start_at_ms": 2000,
+      "end_at_ms": 4400
+    }
+  ],
+  "custom_annotation": []
+}

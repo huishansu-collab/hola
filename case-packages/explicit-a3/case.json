@@ -1,0 +1,136 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-a3",
+      "case_name": "A3 · 查生僻字（描述字形）",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 15200,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "按400ms微轮次对齐，连续状态合并展示；考对非标准字形表述的理解与答案克制；时间与工具耗时均为示意。",
+      "source": "《语音双工 - Explicit case》A3",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "char.lookup",
+          "description": "char.lookup（山+今）发起",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "问你个字：上面一个山、下面一个今，念啥？",
+      "start_at_ms": 0,
+      "end_at_ms": 3200
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯……",
+      "start_at_ms": 3200,
+      "end_at_ms": 3600
+    },
+    {
+      "id": "u003",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "岑，二声，cén。岑参的岑，也当小山头讲。",
+      "start_at_ms": 3600,
+      "end_at_ms": 6800
+    },
+    {
+      "id": "u004",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "欸？后头那个参念shēn啊？我一直念的cān。",
+      "start_at_ms": 6800,
+      "end_at_ms": 10400
+    },
+    {
+      "id": "u005",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯，人名里读shēn，跟人参的参一个音。",
+      "start_at_ms": 10800,
+      "end_at_ms": 13600
+    },
+    {
+      "id": "u006",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "行，知道了。",
+      "start_at_ms": 13600,
+      "end_at_ms": 14400
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "char.lookup",
+      "time_at_ms": 0,
+      "query": "{\"request\": \"山+今\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "char.lookup",
+      "time_at_ms": 3200,
+      "results": {
+        "note": "char.lookup（山+今）成功，耗时300ms",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

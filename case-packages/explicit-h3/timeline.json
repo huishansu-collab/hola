@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（触碰LIVINGEDGE）→手机亮光",
+          "description": "行为：（触碰LIVINGEDGE）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "action",
+          "label": "（立即暂停播放，不说话）",
+          "description": "（立即暂停播放，不说话）",
+          "start_at_ms": 14400,
+          "end_at_ms": 14800
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 2000,
+          "end_at_ms": 5200
+        },
+        {
+          "kind": "expression",
+          "label": "短确认暂不发声",
+          "description": "短确认暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "短确认暂不发声",
+          "start_at_ms": 5600,
+          "end_at_ms": 6800
+        },
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 11600,
+          "end_at_ms": 14400
+        },
+        {
+          "kind": "expression",
+          "label": "不出声保持静默",
+          "description": "不出声保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "不出声保持静默",
+          "start_at_ms": 14400,
+          "end_at_ms": 14800
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态",
+          "description": "触碰唤醒，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "指令＝切外放＋降低音量；终端感知已到家，正常操作即可",
+          "description": "指令＝切外放＋降低音量；终端感知已到家，正常操作即可",
+          "start_at_ms": 2000,
+          "end_at_ms": 5200
+        },
+        {
+          "kind": "state",
+          "label": "两个动作合并执行，确认一句世界信号：来电事件｜联系人＝妈妈",
+          "description": "两个动作合并执行，确认一句世界信号：来电事件｜联系人＝妈妈",
+          "start_at_ms": 5600,
+          "end_at_ms": 6800
+        },
+        {
+          "kind": "state",
+          "label": "指令＝暂停，根据上下文推断指音频焦点",
+          "description": "指令＝暂停，根据上下文推断指音频焦点",
+          "start_at_ms": 11600,
+          "end_at_ms": 14400
+        },
+        {
+          "kind": "state",
+          "label": "用户接起电话，会话自然结束，end_reason=system_end；灯环熄灭",
+          "description": "用户接起电话，会话自然结束，end_reason=system_end；灯环熄灭",
+          "start_at_ms": 14400,
+          "end_at_ms": 14800
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "audio.output=speaker+volume=5(device.setting)即时完成"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "podcast.pause即时完成，耗时0.2秒"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

@@ -1,0 +1,298 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u008"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "（半躺着触碰LIVINGEDGE，压着嗓）→手机亮光",
+          "description": "行为：（半躺着触碰LIVINGEDGE，压着嗓）→手机亮光",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "暂不发声",
+          "description": "暂不发声",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "暂不发声",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完；不写他人睡眠为传感器结果；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完；不写他人睡眠为传感器结果；",
+          "start_at_ms": 2000,
+          "end_at_ms": 9600
+        },
+        {
+          "kind": "expression",
+          "label": "低语最短承接，不宣告已完成",
+          "description": "低语最短承接，不宣告已完成；助手台词1字，发声0.4s（约2.5字/秒）",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "低语最短承接，不宣告已完成；助手台词1字，发声0.4s（约2.5字/秒）",
+          "start_at_ms": 9600,
+          "end_at_ms": 10000
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默，继续收听",
+          "description": "保持静默，继续收听",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默，继续收听",
+          "start_at_ms": 10000,
+          "end_at_ms": 10400
+        },
+        {
+          "kind": "expression",
+          "label": "应答，低语",
+          "description": "应答，低语；确认设备＋临时闹钟＋惯例保留；禁止半天不吭声、禁止设备回执前说“开了”；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "应答，低语；确认设备＋临时闹钟＋惯例保留；禁止半天不吭声、禁止设备回执前说“开了”；",
+          "start_at_ms": 10400,
+          "end_at_ms": 18400
+        },
+        {
+          "kind": "expression",
+          "label": "听完",
+          "description": "听完；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "听完；",
+          "start_at_ms": 19200,
+          "end_at_ms": 23200
+        },
+        {
+          "kind": "expression",
+          "label": "保持静默，继续收听",
+          "description": "保持静默，继续收听",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "保持静默，继续收听",
+          "start_at_ms": 23200,
+          "end_at_ms": 23600
+        },
+        {
+          "kind": "expression",
+          "label": "低语",
+          "description": "低语；只报已知首班时刻，并明确判断所缺信息，不打包票、不擅自叫车；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "低语；只报已知首班时刻，并明确判断所缺信息，不打包票、不擅自叫车；",
+          "start_at_ms": 23600,
+          "end_at_ms": 32000
+        },
+        {
+          "kind": "expression",
+          "label": "“嚯……”停顿0.4s，语调未收束时不抢话",
+          "description": "“嚯……”停顿0.4s，语调未收束时不抢话；低语；另计停顿/动作0.4s",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "“嚯……”停顿0.4s，语调未收束时不抢话；低语；另计停顿/动作0.4s",
+          "start_at_ms": 32400,
+          "end_at_ms": 35200
+        },
+        {
+          "kind": "expression",
+          "label": "应答（收敛），低语一句话",
+          "description": "应答（收敛），低语一句话；禁止重背时刻表、追问叫车或展开睡眠建议；",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "应答（收敛），低语一句话；禁止重背时刻表、追问叫车或展开睡眠建议；",
+          "start_at_ms": 35600,
+          "end_at_ms": 39600
+        },
+        {
+          "kind": "expression",
+          "label": "闭嘴",
+          "description": "闭嘴；保持静默",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "闭嘴；保持静默",
+          "start_at_ms": 39600,
+          "end_at_ms": 40000
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "触碰唤醒，进入聆听态；夜间模式采用低亮度灯效",
+          "description": "触碰唤醒，进入聆听态；夜间模式采用低亮度灯效",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        },
+        {
+          "kind": "state",
+          "label": "提取开启加湿器及修改明早闹钟两项请求；根据低语和夜间模式降低输出音量；召回06:",
+          "description": "提取开启加湿器及修改明早闹钟两项请求；根据低语和夜间模式降低输出音量；召回06:40惯例，仅覆盖明早为05:50",
+          "start_at_ms": 2000,
+          "end_at_ms": 9600
+        },
+        {
+          "kind": "state",
+          "label": "收到开启加湿器和临时修改闹钟的请求，降低语音输出音量并开始执行",
+          "description": "收到开启加湿器和临时修改闹钟的请求，降低语音输出音量并开始执行",
+          "start_at_ms": 9600,
+          "end_at_ms": 10000
+        },
+        {
+          "kind": "state",
+          "label": "闹钟单次覆盖已成功；等待加湿器成功回执，保留后续06:40惯例",
+          "description": "闹钟单次覆盖已成功；等待加湿器成功回执，保留后续06:40惯例",
+          "start_at_ms": 10000,
+          "end_at_ms": 10400
+        },
+        {
+          "kind": "state",
+          "label": "加湿器开启及明早05:50单次闹钟覆盖均成功；后续工作日06:40惯例保留",
+          "description": "加湿器开启及明早05:50单次闹钟覆盖均成功；后续工作日06:40惯例保留",
+          "start_at_ms": 10400,
+          "end_at_ms": 18400
+        },
+        {
+          "kind": "state",
+          "label": "识别首班地铁查询及赶上明早07:00高铁的可达性判断请求",
+          "description": "识别首班地铁查询及赶上明早07:00高铁的可达性判断请求",
+          "start_at_ms": 19200,
+          "end_at_ms": 23200
+        },
+        {
+          "kind": "state",
+          "label": "读取本地首班时刻缓存；仅查询时刻，尚无完整赶高铁路线与进站耗时",
+          "description": "读取本地首班时刻缓存；仅查询时刻，尚无完整赶高铁路线与进站耗时",
+          "start_at_ms": 23200,
+          "end_at_ms": 23600
+        },
+        {
+          "kind": "state",
+          "label": "缓存返回首班05:47；缺少前往高铁站的完整路程及进站时间，明确尚不能确认赶上0",
+          "description": "缓存返回首班05:47；缺少前往高铁站的完整路程及进站时间，明确尚不能确认赶上07:00高铁",
+          "start_at_ms": 23600,
+          "end_at_ms": 32000
+        },
+        {
+          "kind": "state",
+          "label": "识别用户对早起的调侃，未提出新任务",
+          "description": "识别用户对早起的调侃，未提出新任务",
+          "start_at_ms": 32400,
+          "end_at_ms": 35200
+        },
+        {
+          "kind": "state",
+          "label": "承接早起感叹并收束话题；保持夜间低音量",
+          "description": "承接早起感叹并收束话题；保持夜间低音量",
+          "start_at_ms": 35600,
+          "end_at_ms": 39600
+        },
+        {
+          "kind": "state",
+          "label": "识别用户确认，没有明确结束指令；保持静默等待最后用户人声于40,100ms结束；",
+          "description": "识别用户确认，没有明确结束指令；保持静默等待最后用户人声于40,100ms结束；静默满10,000ms，end_reason=silence_timeout；灯环渐隐，无结束音；加湿器继续，明早05:50单次闹钟及后续06:40惯例保留",
+          "start_at_ms": 39600,
+          "end_at_ms": 40000
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "未查询完整路线，不给确定赶车结论",
+          "description": "未查询完整路线，不给确定赶车结论",
+          "start_at_ms": 23600,
+          "end_at_ms": 32000
+        },
+        {
+          "kind": "tool",
+          "event_id": "e01",
+          "description": "home.humidifier执行中"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e02",
+          "description": "home.humidifier：9,600ms发起→10,600ms成功（1,000ms）",
+          "lane": 1
+        },
+        {
+          "kind": "tool",
+          "event_id": "e03",
+          "description": "metro.firstTrain(附近站，本地缓存)：23,400ms发起→23,700ms返回（300ms）"
+        },
+        {
+          "kind": "tool",
+          "event_id": "e04",
+          "description": "alarm.override：9,600ms发起→9,900ms成功（300ms）"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [],
+  "backchannels": [],
+  "checkpoints": [],
+  "tool_dependencies": []
+}

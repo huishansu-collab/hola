@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "explicit-d2",
+  "title": "D2 · 现在出发，九点前能到吗",
+  "group": "D 出行与位置",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

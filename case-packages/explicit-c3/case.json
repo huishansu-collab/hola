@@ -1,0 +1,196 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "explicit-c3",
+      "case_name": "C3 · 发消息给张伟——通讯录里有俩",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 29600,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "按400ms微轮次对齐，连续状态合并展示；考同名歧义一次问清（不按\"最近联系\"猜）、改稿即视为确认、结束用静默超时兜底；时间与工具耗时均为示意。",
+      "source": "《语音双工 - Explicit case》C3",
+      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "im.draft",
+          "description": "im.draft(张伟·运营部)发起",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "im.send",
+          "description": "im.send(张伟·运营部)发起",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "request"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "description": "文档原文写的调用参数"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "给张伟发个消息，就说文件我发他邮箱了。",
+      "start_at_ms": 0,
+      "end_at_ms": 3600
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "有俩张伟是运营部那个，还是你表哥？",
+      "start_at_ms": 3600,
+      "end_at_ms": 6800
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "公司的。",
+      "start_at_ms": 6800,
+      "end_at_ms": 7600
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯……",
+      "start_at_ms": 7600,
+      "end_at_ms": 8000
+    },
+    {
+      "id": "u005",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好，发运营部张伟：‘文件发你邮箱了，注意查收。’这么发？",
+      "start_at_ms": 8000,
+      "end_at_ms": 12400
+    },
+    {
+      "id": "u006",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "把‘注意查收’去了，就前半句。",
+      "start_at_ms": 12400,
+      "end_at_ms": 14800
+    },
+    {
+      "id": "u007",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯。",
+      "start_at_ms": 14800,
+      "end_at_ms": 15200
+    },
+    {
+      "id": "u008",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "‘文件发你邮箱了。’——改好了，发了哈。",
+      "start_at_ms": 15600,
+      "end_at_ms": 18400
+    },
+    {
+      "id": "u009",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "好。",
+      "start_at_ms": 18400,
+      "end_at_ms": 18800
+    }
+  ],
+  "events": [
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "im.draft",
+      "time_at_ms": 6800,
+      "query": "{\"request\": \"张伟·运营部\"}"
+    },
+    {
+      "event_id": "e01",
+      "event_type": "function_call",
+      "tool_name": "im.draft",
+      "time_at_ms": 7600,
+      "results": {
+        "note": "im.draft成功，耗时200ms",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "im.send",
+      "time_at_ms": 14800,
+      "query": "{\"request\": \"张伟·运营部\"}"
+    },
+    {
+      "event_id": "e02",
+      "event_type": "function_call",
+      "tool_name": "im.send",
+      "time_at_ms": 15200,
+      "results": {
+        "note": "im.send成功，耗时500ms，已发",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}
