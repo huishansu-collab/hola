@@ -67,3 +67,13 @@ node scripts/check-case-viewport-browser.cjs
 运行前先启动本地预览，也可以通过 `STUDIO_URL` 指定已构建页面。
 
 重新生成语音需要自行配置服务访问凭据。生成脚本从 `SEED_AUTH_FILE` 环境变量读取私有请求头文件，请勿将凭据提交到仓库。
+
+尚未配音的 Case 已备好合成提示词，取得凭据后按下面三步补语音：
+
+```sh
+SEED_AUTH_FILE=/path/to/headers python3 local/generate_audio.py backchannel
+# 听 local/backchannel/audio/session-master.mp3，把每段台词的起止秒写进 local/backchannel/audio-cuts.json
+python3 local/package_case_audio.py backchannel
+```
+
+`audio-cuts.json` 里的 `id` 要和 `timeline.json` 里对应片段的 `audio_key` 一致。切片完成后必须按实际录音重排时间线，并把 `timing_status` 与 `audio_status` 改为 `aligned` / `generated`；附和 Case 的重叠区间也要跟着重对，否则 `check-case-set.mjs` 会红。
