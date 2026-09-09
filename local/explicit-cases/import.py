@@ -46,6 +46,11 @@ def clean(s):
 
 def quoted(s):
     q = [x.strip() for x in QUOTE.findall(s) if x.strip()]
+    # 引号没收口的，把最后一个引号之后的尾巴也带上——表格换行会把后半句甩到下一行，
+    # 只取成对的会把「有条快 8 分钟」这半句直接丢掉。
+    if (s.count('“') + s.count('”') + s.count('"')) % 2 == 1:
+        tail = re.split(r'[“”"]', s)[-1].strip()
+        if tail: q.append(tail)
     return ' '.join(q)
 
 def spans(row):
@@ -145,6 +150,7 @@ def build(case):
     stop_needed = []
     open_quote = {}
     odd = lambda t: (t.count('“') + t.count('”') + t.count('"')) % 2 == 1
+    dash_tail = {}
     for (a, b), row in zip(rows, case['rows']):
         u, asst = clean(row['user']), clean(row['assistant'])
         # 用户轨:说话 / 行为 / 旁人
@@ -154,7 +160,7 @@ def build(case):
                                  'description': u, 'start_at_ms': a, 'end_at_ms': b})
             elif open_quote.get('user') and users and not quoted(u):
                 # 上一行的引号没收口，这一行是同一句的后半截，接回去而不是新起一句
-                users[-1]['text'] += u.strip('“”"\' ')
+                users[-1]['text'] += dash_tail.pop('user', '') + u.strip('“”"\' ')
                 users[-1]['end_at_ms'] = b
             else:
                 text = (quoted(u) or re.sub(r'^[^：:]{0,8}[：:]', '', u)).strip('“”"\' ')
@@ -180,7 +186,7 @@ def build(case):
                     {'kind': 'action', 'label': asst[:60], 'description': asst,
                      'start_at_ms': a, 'end_at_ms': b, '_track': 'assistant'})
             elif open_quote.get('assistant') and assistants and not quoted(asst):
-                assistants[-1]['text'] += asst.strip('“”"\' ')
+                assistants[-1]['text'] += dash_tail.pop('assistant', '') + asst.strip('“”"\' ')
                 assistants[-1]['end_at_ms'] = b
             else:
                 text = (quoted(asst) or asst).strip('“”"\' ')
@@ -188,6 +194,9 @@ def build(case):
                     i = uid()
                     assistants.append({'id': i, 'speaker': 'assistant', 'speaker_id': 'assistant',
                                        'text': text, 'start_at_ms': a, 'end_at_ms': b})
+        # 「有俩张伟——」这种破折号是原文的停顿，clean 会把它剥掉，接续时再补回来
+        dash_tail = {k: '——' for k, v in (('user', row['user']), ('assistant', row['assistant']))
+                     if v.replace('​', '').rstrip().endswith('—')}
         open_quote = {'user': odd(u) or (open_quote.get('user') and not odd(u) and not quoted(u)),
                       'assistant': odd(asst) or (open_quote.get('assistant') and not odd(asst) and not quoted(asst))}
         r = clean(row['reason'])

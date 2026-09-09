@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       case:
-        description: 'Case id(local/ 下的目录名,需含 master-request.json)'
+        description: 'Case id,空格分隔可以一次跑多个(local/ 下的目录名,需含 master-request.json)'
         default: backchannel
         required: true
 
@@ -34,12 +34,16 @@ jobs:
       - name: 读取参数(手动运行用 inputs;push 触发读请求文件)
         id: req
         run: |
-          CASE="${{ inputs.case }}"
-          [ -n "$CASE" ] || CASE="$(sed -n 's/^case:[[:space:]]*//p' .github/synthesis-tts-request.yml | head -1 | tr -d '\r"')"
-          [ -n "$CASE" ] || CASE=backchannel
-          test -f "local/$CASE/master-request.json" || { echo "::error::local/$CASE/master-request.json 不存在"; exit 1; }
-          echo "case=$CASE" >> "$GITHUB_OUTPUT"
-          echo "生成 Case:$CASE"
+          CASES="${{ inputs.case }}"
+          # 请求文件里既支持单个 case:,也支持 cases: 下面一行一个
+          [ -n "$CASES" ] || CASES="$(sed -n 's/^case:[[:space:]]*//p' .github/synthesis-tts-request.yml | head -1 | tr -d '\r"')"
+          [ -n "$CASES" ] || CASES="$(sed -n 's/^[[:space:]]*-[[:space:]]*//p' .github/synthesis-tts-request.yml | tr -d '\r"' | tr '\n' ' ')"
+          [ -n "$CASES" ] || CASES=backchannel
+          for C in $CASES; do
+            test -f "local/$C/master-request.json" || { echo "::error::local/$C/master-request.json 不存在"; exit 1; }
+          done
+          echo "cases=$CASES" >> "$GITHUB_OUTPUT"
+          echo "生成 Case:$CASES"
 
       - name: 组装鉴权头(generate_audio.py 用 curl -H @file,要的是文件)
         env:
@@ -70,14 +74,19 @@ jobs:
         env:
           SEED_AUTH_FILE: ${{ runner.temp }}/seed-auth-headers
         run: |
-          python3 local/generate_audio.py "${{ steps.req.outputs.case }}"
+          for C in ${{ steps.req.outputs.cases }}; do
+            echo "::group::$C"
+            python3 local/generate_audio.py "$C"
+            echo "::endgroup::"
+          done
 
       - name: 母带转 48 kHz 单声道 WAV(Case 包音频源格式)
         run: |
-          C="${{ steps.req.outputs.case }}"
-          ffmpeg -y -loglevel error -i "local/$C/audio/session-master.mp3" \
-                 -ar 48000 -ac 1 -c:a pcm_s16le "local/$C/audio/session-master.wav"
-          ls -la "local/$C/audio/"
+          for C in ${{ steps.req.outputs.cases }}; do
+            ffmpeg -y -loglevel error -i "local/$C/audio/session-master.mp3" \
+                   -ar 48000 -ac 1 -c:a pcm_s16le "local/$C/audio/session-master.wav"
+            ls -la "local/$C/audio/"
+          done
 
       - name: 接口返回里有哪些字段(判断能否直接拿到逐字时间戳,不打印内容)
         run: |
@@ -95,18 +104,19 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: master-${{ steps.req.outputs.case }}
-          path: local/${{ steps.req.outputs.case }}/audio/session-master.*
+          name: masters-${{ github.run_number }}
+          path: local/*/audio/session-master.*
           retention-days: 7
 
       - name: 提交回分支(只提交音频,不提交原始接口响应)
         run: |
-          C="${{ steps.req.outputs.case }}"
-          rm -f "local/$C/audio/master-response.json"
+          rm -f local/*/audio/master-response.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "local/$C/audio/session-master.mp3" "local/$C/audio/session-master.wav"
+          for C in ${{ steps.req.outputs.cases }}; do
+            git add "local/$C/audio/session-master.mp3" "local/$C/audio/session-master.wav"
+          done
           git diff --cached --quiet && { echo "没有变化,不提交"; exit 0; }
-          git commit -m "语音:火山 seed-audio 生成 $C 整段母带(Actions 运行 ${{ github.run_number }})"
+          git commit -m "语音:火山 seed-audio 生成整段母带 ${{ steps.req.outputs.cases }}(Actions 运行 ${{ github.run_number }})"
           git pull --rebase --autostash origin "${{ github.ref_name }}"
           git push origin "HEAD:${{ github.ref_name }}"
