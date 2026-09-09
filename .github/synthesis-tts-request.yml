@@ -1,5 +1,3 @@
-# 改这个文件并 push，就跑一次语音生成。cases 一行一个，需要 local/<case>/master-request.json。
-# 请求文件用 local/explicit-cases/voice_request.py 生成。
 cases:
   - explicit-a1
   - explicit-a2
@@ -11,4 +9,4 @@ cases:
   - explicit-c2
   - explicit-c3
   - explicit-d1
-run: 5
+run: 6
