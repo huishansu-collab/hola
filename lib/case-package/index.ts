@@ -98,6 +98,20 @@ export function validatePackage(input: unknown): CasePackage {
       ]),
     '声道必须为用户左、助手右',
   );
+  const constraints = d.static_context?.constraints ?? {};
+  // A package may be authored before its speech exists. Planned packages carry
+  // no audio at all; anything half-aligned is rejected rather than half-checked.
+  const planned = constraints.timing_status === 'planned';
+  check(
+    planned || constraints.timing_status === 'aligned',
+    'constraints.timing_status 必须为 planned 或 aligned',
+  );
+  check(
+    planned
+      ? constraints.audio_status === 'none'
+      : constraints.audio_status === 'generated',
+    'planned 包不得声明已生成音频，aligned 包必须声明 generated',
+  );
   for (const k of [
     'utterances',
     'events',
@@ -330,7 +344,12 @@ export function validatePackage(input: unknown): CasePackage {
     );
     aligned.set(c.utterance_id, c);
   }
-  check(aligned.size === utterances.size, '每句台词必须关联一段实际音频');
+  check(
+    planned ? aligned.size === 0 : aligned.size === utterances.size,
+    planned
+      ? 'planned 包不得携带音频关联，补录并改为 aligned 后再对齐'
+      : '每句台词必须关联一段实际音频',
+  );
   check(
     Object.keys(p.sources).every((k) =>
       a.clips.some((c: any) => c.source === k),
@@ -369,6 +388,7 @@ export function validatePackage(input: unknown): CasePackage {
         i.stop_at_ms === r.end_at_ms,
       '打断检出 / 淡出 / 停声顺序错误',
     );
+    if (!planned) {
     const c = aligned.get(u.id),
       s = decoded.get(c.source)!.samples;
     const from = c.source_start_ms * 48,
@@ -399,6 +419,7 @@ export function validatePackage(input: unknown): CasePackage {
         break;
       }
     check(simultaneous, '打断区没有双方实际声音重叠');
+    }
     const stop = [...groups.values()].find(
       (g) =>
         g[0].tool_name === 'audio.stop' &&
@@ -410,6 +431,56 @@ export function validatePackage(input: unknown): CasePackage {
       stop![1].time_at_ms - stop![0].time_at_ms >= 400,
       'audio.stop 控制窗口至少 400 ms',
     );
+  }
+  const declaredOverlap = new Set<string>();
+  for (const i of t.interruptions ?? [])
+    declaredOverlap.add(`${i.user_id}/${i.assistant_id}`);
+  for (const b of t.backchannels ?? []) {
+    const u = utterances.get(b.over_user_id),
+      r = utterances.get(b.assistant_id);
+    check(
+      u && r && u.speaker !== 'assistant' && r.speaker === 'assistant',
+      '附和引用的语音无效',
+    );
+    // What makes it a backchannel and not a barge-in: the assistant speaks
+    // inside the user's turn and the user talks on past it.
+    check(
+      u.start_at_ms < r.start_at_ms && r.end_at_ms < u.end_at_ms,
+      `${r.id} 附和必须完全落在用户人声内部`,
+    );
+    check(
+      !(t.interruptions ?? []).some((i: any) => i.assistant_id === r.id),
+      `${r.id} 不能既是附和又是打断`,
+    );
+    check(
+      !(t.response_links ?? []).some((l: any) => l.assistant_id === r.id),
+      `${r.id} 是附和而不是回应，不应登记 response_links`,
+    );
+    declaredOverlap.add(`${u.id}/${r.id}`);
+  }
+  // Every overlap of real voices is either a barge-in or a backchannel. Leaving
+  // one undeclared is what lets the two be confused, so it is rejected here.
+  for (const u of d.utterances)
+    if (u.speaker !== 'assistant')
+      for (const r of d.utterances)
+        if (
+          r.speaker === 'assistant' &&
+          u.start_at_ms < r.end_at_ms &&
+          r.start_at_ms < u.end_at_ms
+        )
+          check(
+            declaredOverlap.has(`${u.id}/${r.id}`),
+            `${u.id} 与 ${r.id} 人声重叠但未声明为打断或附和`,
+          );
+  // E. Checkpoints let a case mark what to look at when nothing was interrupted.
+  for (const c of t.checkpoints ?? []) {
+    check(
+      ['name', 'title', 'note'].every(
+        (k) => typeof c[k] === 'string' && c[k].trim(),
+      ),
+      '检查点缺少名称、标题或说明',
+    );
+    interval(c.start_at_ms, c.end_at_ms, duration, c.name);
   }
   for (const x of d.fdx_annotation) {
     check(x.fdx_type !== '打断', '打断不属于 Annotation');
@@ -480,8 +551,9 @@ export function renderStereo(runtime: RuntimeCase) {
   const frames = runtime.case.meta_data.media.audio.duration_ms * 48,
     channels = [new Float32Array(frames), new Float32Array(frames)];
   for (const u of runtime.case.utterances) {
-    const clip = runtime.audio[u.id],
-      samples = decodeWav(unbase64(clip.src.split(',')[1])).samples,
+    const clip = runtime.audio[u.id];
+    if (!clip) continue;
+    const samples = decodeWav(unbase64(clip.src.split(',')[1])).samples,
       out = channels[u.speaker === 'assistant' ? 1 : 0],
       i = runtime.timeline.interruptions?.find(
         (x: any) => x.assistant_id === u.id,

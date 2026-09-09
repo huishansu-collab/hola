@@ -35,7 +35,9 @@ npm run build:local
 
 ## 独立 Case 包
 
-Gmail 已使用独立数据包驱动。Files 右侧的“导入 Case 包”支持导入构建生成的 `.case.json`，相同 ID 更新，刷新后保留。
+Gmail 与「老板反复改周会 / 吐槽时附和」已使用独立数据包驱动。Files 右侧的“导入 Case 包”支持导入构建生成的 `.case.json`，相同 ID 更新，刷新后保留。
+
+附和 Case 尚未配音，作为 `planned` 包入库：台词、时序与标注齐备，补录后写入切点并改为 `aligned` 即可产出音频与交付 TAR。
 
 ```sh
 npm run case:validate -- case-packages/gmail

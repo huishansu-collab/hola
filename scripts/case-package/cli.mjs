@@ -82,8 +82,12 @@ try {
     );
     process.exit(0);
   }
+  // A planned package has no recordings yet, so everything downstream of the
+  // audio is withheld rather than emitted empty.
+  const planned =
+    pack.case.static_context?.constraints?.timing_status === 'planned';
   const runtime = buildRuntime(pack),
-    render = renderStereo(runtime),
+    render = planned ? null : renderStereo(runtime),
     out = path.resolve(
       flags[0] === '--out' ? flags[1] : path.join(folder, 'build'),
     );
@@ -96,27 +100,31 @@ try {
     ].some((p) => path.resolve(folder, p).startsWith(out + path.sep))
   )
     throw Error('产物目录不能覆盖源文件');
-  const json = {
-    ...runtime.case,
-    meta_data: {
-      ...runtime.case.meta_data,
-      media: {
-        ...runtime.case.meta_data.media,
-        audio: {
-          ...runtime.case.meta_data.media.audio,
-          file: 'audio.wav',
-          sample_rate: 48000,
-          channels: 2,
-          encoding: 'PCM_16',
+  const json = planned
+    ? runtime.case
+    : {
+        ...runtime.case,
+        meta_data: {
+          ...runtime.case.meta_data,
+          media: {
+            ...runtime.case.meta_data.media,
+            audio: {
+              ...runtime.case.meta_data.media.audio,
+              file: 'audio.wav',
+              sample_rate: 48000,
+              channels: 2,
+              encoding: 'PCM_16',
+            },
+          },
         },
-      },
-    },
-  };
+      };
   const text = (d) => Buffer.from(JSON.stringify(d, null, 2) + '\n'),
-    files = [
-      ['audio.wav', Buffer.from(render.wav)],
-      ['case.json', text(json)],
-    ];
+    files = planned
+      ? [['case.json', text(json)]]
+      : [
+          ['audio.wav', Buffer.from(render.wav)],
+          ['case.json', text(json)],
+        ];
   await fs.mkdir(out, { recursive: true });
   await fs.mkdir(path.join(out, 'clips'), { recursive: true });
   for (const [id, clip] of Object.entries(runtime.audio)) {
@@ -129,14 +137,21 @@ try {
   }
   for (const [name, bytes] of [
     ...files,
-    ['peaks.json', text(render.peaks)],
+    ...(planned
+      ? []
+      : [
+          ['peaks.json', text(render.peaks)],
+          [`${pack.manifest.case_id}.tar`, tar(files)],
+        ]),
     ['runtime.json', text(runtime)],
     [`${pack.manifest.case_id}.case.json`, text(pack)],
-    [`${pack.manifest.case_id}.tar`, tar(files)],
   ])
     await fs.writeFile(path.join(out, name), bytes);
   console.log(
-    `BUILD ${pack.manifest.case_id}: ${out}\n导入网站：${pack.manifest.case_id}.case.json\n交付：${pack.manifest.case_id}.tar`,
+    `BUILD ${pack.manifest.case_id}: ${out}\n导入网站：${pack.manifest.case_id}.case.json\n` +
+      (planned
+        ? '未配音：audio.wav、clips 与 tar 需补录后改为 aligned 才会产出'
+        : `交付：${pack.manifest.case_id}.tar`),
   );
 } catch (e) {
   console.error(e.message);

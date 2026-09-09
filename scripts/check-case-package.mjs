@@ -80,8 +80,57 @@ assert.equal(
   packageToScenario(buildRuntime(copy)).meta.meta_data.sample.case_id,
   'team-demo',
 );
+// A package may be authored before its speech exists, and every overlap of
+// real voices has to say which kind it is.
+const planned = JSON.parse(
+  fs.readFileSync('case-packages/backchannel/build/backchannel.case.json'),
+);
+validatePackage(planned);
+const ps = packageToScenario(buildRuntime(planned));
+assert.equal(ps.timingStatus, 'planned');
+assert.equal(ps.playableClips.length, 0);
+assert(ps.tracks[0].clips.every((c) => !c.audioKey && !c.wave));
+assert.equal(ps.expressions.length, 4);
+assert.equal(ps.expressions[0].delivery, '嗐');
+assert.equal(ps.tracks[3].clips[0].expression, 0);
+// Checkpoints survive even though nothing in this case was interrupted.
+assert.equal(ps.events.length, 3);
+assert.deepEqual(
+  ps.events.map((e) => [e.t, e.name]),
+  [
+    [15200, '首次附和'],
+    [26000, '句中附和'],
+    [39600, '用户接管'],
+  ],
+);
+assert(ps.events.every((e) => e.overlap === null));
+const failPlanned = (edit, pattern) => {
+  const p = structuredClone(planned);
+  edit(p);
+  assert.throws(() => validatePackage(p), pattern);
+};
+failPlanned(
+  (p) => (p.case.static_context.constraints.audio_status = 'generated'),
+  /planned/,
+);
+failPlanned(
+  (p) =>
+    p.alignment.clips.push({
+      utterance_id: 'u001',
+      source: 'a.wav',
+      source_start_ms: 0,
+      source_end_ms: 1,
+    }),
+  /planned|音频/,
+);
+failPlanned((p) => (p.timeline.backchannels = []), /未声明为打断或附和/);
+failPlanned(
+  (p) => (p.timeline.backchannels[0].over_user_id = 'u009'),
+  /落在用户人声内部/,
+);
+failPlanned((p) => (p.timeline.checkpoints[0].note = ''), /检查点/);
 fs.mkdirSync('/tmp/case-package-tests', { recursive: true });
 fs.writeFileSync('/tmp/case-package-tests/new.case.json', JSON.stringify(copy));
 console.log(
-  'PASS package parity, PCM audio, overlap, validation failures, arbitrary ID',
+  'PASS package parity, PCM audio, overlap, planned packages, backchannels, checkpoints, validation failures, arbitrary ID',
 );

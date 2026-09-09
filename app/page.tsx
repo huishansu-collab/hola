@@ -6,6 +6,7 @@ import { JsonOverlay, type InputEvent, type Controls } from '@/components/json-o
 import { createActorCase } from '@/components/actor-case';
 import {createRideCase} from '@/components/ride-case';
 import gmailRuntime from '@/case-packages/gmail/build/runtime.json';
+import backchannelRuntime from '@/case-packages/backchannel/build/runtime.json';
 import {packageToScenario} from '@/components/package-scenario';
 import {storedPackages,importPackage,importedScenario,type ImportedCase} from '@/components/case-package-store';
 import {createSmsCase} from '@/components/sms-case';
@@ -13,7 +14,6 @@ import {createCoffeeCase} from '@/components/coffee-case';
 import {createInterruptCase} from '@/components/interrupt-case';
 import {createRetryCase} from '@/components/retry-case';
 import {createClarifyCase} from '@/components/clarify-case';
-import {createBackchannelCase} from '@/components/backchannel-case';
 import {createPreemptCase} from '@/components/preempt-case';
 import {readViewports,resolveViewport,viewportStorageKey,type CaseViewport} from '@/components/case-viewport';
 import {streamingCase} from '@/components/streaming-case';
@@ -168,7 +168,7 @@ export default function Studio(){
  const [imported,setImported]=useState<Record<string,{item:ImportedCase;scenario:Scenario}>>({});
  const [packagesReady,setPackagesReady]=useState(false),[packageError,setPackageError]=useState('');
  useEffect(()=>{let live=true;storedPackages().then(items=>{if(live)setImported(Object.fromEntries(items.map(item=>[item.id,{item,scenario:importedScenario(item)}])))}).catch(()=>{if(live)setPackageError('已导入 Case 读取失败，请检查浏览器存储。')}).finally(()=>{if(live)setPackagesReady(true)});return()=>{live=false}},[]);
- const builtins=useMemo<Record<string,Scenario>>(()=>({gmail:packageToScenario(gmailRuntime,'package/gmail'),weather:reconcileCase('weather',streamingCase(weatherScenario)),actor:reconcileCase('actor',streamingCase(createActorCase())),ride:reconcileCase('ride',streamingCase(createRideCase())),coffee:reconcileCase('coffee',streamingCase(createCoffeeCase())),sms:reconcileCase('sms',streamingCase(createSmsCase())),interrupt:reconcileCase('interrupt',streamingCase(createInterruptCase())),retry:reconcileCase('retry',streamingCase(createRetryCase())),clarify:reconcileCase('clarify',streamingCase(createClarifyCase())),backchannel:reconcileCase('backchannel',streamingCase(createBackchannelCase())),preempt:reconcileCase('preempt',streamingCase(createPreemptCase()))}),[]);
+ const builtins=useMemo<Record<string,Scenario>>(()=>({gmail:packageToScenario(gmailRuntime,'package/gmail'),weather:reconcileCase('weather',streamingCase(weatherScenario)),actor:reconcileCase('actor',streamingCase(createActorCase())),ride:reconcileCase('ride',streamingCase(createRideCase())),coffee:reconcileCase('coffee',streamingCase(createCoffeeCase())),sms:reconcileCase('sms',streamingCase(createSmsCase())),interrupt:reconcileCase('interrupt',streamingCase(createInterruptCase())),retry:reconcileCase('retry',streamingCase(createRetryCase())),clarify:reconcileCase('clarify',streamingCase(createClarifyCase())),backchannel:packageToScenario(backchannelRuntime,'package/backchannel'),preempt:reconcileCase('preempt',streamingCase(createPreemptCase()))}),[]);
  const scenarios=useMemo(()=>({...builtins,...Object.fromEntries(Object.entries(imported).map(([id,v])=>[id,v.scenario]))}),[builtins,imported]);
  const isWeather=!!scenarios[activeCase.id];
  const scenario=scenarios[activeCase.id]??scenarios.weather;

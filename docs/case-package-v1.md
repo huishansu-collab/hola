@@ -56,7 +56,36 @@ timeline 的语音片段仅引用它：
 
 工具片段使用 `{"kind":"tool","event_id":"gmail_stop"}`，起止时间和工具名称从对应请求与返回派生。说明可放在 `description`。
 
-后台状态、站内操作、世界信号、表达片段分别使用 kind `state`、`action`、`world`、`expression`，包含 `label`、`start_at_ms`、`end_at_ms`。同轨重叠片段需要不同的 `lane`。
+后台状态、站内操作、世界信号、表达片段分别使用 kind `state`、`action`、`world`、`expression`，包含 `label`、`start_at_ms`、`end_at_ms`。同轨重叠片段需要不同的 `lane`。表达片段可另带 `trigger`、`delivery`、`annotation`，检视面板据此展示；缺省时 `delivery` 取 `label`、`annotation` 取 `description`。
+
+## 未配音的包
+
+台词和时序可以先于录音确定。`constraints.timing_status` 为 `planned` 时，包不携带任何音频：`alignment.clips` 必须为空，`audio_status` 必须为 `none`，校验跳过与录音有关的检查，`case:build` 只产出 `runtime.json`、`case.json` 和 `<id>.case.json`，不产出 `audio.wav`、`clips/` 和 `<id>.tar`——没有录音就没有可交付的合成数据。页面顶部标注「语音待生成」，时间按设计值展示。
+
+补录后把切点写进 `alignment.json`，`timing_status` 改为 `aligned`、`audio_status` 改为 `generated`，重新 build 即可。半对齐的包（部分台词有音频）会被拒绝，避免只校验了一半。
+
+## 打断与附和
+
+助手人声压在用户人声上有两种情形，判据是用户有没有停：
+
+- 用户停声，助手拿走话语权，是**打断**，登记在 `interruptions`，需要完整的检出 / 停播指令 / 淡出 / 实际停声链路和配对的 `audio.stop`。
+- 用户继续说完，话语权不转移，是**附和**，登记在 `backchannels`：
+
+```json
+{"assistant_id":"u006","over_user_id":"u005"}
+```
+
+附和必须完全落在用户人声内部（起声晚于用户、收声早于用户），不能同时登记为打断，也不登记 `response_links`——它不是对用户的回应。
+
+任何一对人声重叠都必须登记为其中之一，漏登记会被拒绝。这条是两者不被混淆的保证：形态相同，只有声明能区分。
+
+## 检查点
+
+没有打断的 Case 也需要指出该看哪里。`timeline.checkpoints` 逐条声明，与打断并列显示在事件条上：
+
+```json
+{"name":"首次附和","title":"嗐 + 是啊！","start_at_ms":15200,"end_at_ms":16400,"tag":"助手附和","note":"连说三句后才给一次附和；压在用户人声上，用户没停。"}
+```
 
 alignment 记录源录音切点：
 
@@ -93,6 +122,9 @@ CLI 与浏览器使用同一个校验器，检查：
 - 工具定义、请求参数、请求返回配对、依赖顺序。
 - 400 ms 网格、回应间隔、同轨重叠。
 - 打断检出、命令、淡出、实际停声顺序，以及重叠区是否有双方实际声音。
+- 附和完全落在用户人声内部，且未同时登记为打断或回应。
+- 每一对人声重叠都已登记为打断或附和。
+- planned 包不得携带音频关联，aligned 包必须逐句关联。
 - audio.play 后的 audio.stop 与助手语音间隔。
 - Annotation 与表达轨道关联，打断不放入 Annotation。
 

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "case_id": "backchannel",
+  "title": "老板反复改周会 / 吐槽时附和",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}
