@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 45600,
+        "duration_ms": 37200,
         "file": null,
         "tracks": [
           {
@@ -30,8 +30,8 @@
     "memory": {},
     "constraints": {
       "simulated": true,
-      "timing_status": "planned",
-      "audio_status": "none",
+      "timing_status": "aligned",
+      "audio_status": "generated",
       "stream_step_ms": 400,
       "task_goal": "把明天的周会从 15:00 改到 17:00",
       "completion_boundary": "周会已改到 17:00；用户提到的客户会与方案初稿未做任何操作",
@@ -39,7 +39,8 @@
       "backchannel_spacing": "不是每句都应；本例八段宣泄只应了三段",
       "backchannel_kinds": "附和词只有语气与应和，附和句带评价内容；随宣泄推进由词转句",
       "venting_is_not_instruction": "用户陈述的影响与规划不构成指令，不触发工具",
-      "timing_note": "时序为设计值，语音尚未生成；边界按 400 毫秒步长排布。"
+      "timing_note": "时序为设计值，语音尚未生成；边界按 400 毫秒步长排布。",
+      "audio_note": "十五段台词来自同一次整段对话生成，按识别对齐切分，原速播放。附和的重叠区间按实际录音重排，助手起点仍对齐 400 毫秒步长。"
     },
     "tools": [
       {
@@ -82,119 +83,119 @@
       "speaker_id": "user_1",
       "text": "把明天下午三点跟老板的周会改到五点。",
       "start_at_ms": 0,
-      "end_at_ms": 3600
+      "end_at_ms": 3200
     },
     {
       "id": "u002",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "好，改到五点了。",
-      "start_at_ms": 5200,
-      "end_at_ms": 7200
+      "start_at_ms": 4400,
+      "end_at_ms": 5910
     },
     {
       "id": "u003",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "他这周都改第三回了。",
-      "start_at_ms": 7600,
-      "end_at_ms": 10000
+      "start_at_ms": 6310,
+      "end_at_ms": 8570
     },
     {
       "id": "u004",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "说改就改，一句话的事。",
-      "start_at_ms": 10400,
-      "end_at_ms": 13200
+      "start_at_ms": 8970,
+      "end_at_ms": 11490
     },
     {
       "id": "u005",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "上周五刚定好的时间，昨天改一次，今天又改。",
-      "start_at_ms": 13600,
-      "end_at_ms": 18400
+      "start_at_ms": 11890,
+      "end_at_ms": 16190
     },
     {
       "id": "u006",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗐",
-      "start_at_ms": 15200,
-      "end_at_ms": 15600
+      "start_at_ms": 12800,
+      "end_at_ms": 13720
     },
     {
       "id": "u007",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "是啊！",
-      "start_at_ms": 15600,
-      "end_at_ms": 16400
+      "start_at_ms": 14000,
+      "end_at_ms": 15040
     },
     {
       "id": "u008",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "我微信里还跟他确认过两遍。",
-      "start_at_ms": 18800,
-      "end_at_ms": 22000
+      "start_at_ms": 16590,
+      "end_at_ms": 18770
     },
     {
       "id": "u009",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "我下午本来排了两个客户，现在只能往后挪，然后见了他们还得把方案初稿收掉的。",
-      "start_at_ms": 22400,
-      "end_at_ms": 30400
+      "start_at_ms": 19170,
+      "end_at_ms": 25890
     },
     {
       "id": "u010",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "那真是够呛",
-      "start_at_ms": 26000,
-      "end_at_ms": 27600
+      "start_at_ms": 22400,
+      "end_at_ms": 23880
     },
     {
       "id": "u011",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "初稿本来今天就该动笔了。",
-      "start_at_ms": 30800,
-      "end_at_ms": 34000
+      "start_at_ms": 26290,
+      "end_at_ms": 28170
     },
     {
       "id": "u012",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "结果这一周，我光顾着跟着他改时间了。",
-      "start_at_ms": 34400,
-      "end_at_ms": 39200
+      "start_at_ms": 28570,
+      "end_at_ms": 31870
     },
     {
       "id": "u013",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "唉，光耗在这上头了。",
-      "start_at_ms": 36000,
-      "end_at_ms": 38000
+      "start_at_ms": 29600,
+      "end_at_ms": 30940
     },
     {
       "id": "u014",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "行了，我看看怎么调整吧。",
-      "start_at_ms": 39600,
-      "end_at_ms": 43200
+      "start_at_ms": 32270,
+      "end_at_ms": 34910
     },
     {
       "id": "u015",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "好，别太烦。",
-      "start_at_ms": 44000,
-      "end_at_ms": 45600
+      "start_at_ms": 35600,
+      "end_at_ms": 37048
     }
   ],
   "events": [
@@ -202,14 +203,14 @@
       "event_id": "cal_1",
       "event_type": "function_call",
       "tool_name": "calendar.update",
-      "time_at_ms": 3600,
+      "time_at_ms": 3200,
       "query": "{\"calendar_event_id\": \"evt_weekly_1\", \"from\": \"明天 15:00\", \"to\": \"明天 17:00\"}"
     },
     {
       "event_id": "cal_1",
       "event_type": "function_call",
       "tool_name": "calendar.update",
-      "time_at_ms": 4400,
+      "time_at_ms": 4000,
       "results": {
         "status": "updated",
         "calendar_event_id": "evt_weekly_1",
@@ -222,26 +223,26 @@
     {
       "fdx_type": "附和词",
       "role": "assistant",
-      "start_at_ms": 15200,
-      "end_at_ms": 15600
+      "start_at_ms": 12800,
+      "end_at_ms": 13720
     },
     {
       "fdx_type": "附和词",
       "role": "assistant",
-      "start_at_ms": 15600,
-      "end_at_ms": 16400
+      "start_at_ms": 14000,
+      "end_at_ms": 15040
     },
     {
       "fdx_type": "附和句",
       "role": "assistant",
-      "start_at_ms": 26000,
-      "end_at_ms": 27600
+      "start_at_ms": 22400,
+      "end_at_ms": 23880
     },
     {
       "fdx_type": "附和句",
       "role": "assistant",
-      "start_at_ms": 36000,
-      "end_at_ms": 38000
+      "start_at_ms": 29600,
+      "end_at_ms": 30940
     }
   ],
   "emotion_annotation": [],

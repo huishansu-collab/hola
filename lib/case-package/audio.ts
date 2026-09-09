@@ -96,10 +96,14 @@ export function base64(bytes: Uint8Array) {
   return btoa(s);
 }
 export function unbase64(text: string) {
+  // The grouped form `(?:[A-Za-z0-9+/]{4})*` keeps backtracking state per group
+  // and overflows the regex stack a few megabytes in, far below the size this
+  // format allows. Length carries the grouping; the alphabet scans linearly.
+  const pad = text.endsWith('==') ? 2 : text.endsWith('=') ? 1 : 0;
   if (
-    !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(
-      text,
-    )
+    text.length % 4 !== 0 ||
+    text.length === pad ||
+    !/^[A-Za-z0-9+/]*$/.test(text.slice(0, text.length - pad))
   )
     throw Error('音频编码无效');
   return Uint8Array.from(atob(text), (c) => c.charCodeAt(0));

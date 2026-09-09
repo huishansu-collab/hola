@@ -2,7 +2,8 @@ import fs from 'node:fs';import assert from 'node:assert/strict';
 import {loadCases,compile} from './load-cases.mjs';
 const baseMeta=JSON.parse(fs.readFileSync('components/meta-data.json'));
 const {reconcileCase}=Function('baseMeta',compile('components/case-data.ts')+';return {reconcileCase}')(baseMeta);
-const added=['interrupt','retry','clarify','backchannel','preempt'];
+const planned=['interrupt','retry','clarify','preempt'];
+const added=[...planned,'backchannel'];
 const all=loadCases();
 const cases=Object.fromEntries(added.map(id=>{assert(all[id],`${id} not registered in scripts/load-cases.mjs`);return [id,reconcileCase(id,all[id])]}));
 const track=(s,name)=>s.tracks.find(t=>t.name===name);
@@ -13,23 +14,30 @@ const calls=(s,tool)=>[...new Set(s.inputEvents.filter(e=>e.tool_name===tool).ma
 
 // Shared shape: design-time fixtures with no generated speech.
 for(const [id,s] of Object.entries(cases)){
- assert.equal(s.timingStatus,'planned',`${id} must be marked planned until speech is generated`);
- assert.equal(s.playableClips.length,0,`${id} claims audio but no clips were generated`);
- assert.equal(s.meta.static_context.constraints.audio_status,'none',`${id} audio_status must stay none`);
+ const voiced=!planned.includes(id);
+ assert.equal(s.timingStatus,voiced?'aligned':'planned',`${id} timing status`);
+ assert.equal(s.playableClips.length===0,!voiced,`${id} audio clips must match its timing status`);
+ assert.equal(s.meta.static_context.constraints.audio_status,voiced?'generated':'none',`${id} audio_status`);
  assert(s.events.length,`${id} needs at least one checkpoint`);
  for(const t of s.tracks){
   const clips=t.clips.toSorted((a,b)=>a.a-b.a);
   for(let i=0;i<clips.length;i++){
    const c=clips[i];
    assert(c.b>c.a,`${id}/${t.name} nonpositive interval: ${c.label}`);
-   assert.equal(c.a%400,0,`${id}/${t.name} off-grid start: ${c.label}`);
-   assert.equal(c.b%400,0,`${id}/${t.name} off-grid end: ${c.label}`);
+   // 400ms 网格约束在用户侧不成立：已配音 Case 的用户人声起止由录音决定。
+   // 设计稿（planned）里全部人工排布，所以连用户轨也一并要求对齐。
+   if(!voiced||!['用户','用户控制','世界'].includes(t.name)){
+    assert.equal(c.a%400,0,`${id}/${t.name} off-grid start: ${c.label}`);
+    if(!voiced)assert.equal(c.b%400,0,`${id}/${t.name} off-grid end: ${c.label}`);
+   }
    assert(c.b<=s.END,`${id}/${t.name} runs past END: ${c.label}`);
    // The tools track deliberately stacks concurrent work on separate lanes.
    for(let j=i+1;j<clips.length;j++)if((c.lane??0)===(clips[j].lane??0))assert(clips[j].a>=c.b,`${id}/${t.name} overlap: ${c.label} / ${clips[j].label}`);
   }
  }
  if(!['backchannel','preempt'].includes(id))assert(track(s,'工具调用').clips.some(c=>c.playbackControl),`${id} missing playback control block`);
+ // Every utterance of a voiced case must actually carry audio.
+ if(voiced)for(const t of [track(s,'用户'),track(s,'助手')])for(const c of t.clips)assert(c.audioKey&&c.wave,`${id}/${c.label} 已配音 Case 的语音片段必须有音频`);
  for(const e of s.inputEvents)assert(!/实时|已下单|已支付/.test(JSON.stringify(e.results??{})),`${id} result claims more than the case delivers`);
 }
 
@@ -131,15 +139,18 @@ for(const [id,s] of Object.entries(cases)){
  }
  const [particle,agree,sympathy,echo]=backchannels;
  assert.equal(particle.label,'嗐','backchannel: the particle is its own unit');
- assert.equal(particle.b-particle.a,400,'backchannel: 嗐 is a 400ms particle');
- assert.equal(agree.a,particle.b,'backchannel: 嗐 and the agreement it heads are contiguous');
+ assert(agree.a>=particle.b&&agree.a-particle.b<=400,'backchannel: 嗐 and the agreement it heads stay adjacent');
  assert.equal(agree.label,'是啊！');
  assert.equal(sympathy.label,'那真是够呛');
  assert(echo.label.startsWith('唉'));
  const types=s.controlAnnotations.fdx_annotation.map(a=>a.fdx_type);
  // Particles carry only tone; sentences carry a judgement about the situation.
  assert.deepEqual(types,['附和词','附和词','附和句','附和句'],'backchannel: tone-only and content units are typed apart');
- for(const c of [particle,agree])assert(c.b-c.a<=800,`backchannel: ${c.label} must stay short`);
+ // 纯语气的附和词必须比带内容的附和句短——这条与录制时长无关，是两类的分野。
+ const words=[particle,agree],sentences=[sympathy,echo];
+ assert(Math.max(...words.map(c=>c.b-c.a))<Math.min(...sentences.map(c=>c.b-c.a)),
+  'backchannel: 附和词必须短于附和句');
+ for(const c of backchannels)assert(c.b-c.a<=2000,`backchannel: ${c.label} 过长，已经不像附和`);
  assert(!types.includes('打断'),'backchannel: a backchannel is never annotated as an interruption');
  // Spacing: the user gets whole segments with no assistant voice at all.
  const silent=users.filter(u=>!assistant.some(c=>c.a<u.b&&c.b>u.a));
@@ -201,4 +212,4 @@ for(const [id,s] of Object.entries(cases)){
  assert(!/已购|已支付|出票/.test(assistant.map(c=>c.label).join('')),'preempt: never claim the ticket is bought');
 }
 
-for(const [id,s] of Object.entries(cases))console.log(`${id}: PASS / ${s.END} ms / ${s.utterances.length} utterances / ${s.inputEvents.length} events / planned timing, no generated audio`);
+for(const [id,s] of Object.entries(cases))console.log(`${id}: PASS / ${s.END} ms / ${s.utterances.length} utterances / ${s.inputEvents.length} events / ${planned.includes(id)?'planned timing, no generated audio':'aligned to real audio'}`);

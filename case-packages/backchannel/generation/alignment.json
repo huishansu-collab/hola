@@ -1,4 +1,95 @@
 {
   "schema_version": 1,
-  "clips": []
+  "clips": [
+    {
+      "utterance_id": "u001",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 80,
+      "source_end_ms": 3280
+    },
+    {
+      "utterance_id": "u002",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 3400,
+      "source_end_ms": 4910
+    },
+    {
+      "utterance_id": "u003",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 5000,
+      "source_end_ms": 7260
+    },
+    {
+      "utterance_id": "u004",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 8740,
+      "source_end_ms": 11260
+    },
+    {
+      "utterance_id": "u005",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 11980,
+      "source_end_ms": 16280
+    },
+    {
+      "utterance_id": "u006",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 16600,
+      "source_end_ms": 17520
+    },
+    {
+      "utterance_id": "u007",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 17740,
+      "source_end_ms": 18780
+    },
+    {
+      "utterance_id": "u008",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 19000,
+      "source_end_ms": 21180
+    },
+    {
+      "utterance_id": "u009",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 22140,
+      "source_end_ms": 28860
+    },
+    {
+      "utterance_id": "u010",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 29180,
+      "source_end_ms": 30660
+    },
+    {
+      "utterance_id": "u011",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 30700,
+      "source_end_ms": 32580
+    },
+    {
+      "utterance_id": "u012",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 33540,
+      "source_end_ms": 36840
+    },
+    {
+      "utterance_id": "u013",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 37400,
+      "source_end_ms": 38740
+    },
+    {
+      "utterance_id": "u014",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 39300,
+      "source_end_ms": 41940
+    },
+    {
+      "utterance_id": "u015",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 42160,
+      "source_end_ms": 43608
+    }
+  ]
 }

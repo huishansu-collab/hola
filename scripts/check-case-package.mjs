@@ -80,32 +80,26 @@ assert.equal(
   packageToScenario(buildRuntime(copy)).meta.meta_data.sample.case_id,
   'team-demo',
 );
-// A package may be authored before its speech exists, and every overlap of
-// real voices has to say which kind it is.
-const planned = JSON.parse(
-  fs.readFileSync('case-packages/backchannel/build/backchannel.case.json'),
-);
+// A package may be authored before its speech exists. The planned fixture is
+// derived here rather than pinned to a case, so voicing one never breaks it.
+const plannedOf = (src) => {
+  const p = structuredClone(src);
+  Object.assign(p.case.static_context.constraints, {
+    timing_status: 'planned',
+    audio_status: 'none',
+  });
+  p.alignment.clips = [];
+  p.sources = {};
+  return p;
+};
+const planned = plannedOf(bundle);
 validatePackage(planned);
-const ps = packageToScenario(buildRuntime(planned));
-assert.equal(ps.timingStatus, 'planned');
-assert.equal(ps.playableClips.length, 0);
-assert(ps.tracks[0].clips.every((c) => !c.audioKey && !c.wave));
-assert.equal(ps.expressions.length, 4);
-assert.equal(ps.expressions[0].delivery, '嗐');
-assert.equal(ps.tracks[3].clips[0].expression, 0);
-// Checkpoints survive even though nothing in this case was interrupted.
-assert.equal(ps.events.length, 3);
-assert.deepEqual(
-  ps.events.map((e) => [e.t, e.name]),
-  [
-    [15200, '首次附和'],
-    [26000, '句中附和'],
-    [39600, '用户接管'],
-  ],
-);
-assert(ps.events.every((e) => e.overlap === null));
+const plannedScenario = packageToScenario(buildRuntime(planned));
+assert.equal(plannedScenario.timingStatus, 'planned');
+assert.equal(plannedScenario.playableClips.length, 0);
+assert(plannedScenario.tracks[0].clips.every((c) => !c.audioKey && !c.wave));
 const failPlanned = (edit, pattern) => {
-  const p = structuredClone(planned);
+  const p = plannedOf(bundle);
   edit(p);
   assert.throws(() => validatePackage(p), pattern);
 };
@@ -116,21 +110,53 @@ failPlanned(
 failPlanned(
   (p) =>
     p.alignment.clips.push({
-      utterance_id: 'u001',
+      utterance_id: p.case.utterances[0].id,
       source: 'a.wav',
       source_start_ms: 0,
       source_end_ms: 1,
     }),
   /planned|音频/,
 );
-failPlanned((p) => (p.timeline.backchannels = []), /未声明为打断或附和/);
-failPlanned(
+
+// Every overlap of real voices has to say which kind it is, and a backchannel
+// has to stay inside the user's turn.
+const voiced = JSON.parse(
+  fs.readFileSync('case-packages/backchannel/build/backchannel.case.json'),
+);
+validatePackage(voiced);
+const vs = packageToScenario(buildRuntime(voiced));
+assert.equal(vs.timingStatus, 'aligned');
+assert.equal(vs.playableClips.length, voiced.case.utterances.length);
+assert.equal(vs.expressions.length, 4);
+assert.equal(vs.expressions[0].delivery, '嗐');
+assert.equal(vs.tracks[3].clips[0].expression, 0);
+// Checkpoints survive even though nothing in this case was interrupted.
+assert.equal(vs.events.length, 3);
+assert.deepEqual(
+  vs.events.map((e) => e.name),
+  ['首次附和', '句中附和', '用户接管'],
+);
+assert(vs.events.every((e) => e.overlap === null));
+const u = (id) => voiced.case.utterances.find((x) => x.id === id);
+for (const b of voiced.timeline.backchannels) {
+  const over = u(b.over_user_id),
+    said = u(b.assistant_id);
+  assert(over.start_at_ms < said.start_at_ms && said.end_at_ms < over.end_at_ms);
+  assert(over.end_at_ms - said.end_at_ms >= 800);
+}
+const failVoiced = (edit, pattern) => {
+  const p = structuredClone(voiced);
+  edit(p);
+  assert.throws(() => validatePackage(p), pattern);
+};
+failVoiced((p) => (p.timeline.backchannels = []), /未声明为打断或附和/);
+failVoiced(
   (p) => (p.timeline.backchannels[0].over_user_id = 'u009'),
   /落在用户人声内部/,
 );
-failPlanned((p) => (p.timeline.checkpoints[0].note = ''), /检查点/);
+failVoiced((p) => (p.timeline.checkpoints[0].note = ''), /检查点/);
 fs.mkdirSync('/tmp/case-package-tests', { recursive: true });
 fs.writeFileSync('/tmp/case-package-tests/new.case.json', JSON.stringify(copy));
 console.log(
-  'PASS package parity, PCM audio, overlap, planned packages, backchannels, checkpoints, validation failures, arbitrary ID',
+  'PASS package parity, PCM audio, overlap, planned packages, voiced backchannels, checkpoints, validation failures, arbitrary ID',
 );

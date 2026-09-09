@@ -81,9 +81,9 @@
         {
           "kind": "expression",
           "label": "附和词 · 嗐",
-          "start_at_ms": 15200,
-          "end_at_ms": 15600,
-          "description": "四声短促气声，只有语气没有内容",
+          "start_at_ms": 12800,
+          "end_at_ms": 13720,
+          "description": "四声短促气声；压在用户人声上，用户未停。",
           "trigger": "用户连说三句",
           "delivery": "嗐",
           "annotation": "四声短促气声；压在用户人声上，用户未停。"
@@ -91,9 +91,9 @@
         {
           "kind": "expression",
           "label": "附和词 · 是啊！",
-          "start_at_ms": 15600,
-          "end_at_ms": 16400,
-          "description": "纯应和，不带内容也不评价老板",
+          "start_at_ms": 14000,
+          "end_at_ms": 15040,
+          "description": "纯应和，不带内容也不评价老板；用户继续说完。",
           "trigger": "承接上一声附和",
           "delivery": "是啊！",
           "annotation": "纯应和，不带内容也不评价老板；用户继续说完。"
@@ -101,9 +101,9 @@
         {
           "kind": "expression",
           "label": "附和句 · 那真是够呛",
-          "start_at_ms": 26000,
-          "end_at_ms": 27600,
-          "description": "共情处境，不评判、不给建议",
+          "start_at_ms": 22400,
+          "end_at_ms": 23880,
+          "description": "共情处境，不评判也不给建议，不切断句子。",
           "trigger": "长句语义接缝",
           "delivery": "那真是够呛",
           "annotation": "共情处境，不评判也不给建议，不切断句子。"
@@ -111,9 +111,9 @@
         {
           "kind": "expression",
           "label": "附和句 · 唉，光耗在这上头了",
-          "start_at_ms": 36000,
-          "end_at_ms": 38000,
-          "description": "顺用户原话，不加码",
+          "start_at_ms": 29600,
+          "end_at_ms": 30940,
+          "description": "顺用户原话收，不加码不升级。",
           "trigger": "情绪到顶",
           "delivery": "唉，光耗在这上头了。",
           "annotation": "顺用户原话收，不加码不升级。"
@@ -130,79 +130,79 @@
         {
           "kind": "state",
           "label": "新时间明确唯一 · 直接改",
-          "start_at_ms": 3600,
-          "end_at_ms": 4000,
-          "description": "不反问确认，也不追问为什么改"
+          "description": "不反问确认，也不追问为什么改",
+          "start_at_ms": 2800,
+          "end_at_ms": 3200
         },
         {
           "kind": "state",
           "label": "更新成功 · event_id 不变",
-          "start_at_ms": 4400,
-          "end_at_ms": 4800,
-          "description": "同一场会的第一次改动，不新建日程"
+          "description": "同一场会的第一次改动，不新建日程",
+          "start_at_ms": 4000,
+          "end_at_ms": 4400
         },
         {
           "kind": "state",
           "label": "宣泄开始 · 陈述不是指令",
-          "start_at_ms": 7200,
-          "end_at_ms": 7600,
-          "description": "整段吐槽都不触发工具"
+          "description": "整段吐槽都不触发工具",
+          "start_at_ms": 5600,
+          "end_at_ms": 6000
         },
         {
           "kind": "state",
           "label": "同一件事的延续 · 本轮不出声",
-          "start_at_ms": 10000,
-          "end_at_ms": 10400,
-          "description": "节奏未断，附和过密会打扰"
+          "description": "节奏未断，附和过密会打扰",
+          "start_at_ms": 8400,
+          "end_at_ms": 8800
         },
         {
           "kind": "state",
           "label": "连说三句 · 给一次附和",
-          "start_at_ms": 14800,
-          "end_at_ms": 15200,
-          "description": "压在人声上，用户不停即不算打断"
+          "description": "压在人声上，用户不停即不算打断",
+          "start_at_ms": 12400,
+          "end_at_ms": 12800
         },
         {
           "kind": "state",
           "label": "刚附和过 · 本轮不再出声",
-          "start_at_ms": 18400,
-          "end_at_ms": 18800,
-          "description": "控制附和密度"
+          "description": "控制附和密度",
+          "start_at_ms": 16000,
+          "end_at_ms": 16400
         },
         {
           "kind": "state",
           "label": "长句出现语义接缝 · 只表示在听",
-          "start_at_ms": 25600,
-          "end_at_ms": 26000,
-          "description": "不接话、不给建议、不切断句子"
+          "description": "不接话、不给建议、不切断句子",
+          "start_at_ms": 22000,
+          "end_at_ms": 22400
         },
         {
           "kind": "state",
           "label": "客户会与方案都没让动",
-          "start_at_ms": 30400,
-          "end_at_ms": 30800,
-          "description": "不查日历、不改、不提议帮挪，也不建任务或提醒"
+          "description": "不查日历、不改、不提议帮挪，也不建任务或提醒",
+          "start_at_ms": 25600,
+          "end_at_ms": 26000
         },
         {
           "kind": "state",
           "label": "情绪到顶 · 顺原话收",
-          "start_at_ms": 35600,
-          "end_at_ms": 36000,
-          "description": "不加码、不升级，不承诺替用户跟老板交涉"
+          "description": "不加码、不升级，不承诺替用户跟老板交涉",
+          "start_at_ms": 29200,
+          "end_at_ms": 29600
         },
         {
           "kind": "state",
           "label": "用户表示自己处理 · 不接活",
-          "start_at_ms": 39200,
-          "end_at_ms": 39600,
-          "description": "不追问怎么调，也不提出代劳"
+          "description": "不追问怎么调，也不提出代劳",
+          "start_at_ms": 31600,
+          "end_at_ms": 32000
         },
         {
           "kind": "state",
           "label": "只回应情绪 · 不复述改动",
-          "start_at_ms": 43200,
-          "end_at_ms": 43600,
-          "description": "改动在 5,200 已确认过一次，重复确认属于话多"
+          "description": "改动已确认过一次，重复确认属于话多",
+          "start_at_ms": 35200,
+          "end_at_ms": 35600
         }
       ]
     },
@@ -246,24 +246,24 @@
     {
       "name": "首次附和",
       "title": "嗐 + 是啊！",
-      "start_at_ms": 15200,
-      "end_at_ms": 16400,
       "tag": "助手附和",
+      "start_at_ms": 12800,
+      "end_at_ms": 15040,
       "note": "连说三句后才给一次附和；压在用户人声上，用户没停。"
     },
     {
       "name": "句中附和",
       "title": "那真是够呛 落在语义接缝",
-      "start_at_ms": 26000,
-      "end_at_ms": 27600,
       "tag": "助手附和",
+      "start_at_ms": 22400,
+      "end_at_ms": 23880,
       "note": "只表示在听，不切断句子，用户照常说完后半句。"
     },
     {
       "name": "用户接管",
       "title": "我看看怎么调整吧",
-      "start_at_ms": 39600,
-      "end_at_ms": 43200,
+      "start_at_ms": 32270,
+      "end_at_ms": 34910,
       "note": "用户表示自己处理；不接活、不提议代劳、不复述改动。"
     }
   ],
