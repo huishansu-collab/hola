@@ -138,6 +138,7 @@ export function packageToScenario(
       custom_annotation,
     },
     meta,
+    breaths: t.breaths,
     timingStatus: planned ? 'planned' : 'aligned',
   };
 }

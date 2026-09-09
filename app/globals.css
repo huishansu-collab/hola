@@ -453,3 +453,27 @@ body,.studio{background:#080808;color:#ededed}
 .synthesis-panel .synthesis-transport button:active{transform:scale(.94)}
 .synthesis-panel .synthesis-transport button:last-child{background:#e5e5e5;color:#111}
 .synthesis-panel .synthesis-transport button:last-child:hover{background:#fff}
+
+/* 附和落点:换气窗口画出来,手柄可拖,位移只落在界面状态里,原始 case 不动。 */
+.bc-layer{position:absolute;top:37px;left:0;right:0;z-index:7;pointer-events:none}
+.bc-breath{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(135deg,#8fb9d81f,#8fb9d81f 3px,transparent 3px,transparent 7px);border-inline:1px solid #7fa8c74d}
+.bc-handle{position:absolute;bottom:5px;height:22px;padding:0 7px;justify-content:flex-start;pointer-events:auto;cursor:ew-resize;touch-action:none;background:#c9a35f;color:#1d1f22;border:1px solid #e0bd7f;border-radius:3px;font-size:11px;overflow:hidden}
+.bc-handle span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bc-handle:hover{background:#e0bd7f}
+.bc-handle.dragging{background:#f0d3a0;border-color:#fdfdfd}
+.bc-handle.bad{background:#b8837a;border-color:#d3a094}
+.bc-readout{border-top:1px solid #3c3e42;background:#25272a;padding:9px 15px 11px;font-size:12px;color:#bbb;max-height:158px;overflow-y:auto}
+.bc-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:7px}
+.bc-title b{color:#e0e4e9;font-weight:500}
+.bc-title>span{color:#8f979f;font-size:11px}
+.bc-actions{margin-left:auto;display:flex;gap:6px}
+.bc-actions button{font-size:11px;padding:4px 9px;background:#303236;border-radius:3px;color:#ddd}
+.bc-actions button:hover{background:#3a3d42}
+.bc-copied{margin:0 0 7px;color:#a9c1af;font-size:11px}
+.bc-item{display:flex;align-items:center;gap:10px;line-height:1.95;font-variant-numeric:tabular-nums}
+.bc-item>button{font-size:11px;padding:2px 8px;background:#303236;border-radius:3px;color:#ccc}
+.bc-item b{color:#e6c896;font-weight:500;min-width:104px}
+.bc-host{color:#99a1aa;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bc-offset{color:#b98f6b}
+.bc-item.in-breath .bc-offset{color:#a9c1af}
+@media(max-width:760px){.bc-readout{max-height:none}.bc-item{flex-wrap:wrap;line-height:1.6}}

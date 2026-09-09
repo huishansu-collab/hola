@@ -152,6 +152,10 @@ for t in tl['tracks']:
                                      ('u013', '附和句 · 唉，光耗在这上头了')]]
     elif t['id'] == 'reasoning':
         t['clips'] = reasoning
+# 气口窗口随数据一起发布，界面据此把可落点画出来，方便人工微调。
+tl['breaths'] = [{'utterance_id': u, 'host_start_ms': place[u][0],
+                  'windows': [list(w) for w in breaths(u)]}
+                 for u in ['u003', 'u004', 'u005', 'u008', 'u009', 'u011', 'u012', 'u014']]
 tl['checkpoints'] = [
     {'name': '首次附和', 'title': '嗐 + 是啊！', 'tag': '助手附和',
      'start_at_ms': place['u006'][0], 'end_at_ms': place['u007'][1],
