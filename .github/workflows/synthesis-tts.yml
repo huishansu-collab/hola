@@ -1,0 +1,109 @@
+# 用 GitHub 的机器调火山 seed-audio 生成 Case 的整段对话母带。
+# (写这个的原因:Claude 云端沙箱的出网策略连不到 openspeech.bytedance.com,GitHub Actions 的机器可以。)
+#
+# 凭据:仓库 Settings → Secrets and variables → Actions
+#       VOLC_TTS_API_KEY,或 VOLC_APP_ID + VOLC_ACCESS_TOKEN(可选 variables.VOLC_RESOURCE_ID)。
+#       key 只存在 GitHub 的加密 secret 里,不进仓库、不进日志。
+# 运行:Actions 页签手动 Run workflow,或改 .github/synthesis-tts-request.yml 后 push。
+#       母带自动提交回该分支,切点对齐与打包在 Claude 会话里做。
+name: Generate Case master audio (Volc seed-audio)
+
+on:
+  push:
+    paths: ['.github/synthesis-tts-request.yml']
+  workflow_dispatch:
+    inputs:
+      case:
+        description: 'Case id(local/ 下的目录名,需含 master-request.json)'
+        default: backchannel
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: synthesis-tts-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  tts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 读取参数(手动运行用 inputs;push 触发读请求文件)
+        id: req
+        run: |
+          CASE="${{ inputs.case }}"
+          [ -n "$CASE" ] || CASE="$(sed -n 's/^case:[[:space:]]*//p' .github/synthesis-tts-request.yml | head -1 | tr -d '\r"')"
+          [ -n "$CASE" ] || CASE=backchannel
+          test -f "local/$CASE/master-request.json" || { echo "::error::local/$CASE/master-request.json 不存在"; exit 1; }
+          echo "case=$CASE" >> "$GITHUB_OUTPUT"
+          echo "生成 Case:$CASE"
+
+      - name: 组装鉴权头(generate_audio.py 用 curl -H @file,要的是文件)
+        env:
+          VOLC_TTS_API_KEY: ${{ secrets.VOLC_TTS_API_KEY }}
+          VOLC_APP_ID: ${{ secrets.VOLC_APP_ID }}
+          VOLC_ACCESS_TOKEN: ${{ secrets.VOLC_ACCESS_TOKEN }}
+          VOLC_RESOURCE_ID: ${{ vars.VOLC_RESOURCE_ID }}
+        run: |
+          umask 077
+          if [ -n "$VOLC_TTS_API_KEY" ]; then
+            printf 'X-Api-Key: %s\n' "$VOLC_TTS_API_KEY" > "$RUNNER_TEMP/seed-auth-headers"
+            echo "用 VOLC_TTS_API_KEY 鉴权"
+          elif [ -n "$VOLC_APP_ID" ] && [ -n "$VOLC_ACCESS_TOKEN" ]; then
+            { printf 'X-Api-App-Id: %s\n' "$VOLC_APP_ID"
+              printf 'X-Api-Access-Key: %s\n' "$VOLC_ACCESS_TOKEN"
+              [ -n "$VOLC_RESOURCE_ID" ] && printf 'X-Api-Resource-Id: %s\n' "$VOLC_RESOURCE_ID"
+            } > "$RUNNER_TEMP/seed-auth-headers"
+            echo "用 VOLC_APP_ID + VOLC_ACCESS_TOKEN 鉴权"
+          else
+            echo "::error::没有找到火山凭据。到 https://github.com/${{ github.repository }}/settings/secrets/actions 新建 VOLC_TTS_API_KEY,或 VOLC_APP_ID + VOLC_ACCESS_TOKEN。"
+            exit 1
+          fi
+
+      - name: 生成整段母带
+        env:
+          SEED_AUTH_FILE: ${{ runner.temp }}/seed-auth-headers
+        run: |
+          python3 local/generate_audio.py "${{ steps.req.outputs.case }}"
+
+      - name: 母带转 48 kHz 单声道 WAV(Case 包音频源格式)
+        run: |
+          C="${{ steps.req.outputs.case }}"
+          ffmpeg -y -loglevel error -i "local/$C/audio/session-master.mp3" \
+                 -ar 48000 -ac 1 -c:a pcm_s16le "local/$C/audio/session-master.wav"
+          ls -la "local/$C/audio/"
+
+      - name: 接口返回里有哪些字段(判断能否直接拿到逐字时间戳,不打印内容)
+        run: |
+          python3 - <<'PY'
+          import json,glob
+          for f in glob.glob('local/*/audio/master-response.json'):
+              d=json.load(open(f))
+              print(f, '→ 顶层字段:', sorted(d.keys()))
+              for k,v in d.items():
+                  if k!='audio' and not isinstance(v,(str,int,float,type(None))):
+                      print('   ', k, '样例结构:', json.dumps(v,ensure_ascii=False)[:400])
+          PY
+
+      - name: 留一份产物(母带,7 天)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: master-${{ steps.req.outputs.case }}
+          path: local/${{ steps.req.outputs.case }}/audio/session-master.*
+          retention-days: 7
+
+      - name: 提交回分支(只提交音频,不提交原始接口响应)
+        run: |
+          C="${{ steps.req.outputs.case }}"
+          rm -f "local/$C/audio/master-response.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "local/$C/audio/session-master.mp3" "local/$C/audio/session-master.wav"
+          git diff --cached --quiet && { echo "没有变化,不提交"; exit 0; }
+          git commit -m "语音:火山 seed-audio 生成 $C 整段母带(Actions 运行 ${{ github.run_number }})"
+          git pull --rebase --autostash origin "${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"
