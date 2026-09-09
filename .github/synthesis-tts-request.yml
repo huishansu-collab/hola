@@ -1,4 +1,4 @@
 cases:
-  - b3try1
-  - b3try2
-run: 8
+  - explicit-b3
+  - explicit-c1
+run: 9

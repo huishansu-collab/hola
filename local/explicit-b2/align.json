@@ -3,44 +3,44 @@
  "clips": [
   {
    "utterance_id": "u001",
-   "source_start_ms": 160,
-   "source_end_ms": 3720,
+   "source_start_ms": 660,
+   "source_end_ms": 5460,
    "similarity": 0.95
   },
   {
    "utterance_id": "u002",
-   "source_start_ms": 6020,
-   "source_end_ms": 6920,
+   "source_start_ms": 5820,
+   "source_end_ms": 6320,
    "similarity": 1.0
   },
   {
    "utterance_id": "u003",
-   "source_start_ms": 7280,
-   "source_end_ms": 8790,
+   "source_start_ms": 6380,
+   "source_end_ms": 9140,
    "similarity": 1.0
   },
   {
    "utterance_id": "u004",
-   "source_start_ms": 8940,
-   "source_end_ms": 14040,
+   "source_start_ms": 9320,
+   "source_end_ms": 14960,
    "similarity": 1.0
   },
   {
    "utterance_id": "u005",
-   "source_start_ms": 15480,
-   "source_end_ms": 17160,
+   "source_start_ms": 15230,
+   "source_end_ms": 15640,
    "similarity": 1.0
   },
   {
    "utterance_id": "u006",
-   "source_start_ms": 17200,
-   "source_end_ms": 21360,
+   "source_start_ms": 15660,
+   "source_end_ms": 19320,
    "similarity": 1.0
   },
   {
    "utterance_id": "u007",
-   "source_start_ms": 21560,
-   "source_end_ms": 22540,
+   "source_start_ms": 19600,
+   "source_end_ms": 20640,
    "similarity": 1.0
   }
  ]

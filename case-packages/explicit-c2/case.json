@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 10000,
+        "duration_ms": 15600,
         "file": null,
         "tracks": [
           {
@@ -47,23 +47,23 @@
       "speaker_id": "user_1",
       "text": "刚才谁给我打电话？",
       "start_at_ms": 0,
-      "end_at_ms": 1140
+      "end_at_ms": 2380
     },
     {
       "id": "u002",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "物业说啥了？",
-      "start_at_ms": 4340,
-      "end_at_ms": 5120
+      "start_at_ms": 5580,
+      "end_at_ms": 9480
     },
     {
       "id": "u003",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "行，我下午回。",
-      "start_at_ms": 7920,
-      "end_at_ms": 9160
+      "start_at_ms": 12280,
+      "end_at_ms": 14580
     }
   ],
   "events": [],
@@ -74,19 +74,19 @@
       "type": "低语",
       "role": "user",
       "start_at_ms": 0,
-      "end_at_ms": 1140
+      "end_at_ms": 2380
     },
     {
       "type": "低语",
       "role": "user",
-      "start_at_ms": 4340,
-      "end_at_ms": 5120
+      "start_at_ms": 5580,
+      "end_at_ms": 9480
     },
     {
       "type": "低语",
       "role": "user",
-      "start_at_ms": 7920,
-      "end_at_ms": 9160
+      "start_at_ms": 12280,
+      "end_at_ms": 14580
     }
   ],
   "custom_annotation": []

@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 20000,
+        "duration_ms": 21600,
         "file": null,
         "tracks": [
           {
@@ -124,55 +124,55 @@
       "speaker_id": "user_1",
       "text": "欸对了，我到家那会儿提醒我收衣服，阳台还晒着呢。",
       "start_at_ms": 0,
-      "end_at_ms": 3560
+      "end_at_ms": 4800
     },
     {
       "id": "u002",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 3600,
-      "end_at_ms": 4500
+      "start_at_ms": 5200,
+      "end_at_ms": 5700
     },
     {
       "id": "u003",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "好，到家提醒你收衣服。",
-      "start_at_ms": 4800,
-      "end_at_ms": 6310
+      "start_at_ms": 6000,
+      "end_at_ms": 8760
     },
     {
       "id": "u004",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "嗯。要是我八点还没到家，也直接发提醒，别等了。",
-      "start_at_ms": 6310,
-      "end_at_ms": 11410
+      "start_at_ms": 8760,
+      "end_at_ms": 14400
     },
     {
       "id": "u005",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 11600,
-      "end_at_ms": 13280
+      "start_at_ms": 14800,
+      "end_at_ms": 15210
     },
     {
       "id": "u006",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "行：到家提醒，八点还没到家就直接提醒你。",
-      "start_at_ms": 13600,
-      "end_at_ms": 17760
+      "start_at_ms": 15600,
+      "end_at_ms": 19260
     },
     {
       "id": "u007",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "对，就这样。",
-      "start_at_ms": 17760,
-      "end_at_ms": 18740
+      "start_at_ms": 19260,
+      "end_at_ms": 20300
     }
   ],
   "events": [
@@ -187,7 +187,7 @@
       "event_id": "e01",
       "event_type": "function_call",
       "tool_name": "reminder.create",
-      "time_at_ms": 3600,
+      "time_at_ms": 5200,
       "results": {
         "note": "reminder.create(geo=home)成功，耗时200ms",
         "simulated": true
@@ -197,14 +197,14 @@
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "reminder.update",
-      "time_at_ms": 6400,
+      "time_at_ms": 9200,
       "query": "{\"request\": \"geo=homeOR20:00\"}"
     },
     {
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "reminder.update",
-      "time_at_ms": 11600,
+      "time_at_ms": 14800,
       "results": {
         "note": "reminder.update(geo=homeOR20:00)成功，耗时200ms，合并成一条",
         "simulated": true
@@ -214,21 +214,21 @@
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "reminder.fire",
-      "time_at_ms": 19200,
+      "time_at_ms": 20800,
       "query": "{\"request\": \"geo=home\"}"
     },
     {
       "event_id": "e04",
       "event_type": "function_call",
       "tool_name": "reminder.close",
-      "time_at_ms": 19200,
+      "time_at_ms": 20800,
       "query": "{\"request\": \"reminder.close｜完成\"}"
     },
     {
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "reminder.fire",
-      "time_at_ms": 19600,
+      "time_at_ms": 21200,
       "results": {
         "note": "reminder.fire(geo=home)",
         "simulated": true
@@ -238,7 +238,7 @@
       "event_id": "e04",
       "event_type": "function_call",
       "tool_name": "reminder.close",
-      "time_at_ms": 19600,
+      "time_at_ms": 21200,
       "results": {
         "note": "reminder.close｜完成",
         "simulated": true

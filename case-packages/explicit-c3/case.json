@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 21200,
+        "duration_ms": 27200,
         "file": null,
         "tracks": [
           {
@@ -86,23 +86,23 @@
       "speaker_id": "user_1",
       "text": "给张伟发个消息，就说文件我发他邮箱了。",
       "start_at_ms": 0,
-      "end_at_ms": 3480
+      "end_at_ms": 2660
     },
     {
       "id": "u002",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "有俩张伟——是运营部那个，还是你表哥？",
-      "start_at_ms": 3600,
-      "end_at_ms": 6600
+      "start_at_ms": 2800,
+      "end_at_ms": 6340
     },
     {
       "id": "u003",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "公司的。",
-      "start_at_ms": 6600,
-      "end_at_ms": 7160
+      "start_at_ms": 6340,
+      "end_at_ms": 6860
     },
     {
       "id": "u004",
@@ -110,47 +110,47 @@
       "speaker_id": "assistant",
       "text": "嗯……",
       "start_at_ms": 7200,
-      "end_at_ms": 8100
+      "end_at_ms": 7550
     },
     {
       "id": "u005",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "好，发运营部张伟：‘文件发你邮箱了，注意查收。’这么发？",
-      "start_at_ms": 8400,
-      "end_at_ms": 12860
+      "start_at_ms": 8000,
+      "end_at_ms": 16820
     },
     {
       "id": "u006",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "把‘注意查收’去了，就前半句。",
-      "start_at_ms": 12860,
-      "end_at_ms": 15620
+      "start_at_ms": 16820,
+      "end_at_ms": 19340
     },
     {
       "id": "u007",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯。",
-      "start_at_ms": 16000,
-      "end_at_ms": 16280
+      "start_at_ms": 20000,
+      "end_at_ms": 20340
     },
     {
       "id": "u008",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "‘文件发你邮箱了。’——改好了，发了哈。",
-      "start_at_ms": 16800,
-      "end_at_ms": 20080
+      "start_at_ms": 21200,
+      "end_at_ms": 25780
     },
     {
       "id": "u009",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "好。",
-      "start_at_ms": 20080,
-      "end_at_ms": 20320
+      "start_at_ms": 25780,
+      "end_at_ms": 26020
     }
   ],
   "events": [
@@ -175,14 +175,14 @@
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "im.send",
-      "time_at_ms": 16000,
+      "time_at_ms": 20000,
       "query": "{\"request\": \"张伟·运营部\"}"
     },
     {
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "im.send",
-      "time_at_ms": 16400,
+      "time_at_ms": 20800,
       "results": {
         "note": "im.send成功，耗时500ms，已发",
         "simulated": true

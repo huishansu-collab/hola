@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 491600,
+        "duration_ms": 495600,
         "file": null,
         "tracks": [
           {
@@ -124,63 +124,63 @@
       "speaker_id": "user_1",
       "text": "帮我定个十分钟。",
       "start_at_ms": 0,
-      "end_at_ms": 820
+      "end_at_ms": 1440
     },
     {
       "id": "u002",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 1200,
-      "end_at_ms": 1420
+      "start_at_ms": 2000,
+      "end_at_ms": 4540
     },
     {
       "id": "u003",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "好，十分钟，开始了。",
-      "start_at_ms": 1600,
-      "end_at_ms": 3800
+      "start_at_ms": 4800,
+      "end_at_ms": 6660
     },
     {
       "id": "u004",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "欸等会儿，改八分钟吧，我锅已经热了。",
-      "start_at_ms": 3800,
-      "end_at_ms": 6620
+      "start_at_ms": 6660,
+      "end_at_ms": 8700
     },
     {
       "id": "u005",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 6800,
-      "end_at_ms": 7940
+      "start_at_ms": 9200,
+      "end_at_ms": 10780
     },
     {
       "id": "u006",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "改好了，八分钟。",
-      "start_at_ms": 8000,
-      "end_at_ms": 9160
+      "start_at_ms": 11200,
+      "end_at_ms": 12620
     },
     {
       "id": "u007",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "八分钟到了，去看下锅吧。",
-      "start_at_ms": 488000,
-      "end_at_ms": 489720
+      "start_at_ms": 491600,
+      "end_at_ms": 493380
     },
     {
       "id": "u008",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "好嘞。",
-      "start_at_ms": 489720,
-      "end_at_ms": 490120
+      "start_at_ms": 493380,
+      "end_at_ms": 493780
     }
   ],
   "events": [
@@ -195,7 +195,7 @@
       "event_id": "e01",
       "event_type": "function_call",
       "tool_name": "timer.create",
-      "time_at_ms": 1200,
+      "time_at_ms": 2000,
       "results": {
         "note": "timer.create(10:00)成功，耗时200ms",
         "simulated": true
@@ -205,14 +205,14 @@
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "timer.update",
-      "time_at_ms": 4000,
+      "time_at_ms": 7200,
       "query": "{\"request\": \"8:00\"}"
     },
     {
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "timer.update",
-      "time_at_ms": 6800,
+      "time_at_ms": 9200,
       "results": {
         "note": "timer.update(8:00)成功，耗时200ms，自此刻重新起算",
         "simulated": true
@@ -222,14 +222,14 @@
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "timer.fire",
-      "time_at_ms": 487600,
+      "time_at_ms": 491200,
       "query": "{\"request\": \"自6,450起算满480,000ms\"}"
     },
     {
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "timer.fire",
-      "time_at_ms": 488000,
+      "time_at_ms": 491600,
       "results": {
         "note": "timer.fire（自6,450起算满480,000ms）",
         "simulated": true
@@ -239,14 +239,14 @@
       "event_id": "e04",
       "event_type": "function_call",
       "tool_name": "timer.close",
-      "time_at_ms": 490800,
+      "time_at_ms": 494800,
       "query": "{\"request\": \"timer.close｜任务完成\"}"
     },
     {
       "event_id": "e04",
       "event_type": "function_call",
       "tool_name": "timer.close",
-      "time_at_ms": 491200,
+      "time_at_ms": 495200,
       "results": {
         "note": "timer.close｜任务完成",
         "simulated": true

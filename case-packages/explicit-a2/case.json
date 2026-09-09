@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 15200,
+        "duration_ms": 18400,
         "file": null,
         "tracks": [
           {
@@ -86,63 +86,63 @@
       "speaker_id": "user_1",
       "text": "300美元是多少人民币来着？",
       "start_at_ms": 0,
-      "end_at_ms": 1740
+      "end_at_ms": 2100
     },
     {
       "id": "u002",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 2000,
-      "end_at_ms": 2880
+      "start_at_ms": 2400,
+      "end_at_ms": 3300
     },
     {
       "id": "u003",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "2127元。",
-      "start_at_ms": 3200,
-      "end_at_ms": 4680
+      "start_at_ms": 4000,
+      "end_at_ms": 5680
     },
     {
       "id": "u004",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "那500呢？",
-      "start_at_ms": 4680,
-      "end_at_ms": 5600
+      "start_at_ms": 5680,
+      "end_at_ms": 6460
     },
     {
       "id": "u005",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "3545元。",
-      "start_at_ms": 6000,
-      "end_at_ms": 7200
+      "start_at_ms": 7200,
+      "end_at_ms": 8800
     },
     {
       "id": "u006",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "呃，不对不对，我看岔了，这标的是500日元。",
-      "start_at_ms": 7200,
-      "end_at_ms": 10560
+      "start_at_ms": 8800,
+      "end_at_ms": 12860
     },
     {
       "id": "u007",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 10800,
-      "end_at_ms": 11540
+      "start_at_ms": 13200,
+      "end_at_ms": 13860
     },
     {
       "id": "u008",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "日元就便宜多了，24.5元左右。",
-      "start_at_ms": 11600,
-      "end_at_ms": 14240
+      "start_at_ms": 14000,
+      "end_at_ms": 17120
     }
   ],
   "events": [
@@ -157,7 +157,7 @@
       "event_id": "e01",
       "event_type": "function_call",
       "tool_name": "rate.query",
-      "time_at_ms": 2000,
+      "time_at_ms": 2400,
       "results": {
         "note": "rate.query（USD→CNY）成功，耗时300ms",
         "simulated": true
@@ -167,14 +167,14 @@
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "calc",
-      "time_at_ms": 5600,
+      "time_at_ms": 6800,
       "query": "{\"request\": \"500×7.09\"}"
     },
     {
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "calc",
-      "time_at_ms": 6000,
+      "time_at_ms": 7200,
       "results": {
         "note": "calc（500×7.09）即时完成",
         "simulated": true
@@ -184,14 +184,14 @@
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "rate.query",
-      "time_at_ms": 7200,
+      "time_at_ms": 8800,
       "query": "{\"request\": \"JPY→CNY\"}"
     },
     {
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "rate.query",
-      "time_at_ms": 10800,
+      "time_at_ms": 13200,
       "results": {
         "note": "rate.query（JPY→CNY）成功，耗时300ms",
         "simulated": true
@@ -205,8 +205,8 @@
     {
       "label": "改口①",
       "role": "user",
-      "start_at_ms": 7200,
-      "end_at_ms": 10560
+      "start_at_ms": 8800,
+      "end_at_ms": 12860
     }
   ]
 }

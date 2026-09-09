@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 18800,
+        "duration_ms": 22400,
         "file": null,
         "tracks": [
           {
@@ -67,7 +67,7 @@
       "speaker_id": "user_1",
       "text": "问你个字：上面一个山、下面一个今，念啥？",
       "start_at_ms": 0,
-      "end_at_ms": 4640
+      "end_at_ms": 4260
     },
     {
       "id": "u002",
@@ -75,39 +75,39 @@
       "speaker_id": "assistant",
       "text": "嗯……",
       "start_at_ms": 4800,
-      "end_at_ms": 5360
+      "end_at_ms": 5640
     },
     {
       "id": "u003",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "岑，二声，cén。岑参的岑，也当小山头讲。",
-      "start_at_ms": 5600,
-      "end_at_ms": 10020
+      "start_at_ms": 6000,
+      "end_at_ms": 11740
     },
     {
       "id": "u004",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "欸？后头那个参念shēn啊？我一直念的cān。",
-      "start_at_ms": 10020,
-      "end_at_ms": 13520
+      "start_at_ms": 11740,
+      "end_at_ms": 15960
     },
     {
       "id": "u005",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯，人名里读shēn，跟人参的参一个音。",
-      "start_at_ms": 14000,
-      "end_at_ms": 16800
+      "start_at_ms": 16800,
+      "end_at_ms": 20080
     },
     {
       "id": "u006",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "行，知道了。",
-      "start_at_ms": 16800,
-      "end_at_ms": 17620
+      "start_at_ms": 20080,
+      "end_at_ms": 20960
     }
   ],
   "events": [

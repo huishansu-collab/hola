@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 17200,
+        "duration_ms": 18000,
         "file": null,
         "tracks": [
           {
@@ -86,39 +86,39 @@
       "speaker_id": "user_1",
       "text": "诶，帮我看下，今天要带伞不？",
       "start_at_ms": 0,
-      "end_at_ms": 2340
+      "end_at_ms": 2760
     },
     {
       "id": "u002",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "得带。十点后有阵雨，得下午三四点才停。",
-      "start_at_ms": 2400,
-      "end_at_ms": 7000
+      "start_at_ms": 3200,
+      "end_at_ms": 7160
     },
     {
       "id": "u003",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "中午那会儿也下？我约了王姐吃饭。",
-      "start_at_ms": 7000,
-      "end_at_ms": 10060
+      "start_at_ms": 7160,
+      "end_at_ms": 10180
     },
     {
       "id": "u004",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "中午雨最大。约的地方要是远，建议提前几分钟出门。",
-      "start_at_ms": 10400,
-      "end_at_ms": 15060
+      "start_at_ms": 10800,
+      "end_at_ms": 15400
     },
     {
       "id": "u005",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "行，知道了。",
-      "start_at_ms": 15060,
-      "end_at_ms": 16040
+      "start_at_ms": 15400,
+      "end_at_ms": 16660
     }
   ],
   "events": [
@@ -140,7 +140,7 @@
       "event_id": "e01",
       "event_type": "function_call",
       "tool_name": "location",
-      "time_at_ms": 400,
+      "time_at_ms": 800,
       "results": {
         "note": "location（常驻地缓存，即时）",
         "simulated": true
@@ -150,7 +150,7 @@
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "weather.query",
-      "time_at_ms": 400,
+      "time_at_ms": 800,
       "results": {
         "note": "查询成功，耗时400ms（亮屏预取命中，用户开口前已返回）",
         "simulated": true

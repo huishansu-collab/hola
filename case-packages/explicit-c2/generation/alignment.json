@@ -4,20 +4,20 @@
     {
       "utterance_id": "u001",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 600,
-      "source_end_ms": 1740
+      "source_start_ms": 80,
+      "source_end_ms": 2460
     },
     {
       "utterance_id": "u002",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 3120,
-      "source_end_ms": 3900
+      "source_start_ms": 2460,
+      "source_end_ms": 6360
     },
     {
       "utterance_id": "u003",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 5880,
-      "source_end_ms": 7120
+      "source_start_ms": 6360,
+      "source_end_ms": 8660
     }
   ]
 }

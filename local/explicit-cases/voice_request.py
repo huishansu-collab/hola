@@ -112,9 +112,15 @@ def request(cid):
     role = {'user': '用户', 'assistant': '助手', 'third_party': '旁人'}
     scene = SCENES.get(cid, d['static_context']['constraints'].get('task_goal', ''))
     note = '\n'.join(f'{i + 1}. {h}' for i, h in enumerate(hints(lines, {'id': cid, **d})))
-    body = '\n\n'.join(
-        f'{role[s]}：{t}' + (f'\n（读法：{delivery(cid, uid)}）' if delivery(cid, uid) else '')
-        for uid, s, t in lines3)
+    def spoken(t):
+        # 台词末尾的破折号是「被打断」的记号，不是要读的字。留着它，
+        # 生成侧有时会整句跳过（C1 的「等下——」就被漏掉过），所以去掉、改成读法说明。
+        return re.sub(r'[—－-]+$', '', t).strip() or t
+    def note(uid, t):
+        parts = [delivery(cid, uid)] + (['说到这儿被对方打断，读完就收，不要把句子补完整'] if t != spoken(t) else [])
+        parts = [x for x in parts if x]
+        return f'\n（读法：{"；".join(parts)}）' if parts else ''
+    body = '\n\n'.join(f'{role[s]}：{spoken(t)}' + note(uid, t) for uid, s, t in lines3)
     prompt = (
         f'生成完整的 {len(lines)} 段双人普通话对话，严格按下面的顺序逐条读完，每段之间留约 0.8 秒静音，'
         '不读角色名或说明，不增加台词、不合并台词、不改字。各角色全程保持同一音色。无音乐、无环境音效。\n'
@@ -137,5 +143,11 @@ if __name__ == '__main__':
     for cid in sys.argv[1:]:
         out = ROOT / 'local' / cid / 'master-request.json'
         out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(json.dumps(request(cid), ensure_ascii=False, indent=2) + '\n', 'utf-8')
+        req = request(cid)
+        out.write_text(json.dumps(req, ensure_ascii=False, indent=2) + '\n', 'utf-8')
+        # 备用版：去掉逐句读法，只留节奏段。火山的文本审核偶尔会拒掉带读法的那版
+        # （B3 「发群通知」那条就被拒了两次），生成脚本会自动退到这一版。
+        plain = dict(req, text_prompt=re.sub(r'\n（读法：[^）]*）', '', req['text_prompt']))
+        (out.parent / 'master-request-plain.json').write_text(
+            json.dumps(plain, ensure_ascii=False, indent=2) + '\n', 'utf-8')
         print(f'{cid}: {out}')

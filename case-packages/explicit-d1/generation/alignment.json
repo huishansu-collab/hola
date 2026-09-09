@@ -4,26 +4,26 @@
     {
       "utterance_id": "u001",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 1020,
-      "source_end_ms": 3380
+      "source_start_ms": 440,
+      "source_end_ms": 2580
     },
     {
       "utterance_id": "u002",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 4220,
-      "source_end_ms": 11200
+      "source_start_ms": 3200,
+      "source_end_ms": 10380
     },
     {
       "utterance_id": "u003",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 11900,
-      "source_end_ms": 12300
+      "source_start_ms": 12100,
+      "source_end_ms": 12360
     },
     {
       "utterance_id": "u004",
       "source": "audio/sources/session-master.wav",
-      "source_start_ms": 13100,
-      "source_end_ms": 15320
+      "source_start_ms": 13000,
+      "source_end_ms": 14780
     }
   ]
 }
