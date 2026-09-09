@@ -5,9 +5,13 @@ import rideData from './ride-clips.json';
 import coffeeData from './coffee-clips.json';
 import smsData from './sms-clips.json';
 import gmailRuntime from '../../case-packages/gmail/build/runtime.json';
-const gmailData=Object.fromEntries(Object.entries(gmailRuntime.audio).map(([id,clip])=>[`package/gmail/${id}`,clip]));
+import backchannelRuntime from '../../case-packages/backchannel/build/runtime.json';
+// Case 包的音频按 `package/<id>/<utterance>` 注册，与 packageToScenario 生成的
+// audioKey 一致。漏注册的后果是静默无声：播放循环里查不到 key 就直接跳过。
+const packageData=Object.fromEntries([gmailRuntime,backchannelRuntime].flatMap(
+ r=>Object.entries(r.audio).map(([id,clip])=>[`package/${r.manifest.case_id}/${id}`,clip])));
 export type RealClip={a:number;b:number;audioKey?:string;fadeMs?:number;loop?:boolean;gainPoints?:[number,number][]};
-export const audioClips={...data,...actorData,...rideData,...coffeeData,...smsData,...gmailData} as Record<string,{src:string;start:number;duration:number;peaks:number[];sourceStart?:number;sourceEnd?:number;source?:string}>;
+export const audioClips={...data,...actorData,...rideData,...coffeeData,...smsData,...packageData} as Record<string,{src:string;start:number;duration:number;peaks:number[];sourceStart?:number;sourceEnd?:number;source?:string}>;
 export function useTimelineAudio(clips:RealClip[],pos:number,playing:boolean){
  const players=useRef<Map<string,HTMLAudioElement>>(new Map());
  const [error,setError]=useState('');

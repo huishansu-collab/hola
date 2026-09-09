@@ -11,6 +11,11 @@ const clip=(s,name,label)=>track(s,name).clips.find(c=>c.label===label);
 const query=(s,id)=>JSON.parse(s.inputEvents.find(e=>e.event_id===id&&e.query!==undefined).query);
 const result=(s,id)=>s.inputEvents.find(e=>e.event_id===id&&e.results).results;
 const calls=(s,tool)=>[...new Set(s.inputEvents.filter(e=>e.tool_name===tool).map(e=>e.event_id))];
+// 应用实际能播的 key，来自 components/audio/use-timeline-audio.ts 的注册表
+const registered=new Set(Object.keys(Function('data','actorData','rideData','coffeeData','smsData','gmailRuntime','backchannelRuntime',
+ compile('components/audio/use-timeline-audio.ts').replace(/export function useTimelineAudio[\s\S]*$/,'')+';return audioClips')(
+ ...['clips','actor-clips','ride-clips','coffee-clips','sms-clips'].map(n=>JSON.parse(fs.readFileSync(`components/audio/${n}.json`))),
+ ...['gmail','backchannel'].map(id=>JSON.parse(fs.readFileSync(`case-packages/${id}/build/runtime.json`))))));
 
 // Shared shape: design-time fixtures with no generated speech.
 for(const [id,s] of Object.entries(cases)){
@@ -37,7 +42,11 @@ for(const [id,s] of Object.entries(cases)){
  }
  if(!['backchannel','preempt'].includes(id))assert(track(s,'工具调用').clips.some(c=>c.playbackControl),`${id} missing playback control block`);
  // Every utterance of a voiced case must actually carry audio.
- if(voiced)for(const t of [track(s,'用户'),track(s,'助手')])for(const c of t.clips)assert(c.audioKey&&c.wave,`${id}/${c.label} 已配音 Case 的语音片段必须有音频`);
+ if(voiced)for(const t of [track(s,'用户'),track(s,'助手')])for(const c of t.clips){
+  assert(c.audioKey&&c.wave,`${id}/${c.label} 已配音 Case 的语音片段必须有音频`);
+  // 数据对、注册漏，播放循环会静默跳过；这条断言把注册表也一起管住。
+  assert(registered.has(c.audioKey),`${id}/${c.label} 的 audioKey ${c.audioKey} 未注册到 use-timeline-audio 的 audioClips`);
+ }
  for(const e of s.inputEvents)assert(!/实时|已下单|已支付/.test(JSON.stringify(e.results??{})),`${id} result claims more than the case delivers`);
 }
 
