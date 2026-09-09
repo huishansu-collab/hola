@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "clips": [
+    {
+      "utterance_id": "u001",
+      "source": "audio/sources/user-master.wav",
+      "source_start_ms": 500,
+      "source_end_ms": 4150
+    },
+    {
+      "utterance_id": "u002",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 4760,
+      "source_end_ms": 10080
+    },
+    {
+      "utterance_id": "u003",
+      "source": "audio/sources/user-master.wav",
+      "source_start_ms": 5050,
+      "source_end_ms": 5800
+    },
+    {
+      "utterance_id": "u004",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 13080,
+      "source_end_ms": 18312
+    }
+  ]
+}

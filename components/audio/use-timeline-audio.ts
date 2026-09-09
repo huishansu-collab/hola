@@ -4,7 +4,8 @@ import actorData from './actor-clips.json';
 import rideData from './ride-clips.json';
 import coffeeData from './coffee-clips.json';
 import smsData from './sms-clips.json';
-import gmailData from './gmail-clips.json';
+import gmailRuntime from '../../case-packages/gmail/build/runtime.json';
+const gmailData=Object.fromEntries(Object.entries(gmailRuntime.audio).map(([id,clip])=>[`package/gmail/${id}`,clip]));
 export type RealClip={a:number;b:number;audioKey?:string;fadeMs?:number;loop?:boolean;gainPoints?:[number,number][]};
 export const audioClips={...data,...actorData,...rideData,...coffeeData,...smsData,...gmailData} as Record<string,{src:string;start:number;duration:number;peaks:number[];sourceStart?:number;sourceEnd?:number;source?:string}>;
 export function useTimelineAudio(clips:RealClip[],pos:number,playing:boolean){

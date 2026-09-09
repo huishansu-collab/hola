@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": []
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": []
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "start_at_ms": 400,
+          "end_at_ms": 4000,
+          "label": "逐步识别：未读邮件 / 简述重点"
+        },
+        {
+          "kind": "state",
+          "start_at_ms": 4400,
+          "end_at_ms": 4800,
+          "label": "未绑定邮箱 · 发现可用邮件连接能力"
+        },
+        {
+          "kind": "state",
+          "start_at_ms": 5600,
+          "end_at_ms": 6000,
+          "label": "发现 Gmail · 询问用户是否配置"
+        },
+        {
+          "kind": "state",
+          "start_at_ms": 11200,
+          "end_at_ms": 12400,
+          "label": "检测到插话 · 让出话权并接收 Gmail 选择"
+        },
+        {
+          "kind": "state",
+          "start_at_ms": 12800,
+          "end_at_ms": 13200,
+          "label": "配置卡片已展示 · 说明下一步"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "gmail_bindings",
+          "description": "返回：没有已绑定邮箱"
+        },
+        {
+          "kind": "tool",
+          "event_id": "gmail_discovery",
+          "description": "发现 Gmail · 需用户配置"
+        },
+        {
+          "kind": "tool",
+          "event_id": "gmail_config_card",
+          "description": "展示 Gmail 配置卡片 · 等待用户配置"
+        },
+        {
+          "kind": "tool",
+          "event_id": "gmail_stop",
+          "description": "淡出 120 ms · 11.320 秒实际停声"
+        }
+      ]
+    }
+  ],
+  "response_links": [
+    {
+      "user_id": "u001",
+      "assistant_id": "u002"
+    },
+    {
+      "user_id": "u003",
+      "assistant_id": "u004"
+    }
+  ],
+  "interruptions": [
+    {
+      "user_id": "u003",
+      "assistant_id": "u002",
+      "detected_at_ms": 11200,
+      "stop_command_at_ms": 11200,
+      "fade_start_at_ms": 11200,
+      "stop_at_ms": 11320,
+      "user_voice_onset_at_ms": 11130,
+      "timing_basis": "音频对齐；检出和停播为模拟设计值",
+      "discarded_text": "邮箱"
+    }
+  ],
+  "tool_dependencies": [
+    {
+      "event_id": "gmail_bindings",
+      "depends_on": []
+    },
+    {
+      "event_id": "gmail_discovery",
+      "depends_on": [
+        "gmail_bindings"
+      ]
+    },
+    {
+      "event_id": "gmail_stop",
+      "depends_on": []
+    },
+    {
+      "event_id": "gmail_config_card",
+      "depends_on": [
+        "gmail_discovery"
+      ]
+    }
+  ]
+}

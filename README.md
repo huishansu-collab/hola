@@ -4,7 +4,7 @@
 
 ## 本地运行
 
-需要 Node.js 22.13 或更新版本，构建单文件页面还需要 Python 3。
+需要 Node.js 22.18 或更新版本，构建单文件页面还需要 Python 3。
 
 ```sh
 npm ci
@@ -33,8 +33,21 @@ npm run build:local
 
 文件目录与界面状态保存在当前浏览器的本地存储中；合成音频缓存在 IndexedDB 中。更换浏览器或清除站点数据会重置这些本地状态。
 
+## 独立 Case 包
+
+Gmail 已使用独立数据包驱动。Files 右侧的“导入 Case 包”支持导入构建生成的 `.case.json`，相同 ID 更新，刷新后保留。
+
+```sh
+npm run case:validate -- case-packages/gmail
+npm run case:build -- case-packages/gmail
+```
+
+导入文件位于 `case-packages/gmail/build/gmail.case.json`，交付文件为同目录的 `gmail.tar`。格式和新增 Case 方法见 [Case 包 v1](docs/case-package-v1.md)。
+
 ## 项目结构
 
+- `case-packages/`：独立 Case 源数据和源音频，目前已迁移 Gmail。
+- `lib/case-package/`：CLI 与浏览器共用的校验和音频构建。
 - `app/`：页面和样式。
 - `components/`：时间线、Case、音频与数据面板。
 - `components/audio/`：内嵌音频与波形数据、播放和双声道合成。
