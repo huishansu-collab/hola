@@ -2,7 +2,7 @@ import fs from 'node:fs';import assert from 'node:assert/strict';
 import {loadCases,compile} from './load-cases.mjs';
 const baseMeta=JSON.parse(fs.readFileSync('components/meta-data.json'));
 const {reconcileCase,buildCaseData}=Function('baseMeta',compile('components/case-data.ts')+';return {reconcileCase,buildCaseData}')(baseMeta);
-const names={weather:'北京天气 / 跑步提醒',actor:'演员名字 / 追问电视剧',ride:'回家路况 / 呼叫快车',coffee:'订咖啡 / 偏好与地址确认',sms:'手机欠费短信 / Living Edge 提醒',gmail:'新用户查 Gmail 邮件',interrupt:'播报中打断改口 / 高铁车次重查',retry:'路况服务超时 / 降级用历史记录',clarify:'指代不明 / 先澄清再发送'};
+const names={weather:'北京天气 / 跑步提醒',actor:'演员名字 / 追问电视剧',ride:'回家路况 / 呼叫快车',coffee:'订咖啡 / 偏好与地址确认',sms:'手机欠费短信 / Living Edge 提醒',gmail:'新用户查 Gmail 邮件',interrupt:'播报中打断改口 / 高铁车次重查',retry:'路况服务超时 / 降级用历史记录',clarify:'指代不明 / 先澄清再发送',backchannel:'老板反复改周会 / 吐槽时附和',preempt:'订高铁票 / 查到无票主动打断'};
 function schema(value,s,path){
  if(s.type==='object'){assert(value&&typeof value==='object'&&!Array.isArray(value),path);for(const k of s.required??[])assert(Object.hasOwn(value,k),`${path} missing ${k}`);for(const [k,v] of Object.entries(value))if(s.properties?.[k])schema(v,s.properties[k],`${path}.${k}`);}
  else if(s.type==='array'){assert(Array.isArray(value),path);for(const v of value)if(s.items)schema(v,s.items,path+'[]');}
@@ -14,7 +14,10 @@ for(const [id,raw] of Object.entries(loadCases())){
  assert.deepEqual(s.tracks.map(t=>t.name),['用户','用户控制','助手','表达控制','世界','后台判断','工具调用']);
  const mergedTools=s.tracks.find(t=>t.name==='工具调用').clips;
  for(let i=0;i<mergedTools.length;i++)for(let j=i+1;j<mergedTools.length;j++){const a=mergedTools[i],b=mergedTools[j];if(a.lane===b.lane)assert(a.b<=b.a||b.b<=a.a,`${id} overlapping merged blocks`);}
- if(id!=='gmail')assert(mergedTools.some(c=>c.playbackControl),`${id} missing playback controls`);
+ // Playback controls are required wherever the case emits non-speech output:
+ // a loading region, or a device effect the assistant triggered.
+ const emitsPlayback=s.playableClips.some(c=>c.loop)||s.inputEvents.some(e=>['audio.play','living_edge.light'].includes(e.tool_name));
+ if(emitsPlayback)assert(mergedTools.some(c=>c.playbackControl),`${id} missing playback controls`);
  const {document:d}=buildCaseData({caseId:id,caseTitle:names[id],durationMs:s.END,events:s.inputEvents,utterances:s.utterances,controls:s.controlAnnotations,metaOverride:s.meta});
  assert.equal(d.meta_data.sample.case_id,id);assert.equal(d.meta_data.sample.case_name,names[id]);assert.equal(d.meta_data.media.audio.duration_ms,s.END);assert.equal(d.meta_data.media.audio.file,null);
  assert.deepEqual(d.meta_data.media.audio.tracks,[{track_ref:'Channel 1',role:'user'},{track_ref:'Channel 2',role:'assistant'}]);

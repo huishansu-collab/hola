@@ -1,0 +1,276 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "preempt",
+      "case_name": "订高铁票 / 查到无票主动打断",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 26800,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "订今晚从北京西到石家庄的高铁票",
+      "completion_boundary": "次日车次已占座并展示支付卡片；未扣款、未出票",
+      "preempt_condition": "用户正在说的内容已经作废，继续听会让用户白说完",
+      "preempt_shape": "先给理由再给替代，说完立即交回话语权",
+      "no_queue_telemetry": "用户被打断后未说完的半句不补全、不推断",
+      "payment_by_user": "只占座不扣款，点击与支付由用户在卡片内完成",
+      "timing_note": "时序为设计值，语音尚未生成；边界按 400 毫秒步长排布。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "train.search",
+          "description": "按出发地、到达地与时段查询高铁余票。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "origin": {
+                "type": "string",
+                "description": "出发站"
+              },
+              "destination": {
+                "type": "string",
+                "description": "到达站"
+              },
+              "depart_window": {
+                "type": "string",
+                "description": "出发时段"
+              }
+            },
+            "required": [
+              "origin",
+              "destination",
+              "depart_window"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "ticket.hold",
+          "description": "为指定车次占座，不扣款。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "trip_no": {
+                "type": "string",
+                "description": "车次号"
+              },
+              "date": {
+                "type": "string",
+                "description": "乘车日期"
+              },
+              "seats": {
+                "type": "integer",
+                "description": "座位数"
+              },
+              "seat_preference": {
+                "type": "string",
+                "description": "座位偏好，未指定时不传"
+              }
+            },
+            "required": [
+              "trip_no",
+              "date",
+              "seats"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "ui.show_payment_card",
+          "description": "在站内展示支付卡片，支付由用户完成。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "hold_id": {
+                "type": "string",
+                "description": "占座标识"
+              }
+            },
+            "required": [
+              "hold_id"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {
+    "origin": "北京西",
+    "destination": "石家庄"
+  },
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "帮我订今天晚上七点，北京西到石家庄的高铁。",
+      "start_at_ms": 0,
+      "end_at_ms": 4000
+    },
+    {
+      "id": "u002",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "两张票，最好靠窗。",
+      "start_at_ms": 4400,
+      "end_at_ms": 6400
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "另外能不能挑一下车厢——",
+      "start_at_ms": 6800,
+      "end_at_ms": 9200
+    },
+    {
+      "id": "u004",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "打断一下，今晚七点以后的票卖完了。",
+      "start_at_ms": 8400,
+      "end_at_ms": 11200
+    },
+    {
+      "id": "u005",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "最早是明天早上六点三十八，还有两张。",
+      "start_at_ms": 11600,
+      "end_at_ms": 15200
+    },
+    {
+      "id": "u006",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "行，那就订明早那班。",
+      "start_at_ms": 15600,
+      "end_at_ms": 17600
+    },
+    {
+      "id": "u007",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "明早六点三十八，两张靠窗，先给你占住了。",
+      "start_at_ms": 20000,
+      "end_at_ms": 24000
+    },
+    {
+      "id": "u008",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "卡片发你了，付一下就行。",
+      "start_at_ms": 24400,
+      "end_at_ms": 26800
+    }
+  ],
+  "events": [
+    {
+      "event_id": "train_1",
+      "event_type": "function_call",
+      "tool_name": "train.search",
+      "time_at_ms": 4400,
+      "query": "{\"origin\": \"北京西\", \"destination\": \"石家庄\", \"depart_window\": \"今天 19:00 后\"}"
+    },
+    {
+      "event_id": "train_1",
+      "event_type": "function_call",
+      "tool_name": "train.search",
+      "time_at_ms": 7600,
+      "results": {
+        "available": false,
+        "reason": "sold_out",
+        "next_available": {
+          "trip_no": "G601",
+          "depart": "明天 06:38",
+          "seats_left": 2
+        },
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "hold_1",
+      "event_type": "function_call",
+      "tool_name": "ticket.hold",
+      "time_at_ms": 18000,
+      "query": "{\"trip_no\": \"G601\", \"date\": \"明天\", \"seats\": 2, \"seat_preference\": \"靠窗\"}"
+    },
+    {
+      "event_id": "hold_1",
+      "event_type": "function_call",
+      "tool_name": "ticket.hold",
+      "time_at_ms": 18800,
+      "results": {
+        "status": "held",
+        "hold_id": "hold_7781",
+        "trip_no": "G601",
+        "seats": 2,
+        "seat_preference": "靠窗",
+        "expires_in_s": 900,
+        "paid": false,
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "card_1",
+      "event_type": "function_call",
+      "tool_name": "ui.show_payment_card",
+      "time_at_ms": 19200,
+      "query": "{\"hold_id\": \"hold_7781\"}"
+    },
+    {
+      "event_id": "card_1",
+      "event_type": "function_call",
+      "tool_name": "ui.show_payment_card",
+      "time_at_ms": 19600,
+      "results": {
+        "status": "shown",
+        "hold_id": "hold_7781",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": [
+    {
+      "custom_type": "抢话起声",
+      "role": "assistant",
+      "start_at_ms": 8400,
+      "end_at_ms": 9200,
+      "note": "语速略快、音量略提；与用户人声重叠 800ms。打断不进 fdx_annotation。"
+    }
+  ]
+}

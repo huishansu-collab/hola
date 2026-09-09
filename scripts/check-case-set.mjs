@@ -2,7 +2,7 @@ import fs from 'node:fs';import assert from 'node:assert/strict';
 import {loadCases,compile} from './load-cases.mjs';
 const baseMeta=JSON.parse(fs.readFileSync('components/meta-data.json'));
 const {reconcileCase}=Function('baseMeta',compile('components/case-data.ts')+';return {reconcileCase}')(baseMeta);
-const added=['interrupt','retry','clarify'];
+const added=['interrupt','retry','clarify','backchannel','preempt'];
 const all=loadCases();
 const cases=Object.fromEntries(added.map(id=>{assert(all[id],`${id} not registered in scripts/load-cases.mjs`);return [id,reconcileCase(id,all[id])]}));
 const track=(s,name)=>s.tracks.find(t=>t.name===name);
@@ -29,7 +29,7 @@ for(const [id,s] of Object.entries(cases)){
    for(let j=i+1;j<clips.length;j++)if((c.lane??0)===(clips[j].lane??0))assert(clips[j].a>=c.b,`${id}/${t.name} overlap: ${c.label} / ${clips[j].label}`);
   }
  }
- assert(track(s,'工具调用').clips.some(c=>c.playbackControl),`${id} missing playback control block`);
+ if(!['backchannel','preempt'].includes(id))assert(track(s,'工具调用').clips.some(c=>c.playbackControl),`${id} missing playback control block`);
  for(const e of s.inputEvents)assert(!/实时|已下单|已支付/.test(JSON.stringify(e.results??{})),`${id} result claims more than the case delivers`);
 }
 
@@ -113,6 +113,89 @@ for(const [id,s] of Object.entries(cases)){
  assert(question.a>ask.b);
  assert(report.a>s.inputEvents.find(e=>e.event_id==='send_1'&&e.results).time_at_ms,'clarify: report only after the send returns');
  assert(!report.label.includes('？'),'clarify: the closing turn is a result, not another question');
+}
+
+// backchannel: speaking over the user without taking the floor.
+{
+ const s=cases.backchannel;
+ const users=track(s,'用户').clips,assistant=track(s,'助手').clips;
+ const spoken=id=>s.utterances.find(u=>u.id===id);
+ const backchannels=assistant.filter(c=>s.controlAnnotations.fdx_annotation.some(a=>a.start_at_ms===Math.round(c.a)));
+ assert.equal(backchannels.length,4,'backchannel: four annotated backchannel units');
+ for(const c of backchannels){
+  // The defining property: it lands inside a user clip and the user keeps going.
+  const over=users.find(u=>u.a<c.a&&u.b>c.b);
+  assert(over,`backchannel: ${c.label} must sit strictly inside a user clip`);
+  assert(over.b-c.b>=800,`backchannel: user must keep talking after ${c.label}`);
+  assert(!assistant.some(o=>o!==c&&o.a<c.b&&o.b>c.a),`backchannel: ${c.label} overlaps another assistant clip`);
+ }
+ const [word1,line1,word2,line2]=backchannels;
+ assert.equal(word1.label,'嗐','backchannel: the particle is its own unit');
+ assert.equal(word1.b-word1.a,400,'backchannel: 嗐 is a 400ms particle');
+ assert.equal(line1.a,word1.b,'backchannel: 嗐 and its content half are contiguous');
+ assert.equal(word2.label,'emmm……');
+ assert(line2.label.startsWith('唉'));
+ const types=s.controlAnnotations.fdx_annotation.map(a=>a.fdx_type);
+ assert.deepEqual(types,['附和词','附和句','附和词','附和句'],'backchannel: particle and content units are typed apart');
+ assert(!types.includes('打断'),'backchannel: a backchannel is never annotated as an interruption');
+ // Spacing: the user gets whole segments with no assistant voice at all.
+ const silent=users.filter(u=>!assistant.some(c=>c.a<u.b&&c.b>u.a));
+ assert(silent.length>=5,`backchannel: at least five user segments must go unanswered, got ${silent.length}`);
+ // Spacing is the point: never two answered segments in a row.
+ const answered=users.flatMap((u,i)=>assistant.some(c=>c.a<u.b&&c.b>u.a)?[i]:[]);
+ for(let i=1;i<answered.length;i++)assert(answered[i]-answered[i-1]>=2,`backchannel: leave a whole user segment between backchannels (${answered.join(',')})`);
+ const vented=users.slice(1);
+ assert(!assistant.some(c=>c.a<vented[0].b&&c.b>vented[0].a),'backchannel: the first vented segment gets no backchannel');
+ assert(!assistant.some(c=>c.a<vented[1].b&&c.b>vented[1].a),'backchannel: the second vented segment gets no backchannel either');
+ // Venting is not an instruction.
+ assert.equal(calls(s,'calendar.update').length,1,'backchannel: exactly one calendar write');
+ const write=s.inputEvents.find(e=>e.event_id==='cal_1'&&e.query!==undefined);
+ assert(write.time_at_ms<=users[0].b,'backchannel: the write follows the only instruction, not the venting');
+ assert(!s.inputEvents.some(e=>e.time_at_ms>vented[0].a),'backchannel: no tool call at all once venting starts');
+ assert.equal(query(s,'cal_1').to,'明天 17:00');
+ assert.equal(result(s,'cal_1').start_at,query(s,'cal_1').to,'backchannel: the result must echo the requested time');
+ assert.equal(result(s,'cal_1').calendar_event_id,query(s,'cal_1').calendar_event_id,'backchannel: same event, not a new one');
+ // Closing: one line, and nothing the user did not ask for.
+ const close=assistant.at(-1);
+ assert.equal(close.label,'好，别太烦。','backchannel: the case ends on one short line');
+ assert(close.a>users.at(-1).b,'backchannel: the close waits for the user to finish');
+ assert(!/五点|改好|要不要|需要/.test(close.label),'backchannel: the close neither restates the change nor offers more');
+ assert(spoken(s.utterances.find(u=>u.text===close.label).id).speaker==='assistant');
+}
+
+// preempt: the assistant takes the floor because the user's words are moot.
+{
+ const s=cases.preempt;
+ const users=track(s,'用户').clips,assistant=track(s,'助手').clips;
+ const cut=users[2],barge=assistant[0];
+ assert(barge.a>cut.a&&barge.a<cut.b,'preempt: the assistant must start speaking inside the user clip');
+ assert(barge.b>cut.b,'preempt: the user stops first — the floor changed hands');
+ const point=s.events.find(e=>e.overlap);
+ assert.equal(point.tag,'助手打断');
+ assert.deepEqual(point.overlap,[barge.a,cut.b],'preempt: the overlap runs from assistant onset to user stop');
+ const evidence=s.inputEvents.find(e=>e.event_id==='train_1'&&e.results);
+ assert(evidence.time_at_ms<barge.a,'preempt: the reason must exist before the assistant cuts in');
+ assert(barge.a-evidence.time_at_ms<=1200,'preempt: cut in promptly, do not let the user finish for nothing');
+ assert.equal(result(s,'train_1').available,false,'preempt: the interruption is only justified by a dead end');
+ assert(barge.label.startsWith('打断一下'),'preempt: name the interruption, then give the reason');
+ assert(assistant[1].label.includes('六点三十八'),'preempt: an interruption must carry an alternative');
+ assert.equal(JSON.parse(fs.readFileSync('components/cases/preempt/case.json')).fdx_annotation.length,0,'preempt: an interruption never enters fdx_annotation');
+ const [mark]=s.controlAnnotations.custom_annotation;
+ assert.equal(mark.start_at_ms,barge.a);assert.equal(mark.end_at_ms,cut.b,'preempt: the custom mark spans the overlap');
+ assert(!/[，。]/.test(cut.label.slice(-1)),'preempt: the cut-off line is left unfinished, not completed');
+ // The floor goes back, and only the finished preference carries over.
+ assert(users[3].a>assistant[1].b,'preempt: the user answers after the assistant finishes');
+ const held=query(s,'hold_1');
+ assert.equal(held.seat_preference,'靠窗','preempt: a preference stated in full carries over');
+ assert.equal(held.trip_no,result(s,'train_1').next_available.trip_no,'preempt: book the alternative that was offered');
+ assert.equal(held.seats,result(s,'train_1').next_available.seats_left);
+ assert(!/车厢/.test(JSON.stringify(s.inputEvents)),'preempt: nothing from the interrupted half-sentence may reach a tool');
+ assert.equal(result(s,'hold_1').paid,false,'preempt: holding is not paying');
+ const card=s.inputEvents.find(e=>e.event_id==='card_1'&&e.query!==undefined);
+ assert.equal(JSON.parse(card.query).hold_id,result(s,'hold_1').hold_id);
+ assert(card.time_at_ms>s.inputEvents.find(e=>e.event_id==='hold_1'&&e.results).time_at_ms,'preempt: the card follows the hold');
+ assert(assistant[2].a>s.inputEvents.find(e=>e.event_id==='card_1'&&e.results).time_at_ms,'preempt: report only after the card is up');
+ assert(!/已购|已支付|出票/.test(assistant.map(c=>c.label).join('')),'preempt: never claim the ticket is bought');
 }
 
 for(const [id,s] of Object.entries(cases))console.log(`${id}: PASS / ${s.END} ms / ${s.utterances.length} utterances / ${s.inputEvents.length} events / planned timing, no generated audio`);

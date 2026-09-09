@@ -1,0 +1,249 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "backchannel",
+      "case_name": "老板反复改周会 / 吐槽时附和",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 45600,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {},
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "task_goal": "把明天的周会从 15:00 改到 17:00",
+      "completion_boundary": "周会已改到 17:00；用户提到的客户会与方案初稿未做任何操作",
+      "backchannel_definition": "助手人声压在用户人声上但用户不停，话语权不转移；用户停声才算打断",
+      "backchannel_spacing": "不是每句都应；本例八段宣泄只应了三段",
+      "venting_is_not_instruction": "用户陈述的影响与规划不构成指令，不触发工具",
+      "timing_note": "时序为设计值，语音尚未生成；边界按 400 毫秒步长排布。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "calendar.update",
+          "description": "修改已有日程的时间。",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "calendar_event_id": {
+                "type": "string",
+                "description": "日程标识"
+              },
+              "from": {
+                "type": "string",
+                "description": "原时间"
+              },
+              "to": {
+                "type": "string",
+                "description": "新时间"
+              }
+            },
+            "required": [
+              "calendar_event_id",
+              "to"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {
+    "calendar_event_id": "evt_weekly_1"
+  },
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "把明天下午三点跟老板的周会改到五点。",
+      "start_at_ms": 0,
+      "end_at_ms": 3600
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好，改到五点了。",
+      "start_at_ms": 5200,
+      "end_at_ms": 7200
+    },
+    {
+      "id": "u003",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "他这周都改第三回了。",
+      "start_at_ms": 7600,
+      "end_at_ms": 10000
+    },
+    {
+      "id": "u004",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "说改就改，一句话的事。",
+      "start_at_ms": 10400,
+      "end_at_ms": 13200
+    },
+    {
+      "id": "u005",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "上周五刚定好的时间，昨天改一次，今天又改。",
+      "start_at_ms": 13600,
+      "end_at_ms": 18400
+    },
+    {
+      "id": "u006",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗐",
+      "start_at_ms": 15200,
+      "end_at_ms": 15600
+    },
+    {
+      "id": "u007",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "老板都比较忙。",
+      "start_at_ms": 15600,
+      "end_at_ms": 17200
+    },
+    {
+      "id": "u008",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "我微信里还跟他确认过两遍。",
+      "start_at_ms": 18800,
+      "end_at_ms": 22000
+    },
+    {
+      "id": "u009",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "我下午本来排了两个客户，现在只能往后挪，然后见了他们还得把方案初稿收掉的。",
+      "start_at_ms": 22400,
+      "end_at_ms": 30400
+    },
+    {
+      "id": "u010",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "emmm……",
+      "start_at_ms": 26000,
+      "end_at_ms": 27200
+    },
+    {
+      "id": "u011",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "初稿本来今天就该动笔了。",
+      "start_at_ms": 30800,
+      "end_at_ms": 34000
+    },
+    {
+      "id": "u012",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "结果这一周，我光顾着跟着他改时间了。",
+      "start_at_ms": 34400,
+      "end_at_ms": 39200
+    },
+    {
+      "id": "u013",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "唉，光耗在这上头了。",
+      "start_at_ms": 36000,
+      "end_at_ms": 38000
+    },
+    {
+      "id": "u014",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "行了，我看看怎么调整吧。",
+      "start_at_ms": 39600,
+      "end_at_ms": 43200
+    },
+    {
+      "id": "u015",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好，别太烦。",
+      "start_at_ms": 44000,
+      "end_at_ms": 45600
+    }
+  ],
+  "events": [
+    {
+      "event_id": "cal_1",
+      "event_type": "function_call",
+      "tool_name": "calendar.update",
+      "time_at_ms": 3600,
+      "query": "{\"calendar_event_id\": \"evt_weekly_1\", \"from\": \"明天 15:00\", \"to\": \"明天 17:00\"}"
+    },
+    {
+      "event_id": "cal_1",
+      "event_type": "function_call",
+      "tool_name": "calendar.update",
+      "time_at_ms": 4400,
+      "results": {
+        "status": "updated",
+        "calendar_event_id": "evt_weekly_1",
+        "start_at": "明天 17:00",
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [
+    {
+      "fdx_type": "附和词",
+      "role": "assistant",
+      "start_at_ms": 15200,
+      "end_at_ms": 15600
+    },
+    {
+      "fdx_type": "附和句",
+      "role": "assistant",
+      "start_at_ms": 15600,
+      "end_at_ms": 17200
+    },
+    {
+      "fdx_type": "附和词",
+      "role": "assistant",
+      "start_at_ms": 26000,
+      "end_at_ms": 27200
+    },
+    {
+      "fdx_type": "附和句",
+      "role": "assistant",
+      "start_at_ms": 36000,
+      "end_at_ms": 38000
+    }
+  ],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": []
+}

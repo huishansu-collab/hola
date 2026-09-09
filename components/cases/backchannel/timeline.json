@@ -1,0 +1,378 @@
+{
+  "timing_status": "planned",
+  "duration_ms": 45600,
+  "roles": [
+    {
+      "role": "user",
+      "track_ids": [
+        "user",
+        "control"
+      ]
+    },
+    {
+      "role": "assistant",
+      "track_ids": [
+        "assistant",
+        "expression",
+        "playback"
+      ]
+    },
+    {
+      "role": "world",
+      "track_ids": [
+        "world"
+      ]
+    },
+    {
+      "role": "backend",
+      "track_ids": [
+        "reasoning",
+        "tools"
+      ]
+    }
+  ],
+  "tracks": [
+    {
+      "id": "user",
+      "name": "用户",
+      "clips": [
+        {
+          "id": "u_ask",
+          "kind": "speech",
+          "label": "把明天下午三点跟老板的周会改到五点。",
+          "start_at_ms": 0,
+          "end_at_ms": 3600,
+          "utterance_id": "u001"
+        },
+        {
+          "id": "v1",
+          "kind": "speech",
+          "label": "他这周都改第三回了。",
+          "start_at_ms": 7600,
+          "end_at_ms": 10000,
+          "utterance_id": "u003"
+        },
+        {
+          "id": "v2",
+          "kind": "speech",
+          "label": "说改就改，一句话的事。",
+          "start_at_ms": 10400,
+          "end_at_ms": 13200,
+          "utterance_id": "u004"
+        },
+        {
+          "id": "v3",
+          "kind": "speech",
+          "label": "上周五刚定好的时间，昨天改一次，今天又改。",
+          "start_at_ms": 13600,
+          "end_at_ms": 18400,
+          "utterance_id": "u005"
+        },
+        {
+          "id": "v4",
+          "kind": "speech",
+          "label": "我微信里还跟他确认过两遍。",
+          "start_at_ms": 18800,
+          "end_at_ms": 22000,
+          "utterance_id": "u008"
+        },
+        {
+          "id": "v5",
+          "kind": "speech",
+          "label": "我下午本来排了两个客户，现在只能往后挪，然后见了他们还得把方案初稿收掉的。",
+          "start_at_ms": 22400,
+          "end_at_ms": 30400,
+          "utterance_id": "u009"
+        },
+        {
+          "id": "v6",
+          "kind": "speech",
+          "label": "初稿本来今天就该动笔了。",
+          "start_at_ms": 30800,
+          "end_at_ms": 34000,
+          "utterance_id": "u011"
+        },
+        {
+          "id": "v7",
+          "kind": "speech",
+          "label": "结果这一周，我光顾着跟着他改时间了。",
+          "start_at_ms": 34400,
+          "end_at_ms": 39200,
+          "utterance_id": "u012"
+        },
+        {
+          "id": "v8",
+          "kind": "speech",
+          "label": "行了，我看看怎么调整吧。",
+          "start_at_ms": 39600,
+          "end_at_ms": 43200,
+          "utterance_id": "u014"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "name": "用户控制",
+      "clips": []
+    },
+    {
+      "id": "assistant",
+      "name": "助手",
+      "clips": [
+        {
+          "id": "a_done",
+          "kind": "speech",
+          "label": "好，改到五点了。",
+          "start_at_ms": 5200,
+          "end_at_ms": 7200,
+          "sub": "只确认改动，不评论、不追问原因",
+          "utterance_id": "u002"
+        },
+        {
+          "id": "b1a",
+          "kind": "speech",
+          "label": "嗐",
+          "start_at_ms": 15200,
+          "end_at_ms": 15600,
+          "sub": "附和起头 · 四声短促气声 · 与用户重叠 400ms",
+          "utterance_id": "u006"
+        },
+        {
+          "id": "b1b",
+          "kind": "speech",
+          "label": "老板都比较忙。",
+          "start_at_ms": 15600,
+          "end_at_ms": 17200,
+          "sub": "同一次附和的内容部分 · 与用户重叠 1,600ms",
+          "utterance_id": "u007"
+        },
+        {
+          "id": "b2",
+          "kind": "speech",
+          "label": "emmm……",
+          "start_at_ms": 26000,
+          "end_at_ms": 27200,
+          "sub": "落在长句语义接缝 · 只表示在听 · 与用户重叠 1,200ms",
+          "utterance_id": "u010"
+        },
+        {
+          "id": "b3",
+          "kind": "speech",
+          "label": "唉，光耗在这上头了。",
+          "start_at_ms": 36000,
+          "end_at_ms": 38000,
+          "sub": "顺用户原话收 · 与用户重叠 2,000ms",
+          "utterance_id": "u013"
+        },
+        {
+          "id": "a_close",
+          "kind": "speech",
+          "label": "好，别太烦。",
+          "start_at_ms": 44000,
+          "end_at_ms": 45600,
+          "sub": "一句收住，不总结不追问",
+          "utterance_id": "u015"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "name": "表达控制",
+      "clips": [
+        {
+          "id": "e_b1a",
+          "kind": "state",
+          "label": "附和词 · 嗐",
+          "start_at_ms": 15200,
+          "end_at_ms": 15600,
+          "sub": "四声短促气声，只有语气没有内容"
+        },
+        {
+          "id": "e_b1b",
+          "kind": "state",
+          "label": "附和句 · 老板都比较忙",
+          "start_at_ms": 15600,
+          "end_at_ms": 17200,
+          "sub": "轻带过，不评价老板本人"
+        },
+        {
+          "id": "e_b2",
+          "kind": "state",
+          "label": "附和词 · emmm……",
+          "start_at_ms": 26000,
+          "end_at_ms": 27200,
+          "sub": "鼻音犹豫，平调略降"
+        },
+        {
+          "id": "e_b3",
+          "kind": "state",
+          "label": "附和句 · 唉，光耗在这上头了",
+          "start_at_ms": 36000,
+          "end_at_ms": 38000,
+          "sub": "顺用户原话，不加码"
+        }
+      ]
+    },
+    {
+      "id": "playback",
+      "name": "播报控制",
+      "clips": []
+    },
+    {
+      "id": "world",
+      "name": "世界",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "name": "后台判断",
+      "clips": [
+        {
+          "id": "r_plan",
+          "kind": "state",
+          "label": "新时间明确唯一 · 直接改",
+          "start_at_ms": 3600,
+          "end_at_ms": 4000,
+          "sub": "不反问确认，也不追问为什么改"
+        },
+        {
+          "id": "r_done",
+          "kind": "state",
+          "label": "更新成功 · event_id 不变",
+          "start_at_ms": 4400,
+          "end_at_ms": 4800,
+          "sub": "同一场会的第一次改动，不新建日程"
+        },
+        {
+          "id": "r_vent",
+          "kind": "state",
+          "label": "宣泄开始 · 陈述不是指令",
+          "start_at_ms": 7200,
+          "end_at_ms": 7600,
+          "sub": "整段吐槽都不触发工具"
+        },
+        {
+          "id": "r_hold1",
+          "kind": "state",
+          "label": "同一件事的延续 · 本轮不出声",
+          "start_at_ms": 10000,
+          "end_at_ms": 10400,
+          "sub": "节奏未断，附和过密会打扰"
+        },
+        {
+          "id": "r_b1",
+          "kind": "state",
+          "label": "连说三句 · 给一次附和",
+          "start_at_ms": 14800,
+          "end_at_ms": 15200,
+          "sub": "压在人声上，用户不停即不算打断"
+        },
+        {
+          "id": "r_hold2",
+          "kind": "state",
+          "label": "刚附和过 · 本轮不再出声",
+          "start_at_ms": 18400,
+          "end_at_ms": 18800,
+          "sub": "控制附和密度"
+        },
+        {
+          "id": "r_b2",
+          "kind": "state",
+          "label": "长句出现语义接缝 · 只表示在听",
+          "start_at_ms": 25600,
+          "end_at_ms": 26000,
+          "sub": "不接话、不给建议、不切断句子"
+        },
+        {
+          "id": "r_scope",
+          "kind": "state",
+          "label": "客户会与方案都没让动",
+          "start_at_ms": 30400,
+          "end_at_ms": 30800,
+          "sub": "不查日历、不改、不提议帮挪，也不建任务或提醒"
+        },
+        {
+          "id": "r_b3",
+          "kind": "state",
+          "label": "情绪到顶 · 顺原话收",
+          "start_at_ms": 35600,
+          "end_at_ms": 36000,
+          "sub": "不加码、不升级，不承诺替用户跟老板交涉"
+        },
+        {
+          "id": "r_hand",
+          "kind": "state",
+          "label": "用户表示自己处理 · 不接活",
+          "start_at_ms": 39200,
+          "end_at_ms": 39600,
+          "sub": "不追问怎么调，也不提出代劳"
+        },
+        {
+          "id": "r_close",
+          "kind": "state",
+          "label": "只回应情绪 · 不复述改动",
+          "start_at_ms": 43200,
+          "end_at_ms": 43600,
+          "sub": "改动在 5,200 已确认过一次，重复确认属于话多"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "name": "工具调用",
+      "clips": [
+        {
+          "id": "run_update",
+          "kind": "state",
+          "label": "calendar.update(周会, 明天 15:00→17:00)",
+          "start_at_ms": 3600,
+          "end_at_ms": 4400,
+          "sub": "返回 success · event_id 不变 · 耗时 800ms"
+        }
+      ]
+    }
+  ],
+  "response_links": [
+    {
+      "user_id": "u001",
+      "assistant_id": "u002"
+    }
+  ],
+  "trigger_links": [],
+  "interruptions": [],
+  "backchannels": [
+    {
+      "assistant_id": "u006",
+      "over_user_id": "u005",
+      "overlap_ms": 400,
+      "user_continued_ms": 2800
+    },
+    {
+      "assistant_id": "u007",
+      "over_user_id": "u005",
+      "overlap_ms": 1600,
+      "user_continued_ms": 1200
+    },
+    {
+      "assistant_id": "u010",
+      "over_user_id": "u009",
+      "overlap_ms": 1200,
+      "user_continued_ms": 3200
+    },
+    {
+      "assistant_id": "u013",
+      "over_user_id": "u012",
+      "overlap_ms": 2000,
+      "user_continued_ms": 1200
+    }
+  ],
+  "tool_runs": [
+    {
+      "event_id": "cal_1",
+      "start_at_ms": 3600,
+      "end_at_ms": 4400,
+      "depends_on": [],
+      "decision_end_at_ms": 3600
+    }
+  ]
+}

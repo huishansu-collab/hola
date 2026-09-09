@@ -1,0 +1,266 @@
+{
+  "timing_status": "planned",
+  "duration_ms": 26800,
+  "roles": [
+    {
+      "role": "user",
+      "track_ids": [
+        "user",
+        "control"
+      ]
+    },
+    {
+      "role": "assistant",
+      "track_ids": [
+        "assistant",
+        "expression",
+        "playback"
+      ]
+    },
+    {
+      "role": "world",
+      "track_ids": [
+        "world"
+      ]
+    },
+    {
+      "role": "backend",
+      "track_ids": [
+        "reasoning",
+        "tools"
+      ]
+    }
+  ],
+  "tracks": [
+    {
+      "id": "user",
+      "name": "用户",
+      "clips": [
+        {
+          "id": "u1",
+          "kind": "speech",
+          "label": "帮我订今天晚上七点，北京西到石家庄的高铁。",
+          "start_at_ms": 0,
+          "end_at_ms": 4000,
+          "utterance_id": "u001"
+        },
+        {
+          "id": "u2",
+          "kind": "speech",
+          "label": "两张票，最好靠窗。",
+          "start_at_ms": 4400,
+          "end_at_ms": 6400,
+          "utterance_id": "u002"
+        },
+        {
+          "id": "u3",
+          "kind": "speech",
+          "label": "另外能不能挑一下车厢——",
+          "start_at_ms": 6800,
+          "end_at_ms": 9200,
+          "utterance_id": "u003"
+        },
+        {
+          "id": "u4",
+          "kind": "speech",
+          "label": "行，那就订明早那班。",
+          "start_at_ms": 15600,
+          "end_at_ms": 17600,
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "name": "用户控制",
+      "clips": []
+    },
+    {
+      "id": "assistant",
+      "name": "助手",
+      "clips": [
+        {
+          "id": "a1",
+          "kind": "speech",
+          "label": "打断一下，今晚七点以后的票卖完了。",
+          "start_at_ms": 8400,
+          "end_at_ms": 11200,
+          "sub": "主动打断 · 起声 8,400 · 与用户人声重叠 800ms",
+          "utterance_id": "u004"
+        },
+        {
+          "id": "a2",
+          "kind": "speech",
+          "label": "最早是明天早上六点三十八，还有两张。",
+          "start_at_ms": 11600,
+          "end_at_ms": 15200,
+          "sub": "打断必须带可行替代，说完交回话语权",
+          "utterance_id": "u005"
+        },
+        {
+          "id": "a3",
+          "kind": "speech",
+          "label": "明早六点三十八，两张靠窗，先给你占住了。",
+          "start_at_ms": 20000,
+          "end_at_ms": 24000,
+          "sub": "只播占座结果，不说已购票",
+          "utterance_id": "u007"
+        },
+        {
+          "id": "a4",
+          "kind": "speech",
+          "label": "卡片发你了，付一下就行。",
+          "start_at_ms": 24400,
+          "end_at_ms": 26800,
+          "sub": "支付由用户完成",
+          "utterance_id": "u008"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "name": "表达控制",
+      "clips": []
+    },
+    {
+      "id": "playback",
+      "name": "播报控制",
+      "clips": []
+    },
+    {
+      "id": "world",
+      "name": "世界",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "name": "后台判断",
+      "clips": [
+        {
+          "id": "r_plan",
+          "kind": "state",
+          "label": "四要素齐全 · 边听边查",
+          "start_at_ms": 3600,
+          "end_at_ms": 4000,
+          "sub": "用户还在说，不打断也不重发查询"
+        },
+        {
+          "id": "r_result",
+          "kind": "state",
+          "label": "结果返回 · 今晚 19:00 后全部无票",
+          "start_at_ms": 7600,
+          "end_at_ms": 8000,
+          "sub": "次日最早 06:38 有票"
+        },
+        {
+          "id": "r_decide",
+          "kind": "state",
+          "label": "后续车厢偏好不影响结果 · 判定高价值打断",
+          "start_at_ms": 8000,
+          "end_at_ms": 8400,
+          "sub": "继续听会让用户白说完"
+        },
+        {
+          "id": "r_stop",
+          "kind": "state",
+          "label": "用户停声 · 未说完的半句不补全",
+          "start_at_ms": 9200,
+          "end_at_ms": 9600,
+          "sub": "无待播队列遥测，不推断用户想说什么"
+        },
+        {
+          "id": "r_carry",
+          "kind": "state",
+          "label": "靠窗已完整说出且未撤回 · 沿用",
+          "start_at_ms": 17600,
+          "end_at_ms": 18000,
+          "sub": "被打断那段没说完，不沿用"
+        },
+        {
+          "id": "r_card",
+          "kind": "state",
+          "label": "卡片已展示 · 点击与支付由用户完成",
+          "start_at_ms": 19200,
+          "end_at_ms": 19600,
+          "sub": "占座不等于购票"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "name": "工具调用",
+      "clips": [
+        {
+          "id": "run_search",
+          "kind": "state",
+          "label": "train.search(北京西→石家庄, 今天 19:00 后)",
+          "start_at_ms": 4400,
+          "end_at_ms": 7600,
+          "sub": "耗时 3,200ms · 今晚售罄 · 次日 06:38 余票 2"
+        },
+        {
+          "id": "run_hold",
+          "kind": "state",
+          "label": "ticket.hold(G601, 明天 06:38, 2 张, 靠窗)",
+          "start_at_ms": 18000,
+          "end_at_ms": 18800,
+          "sub": "只占座不扣款 · 保留 15 分钟"
+        },
+        {
+          "id": "run_card",
+          "kind": "state",
+          "label": "ui.show_payment_card(hold_7781)",
+          "start_at_ms": 19200,
+          "end_at_ms": 19600,
+          "sub": "展示支付入口，后续由用户操作"
+        }
+      ]
+    }
+  ],
+  "response_links": [
+    {
+      "user_id": "u006",
+      "assistant_id": "u007"
+    }
+  ],
+  "trigger_links": [],
+  "interruptions": [
+    {
+      "by": "assistant",
+      "assistant_id": "u004",
+      "interrupted_user_id": "u003",
+      "start_at_ms": 8400,
+      "user_stopped_at_ms": 9200,
+      "overlap_ms": 800,
+      "evidence_event_id": "train_1"
+    }
+  ],
+  "backchannels": [],
+  "tool_runs": [
+    {
+      "event_id": "train_1",
+      "start_at_ms": 4400,
+      "end_at_ms": 7600,
+      "depends_on": [],
+      "decision_end_at_ms": 4400
+    },
+    {
+      "event_id": "hold_1",
+      "start_at_ms": 18000,
+      "end_at_ms": 18800,
+      "depends_on": [
+        "train_1"
+      ],
+      "decision_end_at_ms": 18000
+    },
+    {
+      "event_id": "card_1",
+      "start_at_ms": 19200,
+      "end_at_ms": 19600,
+      "depends_on": [
+        "hold_1"
+      ],
+      "decision_end_at_ms": 19200
+    }
+  ]
+}
