@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 18000,
+        "duration_ms": 15200,
         "file": null,
         "tracks": [
           {
@@ -30,12 +30,12 @@
     "memory": {},
     "constraints": {
       "simulated": true,
-      "timing_status": "planned",
-      "audio_status": "none",
+      "timing_status": "aligned",
+      "audio_status": "generated",
       "stream_step_ms": 400,
       "task_goal": "按400ms微轮次对齐，连续状态合并展示；考上下文承接（\"那500呢\"币种沿用）与改口\"不对不对\"的处理；时间与工具耗时均为示意。",
       "source": "《语音双工 - Explicit case》A2",
-      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+      "audio_note": "台词来自同一次整段对话生成，按语音识别对齐切分，原速播放；其余轨道按旧时间到新时间的分段线性映射跟随。"
     },
     "tools": [
       {
@@ -86,15 +86,15 @@
       "speaker_id": "user_1",
       "text": "300美元是多少人民币来着？",
       "start_at_ms": 0,
-      "end_at_ms": 2800
+      "end_at_ms": 1740
     },
     {
       "id": "u002",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 2800,
-      "end_at_ms": 3200
+      "start_at_ms": 2000,
+      "end_at_ms": 2880
     },
     {
       "id": "u003",
@@ -102,14 +102,14 @@
       "speaker_id": "assistant",
       "text": "2127元。",
       "start_at_ms": 3200,
-      "end_at_ms": 4800
+      "end_at_ms": 4680
     },
     {
       "id": "u004",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "那500呢？",
-      "start_at_ms": 4800,
+      "start_at_ms": 4680,
       "end_at_ms": 5600
     },
     {
@@ -118,23 +118,23 @@
       "speaker_id": "assistant",
       "text": "3545元。",
       "start_at_ms": 6000,
-      "end_at_ms": 7600
+      "end_at_ms": 7200
     },
     {
       "id": "u006",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "呃，不对不对，我看岔了，这标的是500日元。",
-      "start_at_ms": 7600,
-      "end_at_ms": 11200
+      "start_at_ms": 7200,
+      "end_at_ms": 10560
     },
     {
       "id": "u007",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 11200,
-      "end_at_ms": 11600
+      "start_at_ms": 10800,
+      "end_at_ms": 11540
     },
     {
       "id": "u008",
@@ -142,7 +142,7 @@
       "speaker_id": "assistant",
       "text": "日元就便宜多了，24.5元左右。",
       "start_at_ms": 11600,
-      "end_at_ms": 14400
+      "end_at_ms": 14240
     }
   ],
   "events": [
@@ -157,7 +157,7 @@
       "event_id": "e01",
       "event_type": "function_call",
       "tool_name": "rate.query",
-      "time_at_ms": 2800,
+      "time_at_ms": 2000,
       "results": {
         "note": "rate.query（USD→CNY）成功，耗时300ms",
         "simulated": true
@@ -184,14 +184,14 @@
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "rate.query",
-      "time_at_ms": 7600,
+      "time_at_ms": 7200,
       "query": "{\"request\": \"JPY→CNY\"}"
     },
     {
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "rate.query",
-      "time_at_ms": 11200,
+      "time_at_ms": 10800,
       "results": {
         "note": "rate.query（JPY→CNY）成功，耗时300ms",
         "simulated": true
@@ -205,8 +205,8 @@
     {
       "label": "改口①",
       "role": "user",
-      "start_at_ms": 7600,
-      "end_at_ms": 11200
+      "start_at_ms": 7200,
+      "end_at_ms": 10560
     }
   ]
 }

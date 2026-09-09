@@ -1,4 +1,53 @@
 {
   "schema_version": 1,
-  "clips": []
+  "clips": [
+    {
+      "utterance_id": "u001",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 100,
+      "source_end_ms": 920
+    },
+    {
+      "utterance_id": "u002",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 2060,
+      "source_end_ms": 2280
+    },
+    {
+      "utterance_id": "u003",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 3680,
+      "source_end_ms": 5880
+    },
+    {
+      "utterance_id": "u004",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 6360,
+      "source_end_ms": 9180
+    },
+    {
+      "utterance_id": "u005",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 9180,
+      "source_end_ms": 10320
+    },
+    {
+      "utterance_id": "u006",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 10680,
+      "source_end_ms": 11840
+    },
+    {
+      "utterance_id": "u007",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 13560,
+      "source_end_ms": 15280
+    },
+    {
+      "utterance_id": "u008",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 15500,
+      "source_end_ms": 15900
+    }
+  ]
 }

@@ -12,10 +12,16 @@ const query=(s,id)=>JSON.parse(s.inputEvents.find(e=>e.event_id===id&&e.query!==
 const result=(s,id)=>s.inputEvents.find(e=>e.event_id===id&&e.results).results;
 const calls=(s,tool)=>[...new Set(s.inputEvents.filter(e=>e.tool_name===tool).map(e=>e.event_id))];
 // 应用实际能播的 key，来自 components/audio/use-timeline-audio.ts 的注册表
-const registered=new Set(Object.keys(Function('data','actorData','rideData','coffeeData','smsData','gmailRuntime','backchannelRuntime',
+const packageRuntimes=fs.readdirSync('case-packages',{withFileTypes:true}).filter(d=>d.isDirectory())
+ .map(d=>`case-packages/${d.name}/build/runtime.json`).filter(f=>fs.existsSync(f)).map(f=>JSON.parse(fs.readFileSync(f)));
+const registered=new Set(Object.keys(Function('data','actorData','rideData','coffeeData','smsData','packageRuntimes',
  compile('components/audio/use-timeline-audio.ts').replace(/export function useTimelineAudio[\s\S]*$/,'')+';return audioClips')(
  ...['clips','actor-clips','ride-clips','coffee-clips','sms-clips'].map(n=>JSON.parse(fs.readFileSync(`components/audio/${n}.json`))),
- ...['gmail','backchannel'].map(id=>JSON.parse(fs.readFileSync(`case-packages/${id}/build/runtime.json`))))));
+ packageRuntimes)));
+// 配了音却没注册进播放表，界面上就是静默无声——这条把所有 Case 包都盯上。
+for(const r of packageRuntimes)for(const id of Object.keys(r.audio))
+ assert(registered.has(`package/${r.manifest.case_id}/${id}`),
+  `${r.manifest.case_id}/${id} 有音频但没注册进 use-timeline-audio.ts`);
 
 // Shared shape: design-time fixtures with no generated speech.
 for(const [id,s] of Object.entries(cases)){

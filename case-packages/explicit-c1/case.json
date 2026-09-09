@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 22400,
+        "duration_ms": 30800,
         "file": null,
         "tracks": [
           {
@@ -30,12 +30,12 @@
     "memory": {},
     "constraints": {
       "simulated": true,
-      "timing_status": "planned",
-      "audio_status": "none",
+      "timing_status": "aligned",
+      "audio_status": "generated",
       "stream_step_ms": 400,
       "task_goal": "按400ms微轮次对齐，连续状态合并展示；考被打断停声≤400ms、改稿后二次确认、用户点头才发送；时间与工具耗时均为示意。",
       "source": "《语音双工 - Explicit case》C1",
-      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+      "audio_note": "台词来自同一次整段对话生成，按语音识别对齐切分，原速播放；其余轨道按旧时间到新时间的分段线性映射跟随。"
     },
     "tools": [
       {
@@ -124,7 +124,7 @@
       "speaker_id": "user_1",
       "text": "帮我回一下强哥刚发的那条消息。",
       "start_at_ms": 0,
-      "end_at_ms": 2800
+      "end_at_ms": 2600
     },
     {
       "id": "u002",
@@ -132,95 +132,95 @@
       "speaker_id": "assistant",
       "text": "嗯……",
       "start_at_ms": 2800,
-      "end_at_ms": 3200
+      "end_at_ms": 3780
     },
     {
       "id": "u003",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "他问周六踢球去不去。你想咋回？",
-      "start_at_ms": 3200,
-      "end_at_ms": 5600
+      "start_at_ms": 4000,
+      "end_at_ms": 7120
     },
     {
       "id": "u004",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "回他去，让他把时间地点发我。",
-      "start_at_ms": 5600,
-      "end_at_ms": 8000
+      "start_at_ms": 7120,
+      "end_at_ms": 8900
     },
     {
       "id": "u005",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 8000,
-      "end_at_ms": 8400
+      "start_at_ms": 9200,
+      "end_at_ms": 9430
     },
     {
       "id": "u006",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "那我这么发：‘去！几点开球？时间地点发我——",
-      "start_at_ms": 8400,
-      "end_at_ms": 11600
+      "start_at_ms": 9600,
+      "end_at_ms": 15200
     },
     {
       "id": "u007",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "等下——",
-      "start_at_ms": 11200,
-      "end_at_ms": 11600
+      "start_at_ms": 14800,
+      "end_at_ms": 15160
     },
     {
       "id": "u008",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "别说‘去’，说‘应该能去’，我还没跟家里说。",
-      "start_at_ms": 11600,
-      "end_at_ms": 14400
+      "start_at_ms": 15200,
+      "end_at_ms": 18340
     },
     {
       "id": "u009",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 14400,
-      "end_at_ms": 14800
+      "start_at_ms": 18400,
+      "end_at_ms": 19620
     },
     {
       "id": "u010",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "改好了：‘应该能去，几点开球？时间地点发我，今晚定。’这么发？",
-      "start_at_ms": 14800,
-      "end_at_ms": 19600
+      "start_at_ms": 20000,
+      "end_at_ms": 27410
     },
     {
       "id": "u011",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "嗯，发吧。",
-      "start_at_ms": 19600,
-      "end_at_ms": 20400
+      "start_at_ms": 27410,
+      "end_at_ms": 28530
     },
     {
       "id": "u012",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯。",
-      "start_at_ms": 20400,
-      "end_at_ms": 20800
+      "start_at_ms": 28800,
+      "end_at_ms": 29120
     },
     {
       "id": "u013",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "发了。",
-      "start_at_ms": 21200,
-      "end_at_ms": 21600
+      "start_at_ms": 29600,
+      "end_at_ms": 29960
     }
   ],
   "events": [
@@ -245,14 +245,14 @@
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "im.draft",
-      "time_at_ms": 5600,
+      "time_at_ms": 7200,
       "query": "{\"request\": \"张强\"}"
     },
     {
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "im.draft",
-      "time_at_ms": 8000,
+      "time_at_ms": 9200,
       "results": {
         "note": "im.draft(张强)成功，耗时200ms",
         "simulated": true
@@ -262,17 +262,17 @@
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "audio.stop",
-      "time_at_ms": 11200,
+      "time_at_ms": 14800,
       "query": "{\"request\": \"打断 u006\"}"
     },
     {
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "audio.stop",
-      "time_at_ms": 11600,
+      "time_at_ms": 15200,
       "results": {
         "status": "stopped",
-        "stopped_at_ms": 11600,
+        "stopped_at_ms": 15200,
         "simulated": true
       }
     },
@@ -280,14 +280,14 @@
       "event_id": "e04",
       "event_type": "function_call",
       "tool_name": "im.draft",
-      "time_at_ms": 11600,
+      "time_at_ms": 15200,
       "query": "{\"request\": \"张强·改\"}"
     },
     {
       "event_id": "e04",
       "event_type": "function_call",
       "tool_name": "im.draft",
-      "time_at_ms": 14400,
+      "time_at_ms": 18400,
       "results": {
         "note": "im.draft(张强·改)成功，耗时200ms",
         "simulated": true
@@ -297,14 +297,14 @@
       "event_id": "e05",
       "event_type": "function_call",
       "tool_name": "im.send",
-      "time_at_ms": 20400,
+      "time_at_ms": 28800,
       "query": "{\"request\": \"张强\"}"
     },
     {
       "event_id": "e05",
       "event_type": "function_call",
       "tool_name": "im.send",
-      "time_at_ms": 20800,
+      "time_at_ms": 29200,
       "results": {
         "note": "im.send成功，耗时500ms，已发",
         "simulated": true
@@ -318,8 +318,8 @@
     {
       "label": "打断①",
       "role": "user",
-      "start_at_ms": 11200,
-      "end_at_ms": 11600
+      "start_at_ms": 14800,
+      "end_at_ms": 15160
     }
   ]
 }

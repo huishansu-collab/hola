@@ -32,8 +32,8 @@
           "kind": "action",
           "label": "（关火、捞蛋）",
           "description": "行为：（关火、捞蛋）",
-          "start_at_ms": 489200,
-          "end_at_ms": 491600
+          "start_at_ms": 490120,
+          "end_at_ms": 490800
         }
       ]
     },
@@ -83,7 +83,7 @@
           "delivery": "",
           "annotation": "暂不发声",
           "start_at_ms": 0,
-          "end_at_ms": 1600,
+          "end_at_ms": 1200,
           "lane": 1
         },
         {
@@ -93,8 +93,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "接话延迟0ms（≤400ms）；轻声拖长“嗯”，占一个微轮次；本地200ms就回，只够这一声，不说“正在为你设置”；准备：“好，十分钟，开始了。”",
-          "start_at_ms": 1600,
-          "end_at_ms": 2000
+          "start_at_ms": 1200,
+          "end_at_ms": 1600
         },
         {
           "kind": "expression",
@@ -103,8 +103,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "首音“嗯……”已在上一行发出，本行接正式答案；“好”是短音——本地即时档，没有等待要填；常规语速；只带数字回读；禁止反问“是煮蛋吗”“要不要贴个标签”",
-          "start_at_ms": 2000,
-          "end_at_ms": 3600
+          "start_at_ms": 1600,
+          "end_at_ms": 4000
         },
         {
           "kind": "expression",
@@ -113,8 +113,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "听完改口，不抢话",
-          "start_at_ms": 3600,
-          "end_at_ms": 6400
+          "start_at_ms": 4000,
+          "end_at_ms": 6800
         },
         {
           "kind": "expression",
@@ -123,8 +123,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "接话延迟0ms（≤400ms）；轻声拖长“嗯”，占一个微轮次；不说“正在为你修改”；准备：“改好了，八分钟。”",
-          "start_at_ms": 6400,
-          "end_at_ms": 6800
+          "start_at_ms": 6800,
+          "end_at_ms": 8000
         },
         {
           "kind": "expression",
@@ -133,8 +133,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "首音“嗯……”已在上一行发出，本行接正式答案；常规语速；只报改后的数，不复述“原来是十分钟”",
-          "start_at_ms": 6800,
-          "end_at_ms": 8000
+          "start_at_ms": 8000,
+          "end_at_ms": 9200
         },
         {
           "kind": "expression",
@@ -143,8 +143,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "保持安静，不反复填等待话术，不追问“还需要别的吗”",
-          "start_at_ms": 8000,
-          "end_at_ms": 18000
+          "start_at_ms": 9200,
+          "end_at_ms": 19200
         },
         {
           "kind": "expression",
@@ -153,8 +153,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "保持静默；不为“会话要关了”额外播一句提示",
-          "start_at_ms": 18000,
-          "end_at_ms": 18400
+          "start_at_ms": 19200,
+          "end_at_ms": 19600
         },
         {
           "kind": "expression",
@@ -163,8 +163,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "准备：“八分钟到了，去看下锅吧。”",
-          "start_at_ms": 486400,
-          "end_at_ms": 486800
+          "start_at_ms": 487600,
+          "end_at_ms": 488000
         },
         {
           "kind": "expression",
@@ -173,8 +173,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "常规语速；音量比对话时略提一档（人在灶台边、有噪声）；一句带完，不追加“要再定一个吗”",
-          "start_at_ms": 486800,
-          "end_at_ms": 488800
+          "start_at_ms": 488000,
+          "end_at_ms": 490000
         },
         {
           "kind": "expression",
@@ -183,8 +183,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "保持安静",
-          "start_at_ms": 489200,
-          "end_at_ms": 491600
+          "start_at_ms": 490400,
+          "end_at_ms": 490800
         },
         {
           "kind": "expression",
@@ -193,8 +193,9 @@
           "trigger": "",
           "delivery": "",
           "annotation": "保持安静",
-          "start_at_ms": 491600,
-          "end_at_ms": 501600
+          "start_at_ms": 490400,
+          "end_at_ms": 490800,
+          "lane": 1
         },
         {
           "kind": "expression",
@@ -203,8 +204,9 @@
           "trigger": "",
           "delivery": "",
           "annotation": "保持静默",
-          "start_at_ms": 501600,
-          "end_at_ms": 502000
+          "start_at_ms": 490400,
+          "end_at_ms": 490800,
+          "lane": 2
         }
       ]
     },
@@ -227,106 +229,108 @@
           "label": "持续收听；“定个十分钟”＝倒计时，不是闹钟、不是提醒；不追问用途",
           "description": "持续收听；“定个十分钟”＝倒计时，不是闹钟、不是提醒；不追问用途",
           "start_at_ms": 0,
-          "end_at_ms": 1600,
+          "end_at_ms": 1200,
           "lane": 1
         },
         {
           "kind": "state",
           "label": "本地即时档，倒数已起；用户句尾就得出声，回读的数字等本轮结果落定再说",
           "description": "本地即时档，倒数已起；用户句尾就得出声，回读的数字等本轮结果落定再说",
-          "start_at_ms": 1600,
-          "end_at_ms": 2000
+          "start_at_ms": 1200,
+          "end_at_ms": 1600
         },
         {
           "kind": "state",
           "label": "执行本身就是回应，只给最短确认；首音已发，本行把值回读出来",
           "description": "执行本身就是回应，只给最短确认；首音已发，本行把值回读出来",
-          "start_at_ms": 2000,
-          "end_at_ms": 3600
+          "start_at_ms": 1600,
+          "end_at_ms": 4000
         },
         {
           "kind": "state",
           "label": "改口：改时长不是新建第二个计时；“锅已经热了”是理由不是任务",
           "description": "改口：改时长不是新建第二个计时；“锅已经热了”是理由不是任务",
-          "start_at_ms": 3600,
-          "end_at_ms": 6400
+          "start_at_ms": 4000,
+          "end_at_ms": 6800
         },
         {
           "kind": "state",
           "label": "同一个计时器改时长，自此刻重新起算，不叠加；改口说完就得出声，先发这一声接住",
           "description": "同一个计时器改时长，自此刻重新起算，不叠加；改口说完就得出声，先发这一声接住",
-          "start_at_ms": 6400,
-          "end_at_ms": 6800
-        },
-        {
-          "kind": "state",
-          "label": "确认改后的值，任务转入后台；首音已发，本行只报数",
-          "description": "确认改后的值，任务转入后台；首音已发，本行只报数",
           "start_at_ms": 6800,
           "end_at_ms": 8000
         },
         {
           "kind": "state",
+          "label": "确认改后的值，任务转入后台；首音已发，本行只报数",
+          "description": "确认改后的值，任务转入后台；首音已发，本行只报数",
+          "start_at_ms": 8000,
+          "end_at_ms": 9200
+        },
+        {
+          "kind": "state",
           "label": "用户说完就走开，无新信息；保持收听并计静默",
           "description": "用户说完就走开，无新信息；保持收听并计静默",
-          "start_at_ms": 8000,
-          "end_at_ms": 18000
+          "start_at_ms": 9200,
+          "end_at_ms": 19200
         },
         {
           "kind": "state",
           "label": "距最后一次人声正好10.0秒；end_reason=silence_timeou",
           "description": "距最后一次人声正好10.0秒；end_reason=silence_timeout；灯环熄灭。计时不受会话结束影响，后台继续",
-          "start_at_ms": 18000,
-          "end_at_ms": 18400
+          "start_at_ms": 19200,
+          "end_at_ms": 19600
         },
         {
           "kind": "state",
           "label": "会话已关闭",
           "description": "会话已关闭（长任务的常态）；后台倒数中，无监听、无播报",
-          "start_at_ms": 18400,
-          "end_at_ms": 486400
+          "start_at_ms": 19600,
+          "end_at_ms": 487600
         },
         {
           "kind": "state",
           "label": "到点，设备事件唤起；先环境检查再选通道：没在通话、人在厨房、非勿扰→直接出声，不",
           "description": "到点，设备事件唤起；先环境检查再选通道：没在通话、人在厨房、非勿扰→直接出声，不用震动或闪灯",
-          "start_at_ms": 486400,
-          "end_at_ms": 486800
+          "start_at_ms": 487600,
+          "end_at_ms": 488000
         },
         {
           "kind": "state",
           "label": "到点主动开口；只把用户明说过的“锅热了”接回来，不推断锅里煮的是什么；说人话不说",
           "description": "到点主动开口；只把用户明说过的“锅热了”接回来，不推断锅里煮的是什么；说人话不说“您的计时器已结束”",
-          "start_at_ms": 486800,
-          "end_at_ms": 488800
+          "start_at_ms": 488000,
+          "end_at_ms": 490000
         },
         {
           "kind": "state",
           "label": "收到即可，不用再答",
           "description": "收到即可，不用再答",
-          "start_at_ms": 488800,
-          "end_at_ms": 489200
+          "start_at_ms": 490000,
+          "end_at_ms": 490400
         },
         {
           "kind": "state",
           "label": "动作单独计时，不摊进语速；静默从动作结束重新起算",
           "description": "动作单独计时，不摊进语速；静默从动作结束重新起算",
-          "start_at_ms": 489200,
-          "end_at_ms": 491600
+          "start_at_ms": 490400,
+          "end_at_ms": 490800
         },
         {
           "kind": "state",
           "label": "无新信息，保持收听并计静默",
           "description": "无新信息，保持收听并计静默",
-          "start_at_ms": 491600,
-          "end_at_ms": 501600
+          "start_at_ms": 490400,
+          "end_at_ms": 490800,
+          "lane": 1
         },
         {
           "kind": "state",
           "label": "距最后一次动作正好10.0秒；end_reason=silence_timeou",
           "description": "距最后一次动作正好10.0秒；end_reason=silence_timeout；灯环熄灭",
-          "start_at_ms": 501600,
-          "end_at_ms": 502000
+          "start_at_ms": 490400,
+          "end_at_ms": 490800,
+          "lane": 2
         }
       ]
     },
@@ -337,22 +341,22 @@
           "kind": "state",
           "label": "倒数进行中",
           "description": "倒数进行中",
-          "start_at_ms": 8000,
-          "end_at_ms": 18000
+          "start_at_ms": 9200,
+          "end_at_ms": 19200
         },
         {
           "kind": "state",
           "label": "倒数进行中",
           "description": "倒数进行中",
-          "start_at_ms": 18000,
-          "end_at_ms": 18400
+          "start_at_ms": 19200,
+          "end_at_ms": 19600
         },
         {
           "kind": "state",
           "label": "倒数进行中（剩余约8分钟）",
           "description": "倒数进行中（剩余约8分钟）",
-          "start_at_ms": 18400,
-          "end_at_ms": 486400
+          "start_at_ms": 19600,
+          "end_at_ms": 487600
         },
         {
           "kind": "tool",

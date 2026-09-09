@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 22800,
+        "duration_ms": 23200,
         "file": null,
         "tracks": [
           {
@@ -30,12 +30,12 @@
     "memory": {},
     "constraints": {
       "simulated": true,
-      "timing_status": "planned",
-      "audio_status": "none",
+      "timing_status": "aligned",
+      "audio_status": "generated",
       "stream_step_ms": 400,
       "task_goal": "按400ms微轮次对齐，连续状态合并展示；考改口承接（旧指令作废）、对外发送前先念稿指认一次、发完只报结果；时间与工具耗时均为示意。",
       "source": "《语音双工 - Explicit case》B3",
-      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+      "audio_note": "台词来自同一次整段对话生成，按语音识别对齐切分，原速播放；其余轨道按旧时间到新时间的分段线性映射跟随。"
     },
     "tools": [
       {
@@ -105,7 +105,7 @@
       "speaker_id": "user_1",
       "text": "明天的周会往后挪半小时，挪到十点半。",
       "start_at_ms": 0,
-      "end_at_ms": 3200
+      "end_at_ms": 2880
     },
     {
       "id": "u002",
@@ -113,39 +113,39 @@
       "speaker_id": "assistant",
       "text": "嗯……",
       "start_at_ms": 3200,
-      "end_at_ms": 3600
+      "end_at_ms": 4300
     },
     {
       "id": "u003",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "改好了，明天周会十点半开始，日历更新了。",
-      "start_at_ms": 3600,
-      "end_at_ms": 6800
+      "start_at_ms": 4400,
+      "end_at_ms": 7680
     },
     {
       "id": "u004",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "跟组里说一声……",
-      "start_at_ms": 6800,
-      "end_at_ms": 8800
+      "start_at_ms": 7680,
+      "end_at_ms": 9320
     },
     {
       "id": "u005",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "算了，你直接在群里发个通知：周会改十点半，其他不变。",
-      "start_at_ms": 8800,
-      "end_at_ms": 13200
+      "start_at_ms": 9320,
+      "end_at_ms": 12720
     },
     {
       "id": "u006",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 13200,
-      "end_at_ms": 13600
+      "start_at_ms": 12800,
+      "end_at_ms": 13580
     },
     {
       "id": "u007",
@@ -153,39 +153,39 @@
       "speaker_id": "assistant",
       "text": "拟好了：‘明天周会改到10:30，其他不变。’发到‘产品组大群’？",
       "start_at_ms": 13600,
-      "end_at_ms": 18800
+      "end_at_ms": 19340
     },
     {
       "id": "u008",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "发吧。",
-      "start_at_ms": 18800,
-      "end_at_ms": 19200
+      "start_at_ms": 19340,
+      "end_at_ms": 19660
     },
     {
       "id": "u009",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯。",
-      "start_at_ms": 19200,
-      "end_at_ms": 19600
+      "start_at_ms": 20000,
+      "end_at_ms": 20280
     },
     {
       "id": "u010",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "发出去了。",
-      "start_at_ms": 20000,
-      "end_at_ms": 20800
+      "start_at_ms": 20800,
+      "end_at_ms": 21400
     },
     {
       "id": "u011",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "嗯，ok。",
-      "start_at_ms": 20800,
-      "end_at_ms": 22000
+      "start_at_ms": 21400,
+      "end_at_ms": 22180
     }
   ],
   "events": [
@@ -210,14 +210,14 @@
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "im.draft",
-      "time_at_ms": 8800,
+      "time_at_ms": 9600,
       "query": "{\"request\": \"周会改期通知\"}"
     },
     {
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "im.draft",
-      "time_at_ms": 13200,
+      "time_at_ms": 12800,
       "results": {
         "note": "im.draft成功，耗时200ms",
         "simulated": true
@@ -227,14 +227,14 @@
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "im.send",
-      "time_at_ms": 19200,
+      "time_at_ms": 20000,
       "query": "{\"request\": \"产品组大群\"}"
     },
     {
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "im.send",
-      "time_at_ms": 19600,
+      "time_at_ms": 20400,
       "results": {
         "note": "im.send成功，耗时500ms，已发",
         "simulated": true

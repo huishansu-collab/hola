@@ -1,0 +1,71 @@
+{
+ "source": "audio/sources/session-master.wav",
+ "clips": [
+  {
+   "utterance_id": "u001",
+   "source_start_ms": 460,
+   "source_end_ms": 3340,
+   "similarity": 1.0
+  },
+  {
+   "utterance_id": "u002",
+   "source_start_ms": 6300,
+   "source_end_ms": 7400,
+   "similarity": 1.0
+  },
+  {
+   "utterance_id": "u003",
+   "source_start_ms": 8260,
+   "source_end_ms": 11540,
+   "similarity": 1.0
+  },
+  {
+   "utterance_id": "u004",
+   "source_start_ms": 12600,
+   "source_end_ms": 14240,
+   "similarity": 1.0
+  },
+  {
+   "utterance_id": "u005",
+   "source_start_ms": 16680,
+   "source_end_ms": 20080,
+   "similarity": 1.0
+  },
+  {
+   "utterance_id": "u006",
+   "source_start_ms": 20880,
+   "source_end_ms": 21660,
+   "similarity": 1.0
+  },
+  {
+   "utterance_id": "u007",
+   "source_start_ms": 21920,
+   "source_end_ms": 27660,
+   "similarity": 0.79
+  },
+  {
+   "utterance_id": "u008",
+   "source_start_ms": 28200,
+   "source_end_ms": 28520,
+   "similarity": 1.0
+  },
+  {
+   "utterance_id": "u009",
+   "source_start_ms": 28800,
+   "source_end_ms": 29080,
+   "similarity": 1.0
+  },
+  {
+   "utterance_id": "u010",
+   "source_start_ms": 29300,
+   "source_end_ms": 29900,
+   "similarity": 1.0
+  },
+  {
+   "utterance_id": "u011",
+   "source_start_ms": 30100,
+   "source_end_ms": 30880,
+   "similarity": 1.0
+  }
+ ]
+}

@@ -26,7 +26,7 @@
           "label": "（触碰LIVINGEDGE）→手机亮光",
           "description": "行为：（触碰LIVINGEDGE）→手机亮光",
           "start_at_ms": 0,
-          "end_at_ms": 400
+          "end_at_ms": 580
         }
       ]
     },
@@ -58,7 +58,7 @@
           "delivery": "",
           "annotation": "暂不发声",
           "start_at_ms": 0,
-          "end_at_ms": 400
+          "end_at_ms": 800
         },
         {
           "kind": "expression",
@@ -68,7 +68,7 @@
           "delivery": "",
           "annotation": "暂不发声",
           "start_at_ms": 0,
-          "end_at_ms": 3200,
+          "end_at_ms": 4800,
           "lane": 1
         },
         {
@@ -78,8 +78,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "接话延迟0ms（≤400ms）；轻声，自然拖长“嗯”，占满这一个微轮次；本地字库300ms就回，只够这一声，不说“我查一下”；准备：“岑，二声，cén。岑参的岑，也当小山头讲。”",
-          "start_at_ms": 3200,
-          "end_at_ms": 3600
+          "start_at_ms": 4800,
+          "end_at_ms": 5600
         },
         {
           "kind": "expression",
@@ -88,8 +88,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "首音“嗯……”已在上一行发出，本行接正式答案；常规语速5.0字/秒；先给字＋调，再给一个人名例证和字义；人名例证按标准音整读（cénshēn），第二个字的读音随之播出；禁止念部首笔画和《说文》解释",
-          "start_at_ms": 3600,
-          "end_at_ms": 6800
+          "start_at_ms": 5600,
+          "end_at_ms": 10400
         },
         {
           "kind": "expression",
@@ -98,8 +98,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "听完，不抢话；“欸？”后有0.4秒停顿，未满0.8秒不接话",
-          "start_at_ms": 6800,
-          "end_at_ms": 10400
+          "start_at_ms": 10400,
+          "end_at_ms": 13600
         },
         {
           "kind": "expression",
@@ -108,8 +108,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "准备：“嗯，人名里读shēn，跟人参的参一个音。”；本轮不查工具、答案已在手，只做本地组织，保持静默；句首那个“嗯”随下一行正式回复一起播，不提前单独发一声",
-          "start_at_ms": 10400,
-          "end_at_ms": 10800
+          "start_at_ms": 13600,
+          "end_at_ms": 14000
         },
         {
           "kind": "expression",
@@ -118,8 +118,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "“嗯”是短音——答案已在手，不用拖延；常规语速5.0字/秒；用“人名里读”限定语境而不评判；禁止展开cān/shēn/cēn三读全表",
-          "start_at_ms": 10800,
-          "end_at_ms": 13600
+          "start_at_ms": 14000,
+          "end_at_ms": 16800
         },
         {
           "kind": "expression",
@@ -128,8 +128,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "保持静默",
-          "start_at_ms": 14400,
-          "end_at_ms": 14800
+          "start_at_ms": 18000,
+          "end_at_ms": 18400
         }
       ]
     },
@@ -145,64 +145,64 @@
           "label": "触后≤50ms亮光，进入聆听态",
           "description": "触后≤50ms亮光，进入聆听态",
           "start_at_ms": 0,
-          "end_at_ms": 400
+          "end_at_ms": 800
         },
         {
           "kind": "state",
           "label": "持续收听；用户报的是字形部件",
           "description": "持续收听；用户报的是字形部件（山＋今），不是读音，走拆字检索而非拼音检索",
           "start_at_ms": 0,
-          "end_at_ms": 3200,
+          "end_at_ms": 4800,
           "lane": 1
         },
         {
           "kind": "state",
           "label": "结果返回：岑，cén，二声；本地字库唯一命中，无歧义；用户句尾就得出声，字还没读",
           "description": "结果返回：岑，cén，二声；本地字库唯一命中，无歧义；用户句尾就得出声，字还没读出来先发这一声",
-          "start_at_ms": 3200,
-          "end_at_ms": 3600
+          "start_at_ms": 4800,
+          "end_at_ms": 5600
         },
         {
           "kind": "state",
           "label": "本地字库即时档，一声“嗯……”盖住等待；纯语音场景下要给可核对的抓手，同步在锁屏",
           "description": "本地字库即时档，一声“嗯……”盖住等待；纯语音场景下要给可核对的抓手，同步在锁屏推小字卡「岑cén」",
-          "start_at_ms": 3600,
-          "end_at_ms": 6800
+          "start_at_ms": 5600,
+          "end_at_ms": 10400
         },
         {
           "kind": "state",
           "label": "用户接的是助手刚播出的读音，不是新问一个字；这是求确认＋自曝原先念错，不需要再检",
           "description": "用户接的是助手刚播出的读音，不是新问一个字；这是求确认＋自曝原先念错，不需要再检索",
-          "start_at_ms": 6800,
-          "end_at_ms": 10400
+          "start_at_ms": 10400,
+          "end_at_ms": 13600
         },
         {
           "kind": "state",
           "label": "读音上一轮已随人名播出，无需复查；不再起char.lookup；组织“确认＋给个",
           "description": "读音上一轮已随人名播出，无需复查；不再起char.lookup；组织“确认＋给个记法”的口径",
-          "start_at_ms": 10400,
-          "end_at_ms": 10800
+          "start_at_ms": 13600,
+          "end_at_ms": 14000
         },
         {
           "kind": "state",
           "label": "先确认用户听到的读音，再补一个熟词做锚；不点评用户先前念错",
           "description": "先确认用户听到的读音，再补一个熟词做锚；不点评用户先前念错",
-          "start_at_ms": 10800,
-          "end_at_ms": 13600
+          "start_at_ms": 14000,
+          "end_at_ms": 16800
         },
         {
           "kind": "state",
           "label": "收尾信号，不用再答",
           "description": "收尾信号，不用再答",
-          "start_at_ms": 13600,
-          "end_at_ms": 14400
+          "start_at_ms": 16800,
+          "end_at_ms": 18000
         },
         {
           "kind": "state",
           "label": "用户明确收尾；end_reason=user_end；灯环熄灭",
           "description": "用户明确收尾；end_reason=user_end；灯环熄灭",
-          "start_at_ms": 14400,
-          "end_at_ms": 14800
+          "start_at_ms": 18000,
+          "end_at_ms": 18400
         }
       ]
     },

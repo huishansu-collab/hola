@@ -32,8 +32,8 @@
           "kind": "action",
           "label": "点击非对话界面退出",
           "description": "行为：点击非对话界面退出",
-          "start_at_ms": 14400,
-          "end_at_ms": 17200
+          "start_at_ms": 14240,
+          "end_at_ms": 14800
         }
       ]
     },
@@ -83,7 +83,7 @@
           "delivery": "",
           "annotation": "暂不发声",
           "start_at_ms": 0,
-          "end_at_ms": 2800,
+          "end_at_ms": 2000,
           "lane": 1
         },
         {
@@ -93,7 +93,7 @@
           "trigger": "",
           "delivery": "",
           "annotation": "接话延迟0ms（≤400ms）；轻声，自然拖长“嗯”，占满这一个微轮次；缓存汇率300ms就回，战术性啰嗦只够这一声，不铺垫“你稍等一下”；准备：“2127元。”",
-          "start_at_ms": 2800,
+          "start_at_ms": 2000,
           "end_at_ms": 3200
         },
         {
@@ -134,7 +134,7 @@
           "delivery": "",
           "annotation": "接话延迟400ms（句尾后第一个微轮次用于组织，未超上限）；常规语速；禁止反问“你是说美元吗”，省掉的部分自己补",
           "start_at_ms": 6000,
-          "end_at_ms": 7600
+          "end_at_ms": 7200
         },
         {
           "kind": "expression",
@@ -143,8 +143,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "听完改口，不抢话；丢弃3545这个结论，不辩解“刚才您说的是美元”",
-          "start_at_ms": 7600,
-          "end_at_ms": 11200
+          "start_at_ms": 7200,
+          "end_at_ms": 10800
         },
         {
           "kind": "expression",
@@ -153,7 +153,7 @@
           "trigger": "",
           "delivery": "",
           "annotation": "接话延迟0ms（≤400ms）；轻声拖长“嗯”，占一个微轮次；不因为上一轮算错就加“抱歉”“我重新算一下”；准备：“日元就便宜多了，24.5元左右。”",
-          "start_at_ms": 11200,
+          "start_at_ms": 10800,
           "end_at_ms": 11600
         },
         {
@@ -173,8 +173,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "保持静默",
-          "start_at_ms": 17200,
-          "end_at_ms": 17600
+          "start_at_ms": 14400,
+          "end_at_ms": 14800
         }
       ]
     },
@@ -197,14 +197,14 @@
           "label": "持续收听；金额300、源币种USD、目标币种按常驻地默认CNY，信息完整",
           "description": "持续收听；金额300、源币种USD、目标币种按常驻地默认CNY，信息完整",
           "start_at_ms": 0,
-          "end_at_ms": 2800,
+          "end_at_ms": 2000,
           "lane": 1
         },
         {
           "kind": "state",
           "label": "结果返回，取日更缓存汇率7.09，算出2,127；用户句尾就得出声，此刻数还没落",
           "description": "结果返回，取日更缓存汇率7.09，算出2,127；用户句尾就得出声，此刻数还没落定，先发一声占住话权",
-          "start_at_ms": 2800,
+          "start_at_ms": 2000,
           "end_at_ms": 3200
         },
         {
@@ -233,20 +233,20 @@
           "label": "本地换算，即时档",
           "description": "本地换算，即时档",
           "start_at_ms": 6000,
-          "end_at_ms": 7600
+          "end_at_ms": 7200
         },
         {
           "kind": "state",
           "label": "用户自我纠正源币种；作废USD那一轮，只留改后的JPY→CNY",
           "description": "用户自我纠正源币种；作废USD那一轮，只留改后的JPY→CNY",
-          "start_at_ms": 7600,
-          "end_at_ms": 11200
+          "start_at_ms": 7200,
+          "end_at_ms": 10800
         },
         {
           "kind": "state",
           "label": "结果返回，日元汇率0.049，算出约24.5；改口后仍是句尾即出声，答案未落定先",
           "description": "结果返回，日元汇率0.049，算出约24.5；改口后仍是句尾即出声，答案未落定先发这一声",
-          "start_at_ms": 11200,
+          "start_at_ms": 10800,
           "end_at_ms": 11600
         },
         {
@@ -261,14 +261,15 @@
           "label": "退出动作＝双重收尾信号，不用再答",
           "description": "退出动作＝双重收尾信号，不用再答",
           "start_at_ms": 14400,
-          "end_at_ms": 17200
+          "end_at_ms": 14800
         },
         {
           "kind": "state",
           "label": "用户明确收尾并退出界面；end_reason=user_end；灯环熄灭",
           "description": "用户明确收尾并退出界面；end_reason=user_end；灯环熄灭",
-          "start_at_ms": 17200,
-          "end_at_ms": 17600
+          "start_at_ms": 14400,
+          "end_at_ms": 14800,
+          "lane": 1
         }
       ]
     },

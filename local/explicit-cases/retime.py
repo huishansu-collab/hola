@@ -71,13 +71,11 @@ def retime(cid):
         anchors.append((u['end_at_ms'], place[u['id']][2]))
     at = mapper(anchors)
     end_new = max(p[2] for p in place.values())
-    duration = grid(end_new + 400)
     # 台词
     for u in d['utterances']:
         a, _, z = place[u['id']]
         u['start_at_ms'], u['end_at_ms'] = a, z
     d['utterances'].sort(key=lambda u: (u['start_at_ms'], u['id']))
-    d['meta_data']['media']['audio']['duration_ms'] = duration
     d['static_context']['constraints'].update(
         timing_status='aligned', audio_status='generated',
         audio_note=('台词来自同一次整段对话生成，按语音识别对齐切分，原速播放；'
@@ -95,10 +93,13 @@ def retime(cid):
             if 'start_at_ms' in c:
                 a, z = at(c['start_at_ms']), at(c['end_at_ms'])
                 if tr['id'] not in ('user', 'control', 'world'): a, z = grid(a), grid(z)
-                if z <= a: z = a + 400
-                c['start_at_ms'], c['end_at_ms'] = min(a, duration - 400), min(z, duration)
+                c['start_at_ms'], c['end_at_ms'] = a, max(z, a + 400)
     for e in d['events']:
-        e['time_at_ms'] = min(grid(at(e['time_at_ms'])), duration)
+        e['time_at_ms'] = grid(at(e['time_at_ms']))
+    for eid in {e['event_id'] for e in d['events']}:     # 请求和返回不能落在同一刻
+        pair = [e for e in d['events'] if e['event_id'] == eid]
+        if len(pair) == 2 and pair[1]['time_at_ms'] <= pair[0]['time_at_ms']:
+            pair[1]['time_at_ms'] = pair[0]['time_at_ms'] + 400
     for e in d['events']:                          # 打断的 audio.stop 必须落在真正的停声点上
         if e['tool_name'] == 'audio.stop':
             eid = e['event_id']
@@ -113,6 +114,10 @@ def retime(cid):
     d['events'].sort(key=lambda e: (e['time_at_ms'], e['event_id'], 'query' not in e))
     for tr in t['tracks']:
         imp.lanes([c for c in tr['clips'] if 'start_at_ms' in c])
+    # 时长要盖住最靠后的一件事：台词、标注片段、工具返回都算在内
+    duration = grid(max([end_new] + [c['end_at_ms'] for tr in t['tracks'] for c in tr['clips']
+                                     if 'end_at_ms' in c] + [e['time_at_ms'] for e in d['events']]) + 400)
+    d['meta_data']['media']['audio']['duration_ms'] = duration
     # 音频与切点
     sources = ROOT / 'case-packages' / cid / 'audio/sources'
     sources.mkdir(parents=True, exist_ok=True)

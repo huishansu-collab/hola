@@ -110,8 +110,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "接话延迟0ms（≤400ms）；轻声拖长“嗯”，占一个微轮次；准备：“好，发运营部张伟：‘文件发你邮箱了，注意查收。’这么发？”",
-          "start_at_ms": 7600,
-          "end_at_ms": 8000
+          "start_at_ms": 7200,
+          "end_at_ms": 8400
         },
         {
           "kind": "expression",
@@ -120,8 +120,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "首音“嗯……”已在上一行发出，本行接正式答案；常规语速；念稿部分略慢一档、收件人重读",
-          "start_at_ms": 8000,
-          "end_at_ms": 12400
+          "start_at_ms": 8400,
+          "end_at_ms": 13200
         },
         {
           "kind": "expression",
@@ -130,8 +130,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "听完，不抢话",
-          "start_at_ms": 12400,
-          "end_at_ms": 14800
+          "start_at_ms": 13200,
+          "end_at_ms": 16000
         },
         {
           "kind": "expression",
@@ -140,8 +140,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "接话延迟0ms（≤400ms）；“嗯”是短音、不拖长——只表示收到改动，不等于发送成功；禁止在回执前说“发了”",
-          "start_at_ms": 14800,
-          "end_at_ms": 15200
+          "start_at_ms": 16000,
+          "end_at_ms": 16400
         },
         {
           "kind": "expression",
@@ -150,8 +150,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "准备：“‘文件发你邮箱了。’——改好了，发了哈。”；回执刚到，本行只做本地组织，不再补声",
-          "start_at_ms": 15200,
-          "end_at_ms": 15600
+          "start_at_ms": 16400,
+          "end_at_ms": 16800
         },
         {
           "kind": "expression",
@@ -160,8 +160,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "考核点：常规语速；回读改后终版一遍并同时报“已发”，一句收；禁止改完再问“确定发吗”多绕一轮",
-          "start_at_ms": 15600,
-          "end_at_ms": 18400
+          "start_at_ms": 16800,
+          "end_at_ms": 20400
         },
         {
           "kind": "expression",
@@ -170,8 +170,8 @@
           "trigger": "",
           "delivery": "",
           "annotation": "单字收尾，占一个最小微轮次",
-          "start_at_ms": 18400,
-          "end_at_ms": 18800
+          "start_at_ms": 20400,
+          "end_at_ms": 20800
         },
         {
           "kind": "expression",
@@ -180,8 +180,9 @@
           "trigger": "",
           "delivery": "",
           "annotation": "保持静默，不追加“还要发给你表哥吗”",
-          "start_at_ms": 18800,
-          "end_at_ms": 28800
+          "start_at_ms": 20400,
+          "end_at_ms": 20800,
+          "lane": 1
         },
         {
           "kind": "expression",
@@ -190,8 +191,9 @@
           "trigger": "",
           "delivery": "",
           "annotation": "考核点：静默满10秒自动收，收前不播任何提示音或“还在吗”",
-          "start_at_ms": 28800,
-          "end_at_ms": 29200
+          "start_at_ms": 20400,
+          "end_at_ms": 20800,
+          "lane": 2
         }
       ]
     },
@@ -236,70 +238,72 @@
           "label": "“公司的”＝运营部张伟，对象确定",
           "description": "“公司的”＝运营部张伟，对象确定",
           "start_at_ms": 6800,
-          "end_at_ms": 7600
+          "end_at_ms": 7200
         },
         {
           "kind": "state",
           "label": "拟稿完成，同事口径，带一句提示语；对象一确定就得出声，念稿等草稿落定再说",
           "description": "拟稿完成，同事口径，带一句提示语；对象一确定就得出声，念稿等草稿落定再说",
-          "start_at_ms": 7600,
-          "end_at_ms": 8000
+          "start_at_ms": 7200,
+          "end_at_ms": 8400
         },
         {
           "kind": "state",
           "label": "回读收件人＋正文等确认，让用户能当场改人或改词；首音已发，本行接念稿",
           "description": "回读收件人＋正文等确认，让用户能当场改人或改词；首音已发，本行接念稿",
-          "start_at_ms": 8000,
-          "end_at_ms": 12400
+          "start_at_ms": 8400,
+          "end_at_ms": 13200
         },
         {
           "kind": "state",
           "label": "只删不加：删掉客套，保留“文件发你邮箱了。”",
           "description": "只删不加：删掉客套，保留“文件发你邮箱了。”",
-          "start_at_ms": 12400,
-          "end_at_ms": 14800
+          "start_at_ms": 13200,
+          "end_at_ms": 16000
         },
         {
           "kind": "state",
           "label": "收件人已确认过，本轮只改文案——改稿即视为确认，直接发，不再问第二遍；改口说完就",
           "description": "收件人已确认过，本轮只改文案——改稿即视为确认，直接发，不再问第二遍；改口说完就得出声，用一个短“嗯”确认收到",
-          "start_at_ms": 14800,
-          "end_at_ms": 15200
+          "start_at_ms": 16000,
+          "end_at_ms": 16400
         },
         {
           "kind": "state",
           "label": "回执返回，确认已投递",
           "description": "回执返回，确认已投递",
-          "start_at_ms": 15200,
-          "end_at_ms": 15600
+          "start_at_ms": 16400,
+          "end_at_ms": 16800
         },
         {
           "kind": "state",
           "label": "回执已到才报完成",
           "description": "回执已到才报完成",
-          "start_at_ms": 15600,
-          "end_at_ms": 18400
+          "start_at_ms": 16800,
+          "end_at_ms": 20400
         },
         {
           "kind": "state",
           "label": "收尾信号，不用再答",
           "description": "收尾信号，不用再答",
-          "start_at_ms": 18400,
-          "end_at_ms": 18800
+          "start_at_ms": 20400,
+          "end_at_ms": 20800
         },
         {
           "kind": "state",
           "label": "无人说话，计静默；用户已走到车边开门",
           "description": "无人说话，计静默；用户已走到车边开门（环境音不算重置）",
-          "start_at_ms": 18800,
-          "end_at_ms": 28800
+          "start_at_ms": 20400,
+          "end_at_ms": 20800,
+          "lane": 1
         },
         {
           "kind": "state",
           "label": "距最后一次人声正好10.0秒；end_reason=silence_timeou",
           "description": "距最后一次人声正好10.0秒；end_reason=silence_timeout；灯环熄灭",
-          "start_at_ms": 28800,
-          "end_at_ms": 29200
+          "start_at_ms": 20400,
+          "end_at_ms": 20800,
+          "lane": 2
         }
       ]
     },

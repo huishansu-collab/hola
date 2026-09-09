@@ -19,8 +19,34 @@ NORM = re.compile(r'[^一-鿿A-Za-z0-9]')
 # 语气词的写法在识别结果里不稳定（嗐/嗨、唉/哎、诶/欸 同音异形），
 # 归一到同一个字再比对，否则附和这类单字台词会匹配不上、只能插值。
 VARIANTS = str.maketrans({'嗐': '嗨', '唉': '哎', '诶': '欸', '嘿': '嗨', '呐': '哪',
-                          '恩': '嗯', '唔': '嗯', '呣': '嗯', '嗯': '嗯'})
+                          '恩': '嗯', '唔': '嗯', '呣': '嗯', '嗯': '嗯',
+                          '幺': '一', '两': '二', '〇': '零'})
+DIGITS = '零一二三四五六七八九'
+UNITS = ['', '十', '百', '千']
+
+
+def cn_number(text):
+    """台词里的阿拉伯数字按中文读法展开：识别结果不带 ITN，「2127 元」在那边是
+    「二千幺百二十七元」，不展开的话这一句会一个字都对不上，只能靠插值定位。"""
+    def whole(n):
+        s = str(int(n))
+        if len(s) > 8: return ''.join(DIGITS[int(c)] for c in s)
+        if len(s) <= 4:
+            out, zero = '', False
+            for i, c in enumerate(s):
+                d, u = int(c), UNITS[len(s) - i - 1]
+                if d == 0: zero = True; continue
+                if zero and out: out += '零'
+                zero = False
+                out += ('' if d == 1 and u == '十' and i == 0 else DIGITS[d]) + u
+            return out or '零'
+        return whole(s[:-4]) + '万' + (whole(s[-4:]) if int(s[-4:]) else '')
+    def one(m):
+        a, b = m.group(1), m.group(2)
+        return whole(a) + ('点' + ''.join(DIGITS[int(c)] for c in b) if b else '')
+    return re.sub(r'(\d+)(?:\.(\d+))?', one, text)
 norm = lambda t: NORM.sub('', str(t)).lower().translate(VARIANTS)
+ref_norm = lambda t: norm(cn_number(str(t)))
 
 
 def ensure_model(model_dir: Path):
@@ -53,7 +79,7 @@ def align_master(rec, path, lines, pad=0.06):
     pcm = decode16k(path); dur = len(pcm) / 16000
     st = rec.create_stream(); st.accept_waveform(16000, pcm); rec.decode_stream(st)
     hyp = [(ch, ts) for t, ts in zip(st.result.tokens, st.result.timestamps) for ch in norm(t)]
-    ref = [(ch, i) for i, l in enumerate(lines) for ch in norm(l['text'])]
+    ref = [(ch, i) for i, l in enumerate(lines) for ch in ref_norm(l['text'])]
     sm = difflib.SequenceMatcher(None, [c for c, _ in ref], [c for c, _ in hyp], autojunk=False)
     first = [None] * len(lines); last = [None] * len(lines); matched = [0] * len(lines)
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
@@ -96,7 +122,7 @@ def align_master(rec, path, lines, pad=0.06):
         idx = np.where(env[fa:fb] > th)[0]
         a2, b2 = ((fa + idx[0]) * 0.02, (fa + idx[-1] + 1) * 0.02) if len(idx) else (a, b)
         regs.append([round(max(a, a2 - pad), 3), round(min(b, b2 + pad), 3)])
-    sims = [round(matched[i] / max(1, len(norm(lines[i]['text']))), 2) for i in range(len(lines))]
+    sims = [round(matched[i] / max(1, len(ref_norm(lines[i]['text']))), 2) for i in range(len(lines))]
     return regs, sims, st.result.text
 
 

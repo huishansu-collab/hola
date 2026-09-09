@@ -1,0 +1,23 @@
+{
+ "source": "audio/sources/session-master.wav",
+ "clips": [
+  {
+   "utterance_id": "u001",
+   "source_start_ms": 600,
+   "source_end_ms": 1740,
+   "similarity": 1.0
+  },
+  {
+   "utterance_id": "u002",
+   "source_start_ms": 3120,
+   "source_end_ms": 3900,
+   "similarity": 1.0
+  },
+  {
+   "utterance_id": "u003",
+   "source_start_ms": 5880,
+   "source_end_ms": 7120,
+   "similarity": 1.0
+  }
+ ]
+}

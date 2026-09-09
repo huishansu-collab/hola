@@ -10,7 +10,7 @@
     },
     "media": {
       "audio": {
-        "duration_ms": 502400,
+        "duration_ms": 491600,
         "file": null,
         "tracks": [
           {
@@ -30,12 +30,12 @@
     "memory": {},
     "constraints": {
       "simulated": true,
-      "timing_status": "planned",
-      "audio_status": "none",
+      "timing_status": "aligned",
+      "audio_status": "generated",
       "stream_step_ms": 400,
       "task_goal": "按400ms微轮次对齐，连续状态合并展示；考最短确认、改数字立刻生效、10秒无响应自动灭、到点播报前的环境判断；时间与工具耗时均为示意。",
       "source": "《语音双工 - Explicit case》B1",
-      "audio_note": "语音待生成；时间按文档示意值吸附到 400 ms 微轮次。"
+      "audio_note": "台词来自同一次整段对话生成，按语音识别对齐切分，原速播放；其余轨道按旧时间到新时间的分段线性映射跟随。"
     },
     "tools": [
       {
@@ -124,63 +124,63 @@
       "speaker_id": "user_1",
       "text": "帮我定个十分钟。",
       "start_at_ms": 0,
-      "end_at_ms": 1600
+      "end_at_ms": 820
     },
     {
       "id": "u002",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 1600,
-      "end_at_ms": 2000
+      "start_at_ms": 1200,
+      "end_at_ms": 1420
     },
     {
       "id": "u003",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "好，十分钟，开始了。",
-      "start_at_ms": 2000,
-      "end_at_ms": 3600
+      "start_at_ms": 1600,
+      "end_at_ms": 3800
     },
     {
       "id": "u004",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "欸等会儿，改八分钟吧，我锅已经热了。",
-      "start_at_ms": 3600,
-      "end_at_ms": 6400
+      "start_at_ms": 3800,
+      "end_at_ms": 6620
     },
     {
       "id": "u005",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "嗯……",
-      "start_at_ms": 6400,
-      "end_at_ms": 6800
+      "start_at_ms": 6800,
+      "end_at_ms": 7940
     },
     {
       "id": "u006",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "改好了，八分钟。",
-      "start_at_ms": 6800,
-      "end_at_ms": 8000
+      "start_at_ms": 8000,
+      "end_at_ms": 9160
     },
     {
       "id": "u007",
       "speaker": "assistant",
       "speaker_id": "assistant",
       "text": "八分钟到了，去看下锅吧。",
-      "start_at_ms": 486800,
-      "end_at_ms": 488800
+      "start_at_ms": 488000,
+      "end_at_ms": 489720
     },
     {
       "id": "u008",
       "speaker": "user",
       "speaker_id": "user_1",
       "text": "好嘞。",
-      "start_at_ms": 488800,
-      "end_at_ms": 489200
+      "start_at_ms": 489720,
+      "end_at_ms": 490120
     }
   ],
   "events": [
@@ -195,7 +195,7 @@
       "event_id": "e01",
       "event_type": "function_call",
       "tool_name": "timer.create",
-      "time_at_ms": 1600,
+      "time_at_ms": 1200,
       "results": {
         "note": "timer.create(10:00)成功，耗时200ms",
         "simulated": true
@@ -205,14 +205,14 @@
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "timer.update",
-      "time_at_ms": 3600,
+      "time_at_ms": 4000,
       "query": "{\"request\": \"8:00\"}"
     },
     {
       "event_id": "e02",
       "event_type": "function_call",
       "tool_name": "timer.update",
-      "time_at_ms": 6400,
+      "time_at_ms": 6800,
       "results": {
         "note": "timer.update(8:00)成功，耗时200ms，自此刻重新起算",
         "simulated": true
@@ -222,14 +222,14 @@
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "timer.fire",
-      "time_at_ms": 486400,
+      "time_at_ms": 487600,
       "query": "{\"request\": \"自6,450起算满480,000ms\"}"
     },
     {
       "event_id": "e03",
       "event_type": "function_call",
       "tool_name": "timer.fire",
-      "time_at_ms": 486800,
+      "time_at_ms": 488000,
       "results": {
         "note": "timer.fire（自6,450起算满480,000ms）",
         "simulated": true
@@ -239,14 +239,14 @@
       "event_id": "e04",
       "event_type": "function_call",
       "tool_name": "timer.close",
-      "time_at_ms": 501600,
+      "time_at_ms": 490800,
       "query": "{\"request\": \"timer.close｜任务完成\"}"
     },
     {
       "event_id": "e04",
       "event_type": "function_call",
       "tool_name": "timer.close",
-      "time_at_ms": 502000,
+      "time_at_ms": 491200,
       "results": {
         "note": "timer.close｜任务完成",
         "simulated": true

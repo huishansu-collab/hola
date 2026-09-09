@@ -24,7 +24,9 @@ npm run build:local
 ## 功能
 
 - 十一个手写示例 Case：北京天气、演员与电视剧查询、回家叫车、订咖啡、短信提醒、新用户查 Gmail 邮件、播报中打断改口、路况服务超时降级、指代不明先澄清、吐槽时附和、查到无票主动打断。Gmail 与吐槽附和两个 Case 已接入完整对话语音，时序按实际录音对齐。
-- 另有 59 个 Case 从《语音双工 - Explicit case》文档导入（文档 58 条，其中 Z5 给了两张表，拆成两个包），按原文分组放在 Files 的 A–Z 文件夹里，均为 `planned` 包：台词、后台判断、工具调用与表达控制齐备，语音待生成。导入脚本见 `local/explicit-cases/`。
+- 另有 59 个 Case 从《语音双工 - Explicit case》文档导入（文档 58 条，其中 Z5 给了两张表，拆成两个包），按原文分组放在 Files 的 A–Z 文件夹里。前十条（A1–D1）已配音，时间线按真实录音重排；其余为 `planned` 包：台词、后台判断、工具调用与表达控制齐备，语音待生成。导入与配音脚本见 `local/explicit-cases/`。
+
+配音一条 Case 的流程：`voice_request.py` 生成请求 → 把 Case id 写进 `.github/synthesis-tts-request.yml` 并 push（Actions 调火山生成母带并提交回分支）→ `local/align_master.py` 对齐切点 → `local/explicit-cases/retime.py` 按录音重排时间线。重新跑 `import.py` 会把包退回 planned，之后对已配音的 Case 再跑一次 retime 即可。
 - 未配音的 Case 时序为设计值，界面顶部会标注「语音待生成」；其余结构与已配音 Case 一致，可直接导出 JSON。
 - 附和与打断成对入库：两者都出现助手人声压在用户人声上，判据是用户有没有停——不停是附和（backchannel），停了是打断（preempt）。
 - 用户、用户控制、助手、表达控制、世界、后台判断、工具调用七条轨道；播放控制并入工具调用。

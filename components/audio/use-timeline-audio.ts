@@ -4,11 +4,11 @@ import actorData from './actor-clips.json';
 import rideData from './ride-clips.json';
 import coffeeData from './coffee-clips.json';
 import smsData from './sms-clips.json';
-import gmailRuntime from '../../case-packages/gmail/build/runtime.json';
-import backchannelRuntime from '../../case-packages/backchannel/build/runtime.json';
+import {packageRuntimes} from '../case-packages';
 // Case 包的音频按 `package/<id>/<utterance>` 注册，与 packageToScenario 生成的
-// audioKey 一致。漏注册的后果是静默无声：播放循环里查不到 key 就直接跳过。
-const packageData=Object.fromEntries([gmailRuntime,backchannelRuntime].flatMap(
+// audioKey 一致。漏注册的后果是静默无声：播放循环里查不到 key 就直接跳过——
+// 所以这里收全部包，新配音的 Case 不用回来补一行 import。
+const packageData=Object.fromEntries(packageRuntimes.flatMap(
  r=>Object.entries(r.audio).map(([id,clip])=>[`package/${r.manifest.case_id}/${id}`,clip])));
 export type RealClip={a:number;b:number;audioKey?:string;fadeMs?:number;loop?:boolean;gainPoints?:[number,number][]};
 export const audioClips={...data,...actorData,...rideData,...coffeeData,...smsData,...packageData} as Record<string,{src:string;start:number;duration:number;peaks:number[];sourceStart?:number;sourceEnd?:number;source?:string}>;

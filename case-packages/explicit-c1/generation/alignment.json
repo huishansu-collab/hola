@@ -1,4 +1,83 @@
 {
   "schema_version": 1,
-  "clips": []
+  "clips": [
+    {
+      "utterance_id": "u001",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 220,
+      "source_end_ms": 2820
+    },
+    {
+      "utterance_id": "u002",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 3320,
+      "source_end_ms": 4300
+    },
+    {
+      "utterance_id": "u003",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 5720,
+      "source_end_ms": 8840
+    },
+    {
+      "utterance_id": "u004",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 9020,
+      "source_end_ms": 10800
+    },
+    {
+      "utterance_id": "u005",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 10850,
+      "source_end_ms": 11080
+    },
+    {
+      "utterance_id": "u006",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 11080,
+      "source_end_ms": 16680
+    },
+    {
+      "utterance_id": "u007",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 17980,
+      "source_end_ms": 18340
+    },
+    {
+      "utterance_id": "u008",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 19820,
+      "source_end_ms": 22960
+    },
+    {
+      "utterance_id": "u009",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 23200,
+      "source_end_ms": 24420
+    },
+    {
+      "utterance_id": "u010",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 25780,
+      "source_end_ms": 33190
+    },
+    {
+      "utterance_id": "u011",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 33440,
+      "source_end_ms": 34560
+    },
+    {
+      "utterance_id": "u012",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 34840,
+      "source_end_ms": 35160
+    },
+    {
+      "utterance_id": "u013",
+      "source": "audio/sources/session-master.wav",
+      "source_start_ms": 36860,
+      "source_end_ms": 37220
+    }
+  ]
 }
