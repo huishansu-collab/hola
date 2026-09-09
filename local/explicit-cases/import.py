@@ -273,8 +273,13 @@ def emit(b):
                               'detected_at_ms': u['start_at_ms'], 'stop_command_at_ms': u['start_at_ms'],
                               'fade_start_at_ms': u['start_at_ms'], 'stop_at_ms': stop,
                               'timing_basis': '文档给的是「≤400 ms 停声」，这里按一个微轮次落表'})
-        events.append(('audio.stop', f"打断 {r['id']}", u['start_at_ms'], stop, '用户开口，停播当前语音',
-                       {'status': 'stopped', 'stopped_at_ms': stop, 'simulated': True}))
+        # 文档在打断那一行往往已经写了 audio.stop，替换掉它，别再补一条重复的
+        payload = ('audio.stop', f"打断 {r['id']}", u['start_at_ms'], stop, '用户开口，停播当前语音',
+                   {'status': 'stopped', 'stopped_at_ms': stop, 'simulated': True})
+        same = next((n for n, e in enumerate(events)
+                     if e[0] == 'audio.stop' and abs(e[2] - u['start_at_ms']) <= 400), None)
+        if same is None: events.append(payload)
+        else: events[same] = payload
         tools.setdefault('audio.stop', '用户打断时停止当前助手语音')
     # 文档按行排时序，个别行仍会让两条人声压在一起。压住不管的话，
     # 「打断」和「附和」就分不出来了，所以这里逐对定性：助手整段落在用户句内是附和，
@@ -360,7 +365,7 @@ def emit(b):
     return case, timeline, duration
 
 
-def script_md(b, case, duration):
+def script_md(b, case, duration, aligned=False):
     fmt = lambda n: f'{n:,}'
     rows = ['| 时间（ms） | 用户音频轨道 | Assistant 音频轨道（实际播出） | 后台判断与反应 | AI 工具调用轨道 | AI 回复内容／表达控制 |',
             '|---|---|---|---|---|---|']
@@ -372,9 +377,8 @@ def script_md(b, case, duration):
 
 {b['note']}
 
-来源：《语音双工 - Explicit case》{b['code']}。语音尚未生成，时间为文档示意值，
-按 400 ms 微轮次吸附（原表整体偏移 {b['shift']} ms，已减去）；工具参数与返回按原文保留成文本，
-未虚构 API 字段。总时长 {fmt(duration)} ms，用户 {len([u for u in case['utterances'] if u['speaker'] != 'assistant'])} 段、
+来源：《语音双工 - Explicit case》{b['code']}。{'语音已生成，下表时间按真实录音重排（台词依次落位，其余轨道按分段线性映射跟随）' if aligned else '语音尚未生成，时间为文档示意值，按 400 ms 微轮次吸附（原表整体偏移 ' + str(b['shift']) + ' ms，已减去）'}；
+工具参数与返回按原文保留成文本，未虚构 API 字段。总时长 {fmt(duration)} ms，用户 {len([u for u in case['utterances'] if u['speaker'] != 'assistant'])} 段、
 助手 {len([u for u in case['utterances'] if u['speaker'] == 'assistant'])} 段，工具调用 {len(case['events']) // 2} 次。
 
 ## 台词与时序

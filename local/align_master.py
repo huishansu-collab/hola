@@ -2,7 +2,7 @@
 """local/align_master.py — 用语音识别把整段母带和 Case 台词对齐，算出每句的切点。
 
     pip install sherpa-onnx numpy
-    python3 local/align_master.py backchannel
+    python3 local/align_master.py backchannel explicit-a1 ...   # 可以一次多个
 
 母带 → SenseVoice 逐字识别（带时间戳）→ 台词字符与识别字符做编辑距离对齐 →
 每句首尾字的时间 → 相邻两句之间取能量最低的静音点作切点。
@@ -101,13 +101,17 @@ def align_master(rec, path, lines, pad=0.06):
 
 
 def main():
-    case = sys.argv[1]
+    cases = sys.argv[1:] or ['backchannel']
     model_dir = Path(os.environ.get('SENSEVOICE_DIR') or (ROOT / '.cache' / MODEL))
     ensure_model(model_dir)
     import sherpa_onnx
     rec = sherpa_onnx.OfflineRecognizer.from_sense_voice(
         model=str(model_dir / 'model.int8.onnx'), tokens=str(model_dir / 'tokens.txt'),
         num_threads=min(8, os.cpu_count() or 4), use_itn=False, language='zh')
+    for case in cases: align_one(rec, case)
+
+
+def align_one(rec, case):
     d = json.loads((ROOT / 'case-packages' / case / 'case.json').read_text('utf-8'))
     # 台词 id 按录制顺序编号，case.json 的数组按时间线排——附和会插到宿主句后面，
     # 两者不一定同序。对齐要的是母带里的朗读顺序，所以按 id 排。
@@ -120,9 +124,9 @@ def main():
          'similarity': s} for l, (a, b), s in zip(lines, regs, sims)]}
     (ROOT / 'local' / case / 'align.json').write_text(
         json.dumps(out, ensure_ascii=False, indent=1) + '\n', 'utf-8')
-    print(f'识别全文：{text[:120]}', file=sys.stderr)
+    print(f'{case} 识别全文：{text[:100]}', file=sys.stderr)
     low = [f"{c['utterance_id']}({c['similarity']})" for c in out['clips'] if c['similarity'] < 0.5]
-    print(f"{len(lines)} 句 · 匹配率均值 {sum(sims)/len(sims):.2f}"
+    print(f"{case}: {len(lines)} 句 · 匹配率均值 {sum(sims)/len(sims):.2f}"
           + (f' · 偏低: {" ".join(low)}' if low else ' · 全部匹配良好'), file=sys.stderr)
 
 

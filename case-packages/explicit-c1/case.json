@@ -263,13 +263,6 @@
       "event_type": "function_call",
       "tool_name": "audio.stop",
       "time_at_ms": 11200,
-      "query": "{\"request\": \"audio.stop()\"}"
-    },
-    {
-      "event_id": "e06",
-      "event_type": "function_call",
-      "tool_name": "audio.stop",
-      "time_at_ms": 11200,
       "query": "{\"request\": \"打断 u006\"}"
     },
     {
@@ -278,7 +271,8 @@
       "tool_name": "audio.stop",
       "time_at_ms": 11600,
       "results": {
-        "note": "audio.stop()",
+        "status": "stopped",
+        "stopped_at_ms": 11600,
         "simulated": true
       }
     },
@@ -288,17 +282,6 @@
       "tool_name": "im.draft",
       "time_at_ms": 11600,
       "query": "{\"request\": \"张强·改\"}"
-    },
-    {
-      "event_id": "e06",
-      "event_type": "function_call",
-      "tool_name": "audio.stop",
-      "time_at_ms": 11600,
-      "results": {
-        "status": "stopped",
-        "stopped_at_ms": 11600,
-        "simulated": true
-      }
     },
     {
       "event_id": "e04",

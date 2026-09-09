@@ -369,7 +369,7 @@
         {
           "kind": "tool",
           "event_id": "e03",
-          "description": "audio.stop()"
+          "description": "用户开口，停播当前语音"
         },
         {
           "kind": "tool",
@@ -380,12 +380,6 @@
           "kind": "tool",
           "event_id": "e05",
           "description": "im.send(张强)发起"
-        },
-        {
-          "kind": "tool",
-          "event_id": "e06",
-          "description": "用户开口，停播当前语音",
-          "lane": 1
         }
       ]
     }

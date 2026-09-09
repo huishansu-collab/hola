@@ -108,33 +108,16 @@
       "event_type": "function_call",
       "tool_name": "audio.stop",
       "time_at_ms": 10400,
-      "query": "{\"request\": \"audio.stop()\"}"
-    },
-    {
-      "event_id": "e02",
-      "event_type": "function_call",
-      "tool_name": "audio.stop",
-      "time_at_ms": 10400,
       "query": "{\"request\": \"打断 u002\"}"
     },
     {
-      "event_id": "e02",
+      "event_id": "e01",
       "event_type": "function_call",
       "tool_name": "audio.stop",
       "time_at_ms": 10800,
       "results": {
         "status": "stopped",
         "stopped_at_ms": 10800,
-        "simulated": true
-      }
-    },
-    {
-      "event_id": "e01",
-      "event_type": "function_call",
-      "tool_name": "audio.stop",
-      "time_at_ms": 12400,
-      "results": {
-        "note": "audio.stop()",
         "simulated": true
       }
     }

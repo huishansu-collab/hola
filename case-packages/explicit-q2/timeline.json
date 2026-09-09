@@ -165,12 +165,6 @@
         {
           "kind": "tool",
           "event_id": "e01",
-          "description": "audio.stop()",
-          "lane": 1
-        },
-        {
-          "kind": "tool",
-          "event_id": "e02",
           "description": "用户开口，停播当前语音"
         }
       ]
