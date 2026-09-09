@@ -140,19 +140,19 @@
         {
           "id": "b1b",
           "kind": "speech",
-          "label": "老板都比较忙。",
+          "label": "是啊！",
           "start_at_ms": 15600,
-          "end_at_ms": 17200,
-          "sub": "同一次附和的内容部分 · 与用户重叠 1,600ms",
+          "end_at_ms": 16400,
+          "sub": "同一次附和的应和部分 · 与用户重叠 800ms",
           "utterance_id": "u007"
         },
         {
           "id": "b2",
           "kind": "speech",
-          "label": "emmm……",
+          "label": "那真是够呛",
           "start_at_ms": 26000,
-          "end_at_ms": 27200,
-          "sub": "落在长句语义接缝 · 只表示在听 · 与用户重叠 1,200ms",
+          "end_at_ms": 27600,
+          "sub": "落在长句语义接缝 · 共情不接话 · 与用户重叠 1,600ms",
           "utterance_id": "u010"
         },
         {
@@ -190,18 +190,18 @@
         {
           "id": "e_b1b",
           "kind": "state",
-          "label": "附和句 · 老板都比较忙",
+          "label": "附和词 · 是啊！",
           "start_at_ms": 15600,
-          "end_at_ms": 17200,
-          "sub": "轻带过，不评价老板本人"
+          "end_at_ms": 16400,
+          "sub": "纯应和，不带内容也不评价老板"
         },
         {
           "id": "e_b2",
           "kind": "state",
-          "label": "附和词 · emmm……",
+          "label": "附和句 · 那真是够呛",
           "start_at_ms": 26000,
-          "end_at_ms": 27200,
-          "sub": "鼻音犹豫，平调略降"
+          "end_at_ms": 27600,
+          "sub": "共情处境，不评判、不给建议"
         },
         {
           "id": "e_b3",
@@ -350,14 +350,14 @@
     {
       "assistant_id": "u007",
       "over_user_id": "u005",
-      "overlap_ms": 1600,
-      "user_continued_ms": 1200
+      "overlap_ms": 800,
+      "user_continued_ms": 2000
     },
     {
       "assistant_id": "u010",
       "over_user_id": "u009",
-      "overlap_ms": 1200,
-      "user_continued_ms": 3200
+      "overlap_ms": 1600,
+      "user_continued_ms": 2800
     },
     {
       "assistant_id": "u013",

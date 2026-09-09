@@ -129,14 +129,17 @@ for(const [id,s] of Object.entries(cases)){
   assert(over.b-c.b>=800,`backchannel: user must keep talking after ${c.label}`);
   assert(!assistant.some(o=>o!==c&&o.a<c.b&&o.b>c.a),`backchannel: ${c.label} overlaps another assistant clip`);
  }
- const [word1,line1,word2,line2]=backchannels;
- assert.equal(word1.label,'嗐','backchannel: the particle is its own unit');
- assert.equal(word1.b-word1.a,400,'backchannel: 嗐 is a 400ms particle');
- assert.equal(line1.a,word1.b,'backchannel: 嗐 and its content half are contiguous');
- assert.equal(word2.label,'emmm……');
- assert(line2.label.startsWith('唉'));
+ const [particle,agree,sympathy,echo]=backchannels;
+ assert.equal(particle.label,'嗐','backchannel: the particle is its own unit');
+ assert.equal(particle.b-particle.a,400,'backchannel: 嗐 is a 400ms particle');
+ assert.equal(agree.a,particle.b,'backchannel: 嗐 and the agreement it heads are contiguous');
+ assert.equal(agree.label,'是啊！');
+ assert.equal(sympathy.label,'那真是够呛');
+ assert(echo.label.startsWith('唉'));
  const types=s.controlAnnotations.fdx_annotation.map(a=>a.fdx_type);
- assert.deepEqual(types,['附和词','附和句','附和词','附和句'],'backchannel: particle and content units are typed apart');
+ // Particles carry only tone; sentences carry a judgement about the situation.
+ assert.deepEqual(types,['附和词','附和词','附和句','附和句'],'backchannel: tone-only and content units are typed apart');
+ for(const c of [particle,agree])assert(c.b-c.a<=800,`backchannel: ${c.label} must stay short`);
  assert(!types.includes('打断'),'backchannel: a backchannel is never annotated as an interruption');
  // Spacing: the user gets whole segments with no assistant voice at all.
  const silent=users.filter(u=>!assistant.some(c=>c.a<u.b&&c.b>u.a));
