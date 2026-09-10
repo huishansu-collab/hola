@@ -65,6 +65,28 @@ fail(
   /依赖/,
 );
 fail((p) => p.timeline.interruptions[0].stop_at_ms++, /停声/);
+// Internal speech interruption retains real overlap/fade checks without
+// inventing an audio-effect stop tool call.
+const internal = structuredClone(bundle);
+const interruption = internal.timeline.interruptions[0];
+interruption.control_type = 'speech_interruption';
+const stopId = internal.case.events.find(
+  (e) => e.tool_name === 'audio.stop' && e.time_at_ms === interruption.stop_command_at_ms,
+).event_id;
+internal.case.events = internal.case.events.filter((e) => e.event_id !== stopId);
+for (const track of internal.timeline.tracks)
+  track.clips = track.clips.filter((c) => c.event_id !== stopId);
+internal.timeline.tool_dependencies = internal.timeline.tool_dependencies
+  .filter((d) => d.event_id !== stopId)
+  .map((d) => ({ ...d, depends_on: d.depends_on.filter((id) => id !== stopId) }));
+internal.case.static_context.tools = internal.case.static_context.tools.filter(
+  (tool) => internal.case.events.some((e) => e.tool_name === tool.function.name),
+);
+validatePackage(internal);
+assert.deepEqual(renderStereo(buildRuntime(internal)).wav, stereo.wav);
+const invalidInternal = structuredClone(internal);
+invalidInternal.timeline.interruptions[0].stop_at_ms++;
+assert.throws(() => validatePackage(invalidInternal), /停声/);
 fail((p) => p.case.fdx_annotation.push({ fdx_type: '打断' }), /Annotation/);
 fail((p) => p.case.meta_data.media.audio.tracks.reverse(), /声道/);
 fail((p) => p.timeline.tracks.pop(), /七条/);

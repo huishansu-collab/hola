@@ -1,3 +1,4 @@
+import { formatToolCall } from '../lib/tool-label.ts';
 import type { Scenario, Clip } from '../app/page';
 import { roles, type RuntimeCase } from '../lib/case-package/index.ts';
 export function packageToScenario(
@@ -17,6 +18,7 @@ export function packageToScenario(
           const u = d.utterances.find((u: any) => u.id === c.utterance_id),
             i = t.interruptions?.find((i: any) => i.assistant_id === u.id);
           return {
+            utteranceId: u.id,
             a: u.start_at_ms,
             b: u.end_at_ms,
             label: u.text,
@@ -29,9 +31,10 @@ export function packageToScenario(
         if (c.kind === 'tool') {
           const es = d.events.filter((e: any) => e.event_id === c.event_id);
           return {
+            toolEventId: c.event_id,
             a: es[0].time_at_ms,
             b: es[1].time_at_ms,
-            label: es[0].tool_name + '()',
+            label: formatToolCall(es[0].tool_name, es[0].query, es[0].display_bindings),
             sub: c.description,
             lane: c.lane,
           };

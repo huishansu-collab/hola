@@ -1,17 +1,21 @@
 import {HighlightJson} from './highlight-json';
-import {useEffect,useRef} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import type {Scenario} from '../app/page';
 import {caseTags,type CaseFile,type CaseTag} from './case-directory';
 import {summarizeCase} from './case-info';
+import {Download} from 'lucide-react';
+import {downloadCaseZip} from './case-archive';
 import {X} from './sf-symbols';
 const seconds=(ms:number)=>`${(ms/1000).toLocaleString('en-US',{maximumFractionDigits:3})} 秒`;
 export function CaseInfoOverlay({file,folder,scenario,onTags,onClose}:{file:CaseFile;folder:string;scenario?:Scenario;onTags:(tags:CaseTag[])=>void;onClose:()=>void}){
+ const [exporting,setExporting]=useState(false),[error,setError]=useState('');
+ const download=async()=>{if(!scenario)return;setExporting(true);setError('');try{await new Promise(r=>setTimeout(r,30));await downloadCaseZip(file.id,file.name,scenario)}catch(e){setError(e instanceof Error?e.message:'导出失败，请重试')}finally{setExporting(false)}};
  const dialog=useRef<HTMLDialogElement>(null);
  useEffect(()=>{dialog.current?.showModal()},[]);
  const info=scenario?summarizeCase(scenario):null;
  return <dialog ref={dialog} className="case-info-overlay" aria-labelledby="case-info-title" onClose={onClose} onClick={e=>{if(e.target===dialog.current){const r=dialog.current!.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.current?.close()}}}>
- <header><div><small>{folder}</small><h2 id="case-info-title">{file.name}</h2></div><button autoFocus aria-label="关闭 Case 信息" onClick={()=>dialog.current?.close()}><X size={18}/></button></header>
- <div className="case-info-content">
+ <header><div><small>{folder}</small><h2 id="case-info-title">{file.name}</h2></div><div className="case-info-actions"><button disabled={!scenario||exporting} aria-label="下载完整 Case ZIP" title="下载完整 Case ZIP" aria-busy={exporting} onClick={()=>void download()}>{exporting?<span className="synthesis-spinner"/>:<Download size={18}/>}</button><button autoFocus aria-label="关闭 Case 信息" onClick={()=>dialog.current?.close()}><X size={18}/></button></div></header>
+ <div className="case-info-content">{error&&<p role="alert" className="files-error">{error}</p>}
  <section><label className="case-type-label" htmlFor="case-type-select">类型</label><select id="case-type-select" className="case-type-select" value={file.tags?.[0]??''} onChange={e=>onTags(e.target.value?[e.target.value as CaseTag]:[])}><option value="" disabled>请选择类型</option>{caseTags.map(tag=><option key={tag} value={tag}>{tag}</option>)}</select></section>
  {info&&scenario?<>
  <dl className="case-info-metrics">{[['时长',seconds(info.duration)],['对话轮次',info.rounds],['事件记录',info.events],['工具调用',info.toolCalls],['音频片段',info.utterances],['轨道',info.tracks]].map(([title,value])=><div key={title}><dt>{title}</dt><dd>{value}</dd></div>)}</dl>

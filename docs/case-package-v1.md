@@ -114,3 +114,42 @@ node scripts/check-case-package-browser.cjs
 ```
 
 Gmail 的历史对照位于 `scripts/fixtures/gmail-parity.json`，仅用于回归；新的制作入口为 `case-packages/gmail`。旧的 `local/gmail` 录音和提示词保留作为制作历史。
+
+## 完整 ZIP 备份与导入
+
+每个 Case 的详情面板右上角提供“下载完整 Case ZIP”。Files 栏的导入按钮同时接受 ZIP 和 `.case.json`。
+
+ZIP 根目录包含：
+
+- `manifest.json`：版本、Case ID、名称与文件索引。
+- `case.json`：完整标准数据。
+- `timeline.json`：全部轨道、打断、表达控制及播放时序。
+- `README.md`、`script.md`：包说明、完整对白与时间。
+- `audio/index.json`、`audio/clips/*.wav`：引用音频、源偏移、持续时间、波形；轨道保留循环和音量曲线。
+- `audio/combined.wav`：用户左声道、助手右声道的合成对白。
+- `source/`：可用的原始制作包，包括母带、对齐记录、提示词及说明。旧 Case 缺失的制作历史不会补造，README 会说明。
+
+网站 ZIP 使用 `interaction-case-snapshot/1`，保存当前可播放的全部轨道，因此六个现有 Case 均可往返导入，等待音效也会保留。`source/` 内的 `interaction-case/1` 制作包继续使用前述 CLI 构建协议。CLI 构建出的 `.case.json` 现已携带说明及生成请求文件。
+
+也可将标准源包目录的内容直接压缩为 ZIP，保证 `manifest.json` 位于根目录后导入。导入上限 64 MB，解压上限 256 MB、1,000 个文件；会拒绝非法路径、缺失音频、无效时序和数据不一致。相同 ID 更新已有 Case 并保留目录与类型，新 ID 加入当前目录。导入成功后持久保存，失败不会覆盖当前内容。
+
+音频预览原有的 TAR 下载继续用于最终合成数据交付。
+
+```sh
+node scripts/check-case-archive.mjs
+node scripts/check-case-archive-browser.cjs
+```
+
+## Case ID
+
+新 Case 使用标准 UUID v7（36 个字符，8-4-4-4-12 格式），按 [RFC 9562 §5.7](https://www.rfc-editor.org/rfc/rfc9562.html#section-5.7) 编码毫秒时间戳和 74 bit 密码学随机值。跨毫秒可按创建时间排序，同一毫秒内使用随机顺序。网站创建时会检查当前目录是否已有相同 ID，发生碰撞则重新生成。标题可以重复，ID 独立于标题和文件夹。
+
+CLI 制作新 Case 时，先执行 `npm run case:id --silent`，将输出同时写入 `manifest.json` 的 `case_id` 和 `case.json` 的 `meta_data.sample.case_id`。只在首次创建时生成；修改、构建、下载和再次导入均沿用这个 ID。已有 Case 的历史 ID 继续兼容，已有目录和缓存不受影响。
+
+## 时间线手动编辑
+
+片段支持同轨水平拖动及右侧尾部拉伸。用户音频按 1 ms 调整，其余轨道按 400 ms 对齐；方向键使用相同步长微调，Esc 取消当前拖动。拖到视口右边缘持续滚动，按需扩展总时长，保持当前缩放比例。
+
+音频片段只允许移动，用户和助手音频轨道不显示尾部拉伸手柄；音效片段同样保持音频长度。非音频工具或状态区域可调整尾部，更新自身事件和标注。JSON 面板及根目录 case.json 使用编辑后的同一份数据，时长同步更新。手动移动不会自动重新规划其他任务的语义依赖。
+
+编辑按 Case ID 和导入版本持久保存，更新同 ID 源包时替换之前的编辑。详情 ZIP 的根目录保存当前编辑结果，source/ 保留原始制作记录。手动修改后的交互因果与训练标注需要按当前布局复核；原始源包通过校验不代表后续自由编辑仍满足同样的约束。

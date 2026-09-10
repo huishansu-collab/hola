@@ -1,0 +1,4 @@
+interface:
+  display_name: "交互 Case 全流程生成"
+  short_description: "从交互需求展开脚本、生成自然语音并校验和交付完整 Case 包"
+  default_prompt: "用 $interaction-case-pipeline 将我的交互需求展开为完整 Case，先询问用户角色性别、年龄和 Seed Audio 1.0 的 API Key 配置，再给我脚本故事线；确认后生成完整 Case 并交付 case.zip，未确认时继续共创脚本。"

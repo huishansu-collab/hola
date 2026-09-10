@@ -453,3 +453,21 @@ body,.studio{background:#080808;color:#ededed}
 .synthesis-panel .synthesis-transport button:active{transform:scale(.94)}
 .synthesis-panel .synthesis-transport button:last-child{background:#e5e5e5;color:#111}
 .synthesis-panel .synthesis-transport button:last-child:hover{background:#fff}
+
+.case-info-overlay header .case-info-actions {display:flex;align-items:center;gap:8px;flex-shrink:0;}
+
+/* World signals use a dedicated gold palette, including imported snapshots. */
+.gold{--ink:#fff2b3;--fill:#665a12;--edge:#a18d32}
+
+.region .clip {cursor:grab;touch-action:none;}
+.region-dragging .clip {cursor:grabbing;}
+.clip-resize-handle {position:absolute;right:-2px;top:0;bottom:0;width:10px;border:0;border-radius:0 5px 5px 0;padding:0;background:transparent;cursor:ew-resize;touch-action:none;z-index:5;}
+.clip-resize-handle:hover,.clip-resize-handle:focus-visible {background:#ffffff35;}
+.clip-resize-handle::after {content:'';position:absolute;right:4px;top:35%;bottom:35%;width:1px;background:#ffffff70;opacity:0;}
+.region:hover .clip-resize-handle::after {opacity:1;}
+.clip-drag-time {position:absolute;left:0;top:-18px;z-index:8;white-space:nowrap;pointer-events:none;background:#111;color:#ddd;font:10px/16px Menlo,monospace;padding:0 4px;border-radius:3px;}
+
+.region-dragging>.clip {outline:1px solid #ffffff90;outline-offset:-1px;}
+
+/* Timeline decorations must not extend the horizontal scroll range past its duration. */
+.timeline{min-width:100%;overflow:clip}

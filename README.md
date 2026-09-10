@@ -74,3 +74,9 @@ node scripts/check-case-viewport-browser.cjs
 运行前先启动本地预览，也可以通过 `STUDIO_URL` 指定已构建页面。
 
 重新生成语音需要自行配置服务访问凭据。生成脚本从 `SEED_AUTH_FILE` 环境变量读取私有请求头文件，请勿将凭据提交到仓库。
+
+## 完整 Case ZIP
+
+Case 详情面板右上角可下载完整 ZIP，包含标准 JSON、说明、对白、全部轨道、语音与等待音效、双声道合成音频，以及可用的源录音和生成记录。Files 栏支持导入 ZIP 或 `.case.json`，同 ID 更新原 Case，刷新后保留。
+
+格式与限制见 [Case 包说明](docs/case-package-v1.md#完整-zip-备份与导入)。音频预览中的最终交付仍为 TAR。

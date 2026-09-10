@@ -24,7 +24,7 @@ export function streamingCase(s:Scenario):Scenario {
  const layout=[
   ['用户','实际输入','green'],['用户控制','站内操作','pink'],
   ['助手','实际播出','blue'],['表达控制','语音表达','purple'],
-  ['世界','外部输入与状态','teal'],
+  ['世界','外部输入与状态','gold'],
   ['后台判断','决策与反应','amber'],['工具调用','服务与播放控制','teal'],
  ];
  const tracks=layout.map(([name,en,color])=>name==='工具调用'?{name,en,color,clips:toolClips}:cleaned.find(t=>t.name===name)??{name,en,color,clips:[]});
