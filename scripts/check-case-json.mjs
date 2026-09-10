@@ -138,16 +138,19 @@ function packageCase(dir) {
 
   // P12 静默超过 2 秒才有实质回答，中间得有垫句。
   // 量的是「最后一次有人出声」到助手开口——用户自己连着说下去不算等待。
+  // 承接按「这一轮」算：用户说完之后已经垫过一句，后面的安静留白就不再点名，
+  // 依据是 interaction.md「已有承接不要求每个工具重复一次，部分等待可安静留白」。
   const sorted = [...d.utterances].sort((a, b) => a.start_at_ms - b.start_at_ms);
   for (const r of assistant) {
     const before = sorted.filter((x) => x.end_at_ms <= r.start_at_ms);
     if (!before.length) continue;
     const quietFrom = Math.max(...before.map((x) => x.end_at_ms));
     const gap = r.start_at_ms - quietFrom;
+    const turnFrom = Math.max(0, ...users.filter((x) => x.end_at_ms <= r.start_at_ms).map((x) => x.end_at_ms));
     const filler = (d.fdx_annotation ?? []).some((a) =>
-      a.start_at_ms >= quietFrom && a.start_at_ms <= r.start_at_ms);
+      a.fdx_type === '垫句' && a.start_at_ms >= turnFrom && a.end_at_ms <= r.start_at_ms);
     if (gap > WAIT && !filler)
-      warn('P12 等待承接', `${quietFrom} ms 起静了 ${gap} ms 才等到 ${r.id}，中间没有垫句`);
+      warn('P12 等待承接', `${quietFrom} ms 起静了 ${gap} ms 才等到 ${r.id}，这一轮没人垫一句`);
   }
 
   // P13/P14 关联与回应

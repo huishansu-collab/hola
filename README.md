@@ -52,11 +52,45 @@ npm run case:json                              # 契约体检：字段、轨道�
 
 ```sh
 npm run ppl -- new taxi-late "加班到十点，让助手叫车回家"   # 建骨架，按 skill 写脚本
+npm run ppl -- new milk "培训中低声点奶茶" --script x.dsl   # 脚本直接编成 Case
+npm run ppl -- compile meeting-milk-tea                    # 改完 script.dsl 重新切轨
 npm run ppl -- review taxi-late                            # 把脚本交给人看
 npm run ppl -- approve taxi-late --by 名字                  # 人 review 通过，才允许配音
 npm run ppl -- make taxi-late                              # 配音 → 对齐 → 重排 → 校验 → 构建
 npm run ppl -- status                                      # 每条走到哪一步
 ```
+
+## 流水线这一页：脚本 → 自动切轨 → 手动拖
+
+界面顶部有两页。「时间线」是拖片段的地方，「流水线」是把脚本变成七轨的地方：
+左边写脚本，右边实时体检并预览切轨结果，一键导入时间线之后再用手拖。
+
+脚本是一行一件事，行首的词决定它落在哪条轨道：
+
+```
+标题 培训中低声点一杯奶茶
+用户 帮我点一杯瑞幸的茉莉花奶茶。 [低语]
+判断 任务：饮品下单；品牌：瑞幸；商品沿用原话 [时长 800]
+助手 嗯……我看一下瑞幸这边。 [垫句] [慢说]
+工具 quote: delivery.quote(product=茉莉花奶茶) => price_cny=12 [时长 1600]
+助手 好的，一杯瑞幸茉莉花奶茶，送到公司，对吧？ [依赖 quote]
+```
+
+时间不用写：台词按字数估时长，助手起点自动对齐 400 ms 微轮次，跨轨道依赖自动留出
+400 ms，`[依赖 quote]` 就等这个工具返回，`[并行]` 与上一件后台的事同时开始。
+`[打断]` `[附和]` `[垫句]` `[慢说]` `[低语]` 分别落进 interruptions、backchannels、
+表达控制与用户侧标注。编译完当场过一遍正式校验器，过不了就不给导入，
+并指到具体第几行。估出来的是 `planned` 时间，配音之后按录音重排。
+
+同一个编译器在命令行里也能用：
+
+```sh
+node scripts/script-to-package.mjs case-packages/meeting-milk-tea   # 改 script.dsl 后重新切轨
+node scripts/check-script-dsl.mjs                                   # 编译器回归检查
+```
+
+`case-packages/meeting-milk-tea/` 就是这么来的：`script.dsl` 是脚本源文件，
+`case.json` 与 `timeline.json` 是编出来的，两边对不上 `check-script-dsl.mjs` 会红。
 
 `make` 可重入：母带没回来就停在等 CI，回来后再跑一次接着往下走；识别匹配率低于 0.5 直接停，
 不带病往下走。状态记在 `local/ppl/<id>.json`，包括谁在什么时候 review 通过的。
@@ -88,6 +122,7 @@ npx tsc --noEmit
 node scripts/check-all-json.mjs
 node scripts/check-case-viewport.mjs
 node scripts/check-case-set.mjs
+node scripts/check-script-dsl.mjs
 ```
 
 `check-all-json.mjs` 会检查工具与事件关联，并把各 Case 的完整 JSON 写入同级 `Case Exports/` 目录。
@@ -100,6 +135,7 @@ node scripts/check-case-set.mjs
 PLAYWRIGHT_MODULE=/path/to/playwright \
 CHROME_PATH=/path/to/chrome \
 node scripts/check-case-viewport-browser.cjs
+node scripts/check-script-page-browser.cjs
 ```
 
 运行前先启动本地预览，也可以通过 `STUDIO_URL` 指定已构建页面。

@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": []
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "垫句 · 嗯……我看一下瑞幸这边。",
+          "description": "跟着耳语压低音量，不外放",
+          "start_at_ms": 4800,
+          "end_at_ms": 7600
+        },
+        {
+          "kind": "expression",
+          "label": "慢说 · 嗯……我看一下瑞幸这边。",
+          "description": "跟着耳语压低音量，不外放",
+          "start_at_ms": 4800,
+          "end_at_ms": 7600,
+          "lane": 1
+        },
+        {
+          "kind": "expression",
+          "label": "垫句 · 好，这就下单。",
+          "description": "轻声一句，只表示收到，不宣布成功",
+          "start_at_ms": 16800,
+          "end_at_ms": 18450
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "任务：饮品下单；品牌：瑞幸；商品沿用原话「茉莉花奶茶」，不归类成订咖啡",
+          "start_at_ms": 3600,
+          "end_at_ms": 4400
+        },
+        {
+          "kind": "state",
+          "label": "当前位置对上常用地址里的「公司」；偏好没记录，不编；选中已连接已授权的瑞幸下单能力",
+          "start_at_ms": 7200,
+          "end_at_ms": 8000
+        },
+        {
+          "kind": "state",
+          "label": "用户口头确认的是订单内容，不是支付；建单可以走，付款按钮仍要用户自己点",
+          "start_at_ms": 16800,
+          "end_at_ms": 17600
+        },
+        {
+          "kind": "state",
+          "label": "订单已创建、待支付；金额与预计送达按返回值播报，接单与配送不在本 Case 内",
+          "start_at_ms": 20800,
+          "end_at_ms": 21600
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "loc",
+          "description": "取当前位置"
+        },
+        {
+          "kind": "tool",
+          "event_id": "addr",
+          "description": "读记忆里的常用地址 · \"公司\",\"家\",\"健身房\"",
+          "lane": 1
+        },
+        {
+          "kind": "tool",
+          "event_id": "pref",
+          "description": "没记过偏好就如实返回，不编",
+          "lane": 2
+        },
+        {
+          "kind": "tool",
+          "event_id": "mcp",
+          "description": "先确认有这个能力，再谈下单",
+          "lane": 3
+        },
+        {
+          "kind": "tool",
+          "event_id": "quote"
+        },
+        {
+          "kind": "tool",
+          "event_id": "card",
+          "description": "确认卡片 商品、地址、金额、预计送达、支付按钮"
+        },
+        {
+          "kind": "tool",
+          "event_id": "confirm",
+          "description": "卡片按语音自动确认，不需要用户去点确认"
+        },
+        {
+          "kind": "tool",
+          "event_id": "order",
+          "lane": 1
+        },
+        {
+          "kind": "tool",
+          "event_id": "pay",
+          "description": "卡片转成待支付，付款按钮亮起"
+        }
+      ]
+    }
+  ],
+  "response_links": [
+    {
+      "user_id": "u001",
+      "assistant_id": "u002"
+    },
+    {
+      "user_id": "u004",
+      "assistant_id": "u005"
+    }
+  ],
+  "tool_dependencies": [
+    {
+      "event_id": "quote",
+      "depends_on": [
+        "mcp"
+      ]
+    },
+    {
+      "event_id": "card",
+      "depends_on": [
+        "quote"
+      ]
+    },
+    {
+      "event_id": "order",
+      "depends_on": [
+        "quote"
+      ]
+    },
+    {
+      "event_id": "confirm",
+      "depends_on": [
+        "card"
+      ]
+    },
+    {
+      "event_id": "pay",
+      "depends_on": [
+        "order"
+      ]
+    }
+  ]
+}

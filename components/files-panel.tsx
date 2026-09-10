@@ -71,6 +71,20 @@ export function FilesPanel({active,onSelect,getScenario,onInspect,onImport,impor
    if(savedCase&&savedCase.id!==active)onSelect(savedCase);
   }catch{setError('本地文件目录读取失败。')}
  },[]);
+ // 从流水线那页导进来的 Case 不经过这里的选择框，目录得自己补上，
+ // 不然只有刷新之后才看得见。
+ useEffect(()=>{
+  setFolders(prev=>{
+   const known=new Set(prev.flatMap(f=>f.cases.map(c=>c.id)));
+   const missing=importedFiles.filter(f=>!known.has(f.id));
+   const next=prev.map(f=>({...f,cases:f.cases.map(c=>{const found=importedFiles.find(x=>x.id===c.id);return found&&found.name!==c.name?{...c,name:found.name}:c})}));
+   if(missing.length)next[0]={...next[0],cases:[...next[0].cases,...missing]};
+   const changed=missing.length||next.some((f,i)=>f.cases.some((c,j)=>c.name!==prev[i].cases[j]?.name));
+   if(!changed)return prev;
+   try{localStorage.setItem('track-studio-files-v1',JSON.stringify(next))}catch{}
+   return next;
+  });
+ },[importedFiles]);
  const importFile=async(file:File)=>{setImporting(true);setError('');try{const added=await onImport(file);let exists=false;const next=folders.map(f=>({...f,cases:f.cases.map(c=>{if(c.id!==added.id)return c;exists=true;return {...c,name:added.name}})}));if(!exists)(next.find(f=>f.id===folder)??next[0]).cases.push(added);save(next);const destination=next.find(f=>f.cases.some(c=>c.id===added.id))!;setFolder(destination.id);setOpen(v=>({...v,[destination.id]:true}));onSelect(added)}catch(e){setError(e instanceof Error?e.message:'导入失败')}finally{setImporting(false);if(picker.current)picker.current.value=''}};
  const create=()=>{const title=name.trim();if(!title)return;const id=creating==='folder'?crypto.randomUUID():createCaseId(new Set(folders.flatMap(f=>f.cases.map(c=>c.id))));let next:Directory[];
  if(creating==='folder'){next=[...folders,{id,name:title,cases:[]}];setFolder(id);setOpen(v=>({...v,[id]:true}))}

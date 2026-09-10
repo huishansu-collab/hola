@@ -1,6 +1,8 @@
 // 一条 Case 的流水线：脚本 → 人 review → 配音 → 对齐 → 校验 → 构建。
 //
 //   npm run ppl -- new <id> "<场景一句话>"   建草稿骨架，按 skill 写脚本
+//   npm run ppl -- new <id> "<场景>" --script <脚本.dsl>   直接把脚本编成 Case
+//   npm run ppl -- compile <id>             改完 script.dsl 重新切轨
 //   npm run ppl -- review <id>              把脚本打出来给人看
 //   npm run ppl -- approve <id> --by <名字>  人 review 通过（花钱前的闸）
 //   npm run ppl -- make <id>                approve 之后才动，做到能做的最后一步
@@ -54,12 +56,43 @@ function state(x, patch) {
   return next;
 }
 
+// 脚本 → 七轨：跟界面上「流水线」那页走的是同一个编译器，同一套校验。
+function compileFrom(x, script) {
+  run(process.execPath, ['scripts/script-to-package.mjs', script, '--out', pkg(x), '--id', x]);
+}
+function compile() {
+  if (!id) die('用法：npm run ppl -- compile <id>');
+  const script = path.join(pkg(id), 'script.dsl');
+  if (!fs.existsSync(script)) die(`${script} 不在。这条 Case 的脚本不是 .dsl 写的，直接改 case.json / timeline.json`);
+  compileFrom(id, script);
+  check(id);
+  console.log(`✓ 重新切轨完成。看一眼：npm run ppl -- review ${id}`);
+}
+
 function newCase() {
   if (!id || !/^[a-z0-9][a-z0-9_-]{0,79}$/.test(id))
     die('用法：npm run ppl -- new <id> "<场景一句话>"，id 只能是小写字母、数字、-、_');
-  const scene = rest.filter((x) => !x.startsWith('--')).join(' ');
+  // 只收自由文本：--xxx 和它后面那个值都不是场景描述。
+  const words = [];
+  for (let i = 0; i < rest.length; i++) rest[i].startsWith('--') ? i++ : words.push(rest[i]);
+  const scene = words.join(' ');
   if (!scene) die('缺场景描述：一句话说清是谁、在哪、要办什么');
   if (fs.existsSync(pkg(id))) die(`${pkg(id)} 已存在，换个 id 或直接 review`);
+  const script = flag('--script');
+  if (typeof script === 'string') {
+    if (!fs.existsSync(script)) die(`找不到脚本 ${script}`);
+    fs.mkdirSync(pkg(id), { recursive: true });
+    const inside = path.join(pkg(id), 'script.dsl');
+    if (path.resolve(script) !== path.resolve(inside)) fs.copyFileSync(script, inside);
+    compileFrom(id, inside);
+    fs.writeFileSync(path.join(pkg(id), 'brief.md'), `# 需求：${scene}\n\n## 要考察什么\n\n（待填）\n`);
+    fs.writeFileSync(path.join(pkg(id), 'script.md'), `# ${scene}\n\n（待填：给人看的脚本故事线，脚本源文件是同目录的 script.dsl）\n`);
+    check(id);
+    state(id, { stage: 'draft', scene, note: '脚本编译建包' });
+    console.log(`✓ 脚本已切轨：${pkg(id)}`);
+    console.log(`  补上 brief.md 与 script.md，然后 npm run ppl -- review ${id}`);
+    return;
+  }
   const t = readJson(path.join(SKILL, 'assets/case-template.json'));
   const uuid = execFileSync(process.execPath, ['scripts/case-package/cli.mjs', 'id'], {
     encoding: 'utf8',
@@ -183,7 +216,7 @@ function status() {
   console.log(`\n${STAGES.join(' → ')}`);
 }
 
-const handlers = { new: newCase, review, approve, make, status };
+const handlers = { new: newCase, compile, review, approve, make, status };
 const handler = handlers[command ?? 'status'];
 if (!handler) die(`不认识的命令 ${command}。可用：${Object.keys(handlers).join('、')}`);
 try {

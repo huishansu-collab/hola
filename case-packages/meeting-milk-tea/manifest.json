@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "meeting-milk-tea",
+  "title": "培训中低声点一杯奶茶",
+  "group": "B 下单与支付",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

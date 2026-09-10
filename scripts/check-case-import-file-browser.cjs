@@ -5,7 +5,7 @@ const { chromium } = playwright();
  const file=process.argv[2];if(!file)throw Error('Usage: node scripts/check-case-import-file-browser.cjs /path/to/case.zip');
  const {readZip,readJson}=await import('../lib/case-package/archive.ts');
  const manifest=readJson(readZip(new Uint8Array(fs.readFileSync(file))),'manifest.json');
- const browser=await chromium.launch({headless:true,args:['--js-flags=--stack-size=256'],executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
+ const browser=await chromium.launch({...launchOptions(),args:['--js-flags=--stack-size=256']});
  try{
   const page=await browser.newPage({viewport:{width:1500,height:980}}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));

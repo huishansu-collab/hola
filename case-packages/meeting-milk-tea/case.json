@@ -1,0 +1,560 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "meeting-milk-tea",
+      "case_name": "培训中低声点一杯奶茶",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 29650,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "device_state": {},
+    "memory": {
+      "identity": {
+        "chinese_name": null,
+        "english_name": null,
+        "gender": null,
+        "birthday": {
+          "month": null,
+          "day": null
+        },
+        "hometown": null,
+        "nationality": null
+      },
+      "dynamic_profile": {
+        "age": {
+          "value": null,
+          "as_of": null,
+          "note": null
+        },
+        "residence": {
+          "country": null,
+          "province": null,
+          "city": null,
+          "district": null,
+          "area": null
+        }
+      },
+      "career": {
+        "employer": null,
+        "company_type": null,
+        "job_title": null,
+        "industry": null,
+        "professional_domain": null
+      },
+      "family": {
+        "marital_status": null,
+        "spouse": {
+          "relation": null,
+          "name": null
+        },
+        "children": [
+          {
+            "relation": null,
+            "name": null,
+            "health_constraints": [
+              {
+                "type": null,
+                "item": null,
+                "action": null
+              }
+            ]
+          }
+        ]
+      },
+      "pets": [
+        {
+          "species": null,
+          "breed": null,
+          "color": null,
+          "name": null,
+          "weight_kg": null,
+          "health_management": []
+        }
+      ],
+      "communication_preferences": {
+        "detail_level": null,
+        "structure": [],
+        "evidence_preference": [],
+        "tone": null,
+        "preferred_address": null,
+        "person_reference": null
+      },
+      "output_templates": {
+        "weekly_report": {
+          "sections": []
+        },
+        "meeting_notes": {
+          "sections": []
+        }
+      },
+      "agent_profile": {
+        "identity": null,
+        "background": null,
+        "proactivity": {
+          "level": null,
+          "recommendation_scope": []
+        },
+        "response_style": []
+      },
+      "important_insights": {
+        "user": [],
+        "agent": []
+      }
+    },
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "uuid_v7": "01a08b30-3dc4-7d25-a440-34ef2a80ddcb",
+      "task_goal": "培训进行中不方便出声，用户压着嗓子让助手点一杯瑞幸茉莉花奶茶送到公司",
+      "completion_boundary": "订单已创建、金额与预计送达已反馈，并引导用户点卡片付款；点击支付与支付回调不在本 Case 内",
+      "audio_note": "语音待生成；时间按字数估算，配音后按录音重排。用户全程耳语，助手轻声跟着走。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "location.current",
+          "description": "模拟：location.current",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory.get",
+          "description": "模拟：memory.get",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "key"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "mcps.search",
+          "description": "模拟：mcps.search",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "capability_query": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "capability_query"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "delivery.quote",
+          "description": "模拟：delivery.quote",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "product": {
+                "type": "string"
+              },
+              "address_label": {
+                "type": "string"
+              },
+              "connector_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "product",
+              "address_label",
+              "connector_id"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "ui.show_card",
+          "description": "模拟：ui.show_card",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "card_id": {
+                "type": "string"
+              },
+              "card_type": {
+                "type": "string"
+              },
+              "source_event_id": {
+                "type": "string"
+              },
+              "content_summary": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "card_id",
+              "card_type",
+              "source_event_id",
+              "content_summary"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "delivery.create_order",
+          "description": "模拟：delivery.create_order",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "quote_id": {
+                "type": "string"
+              },
+              "address_label": {
+                "type": "string"
+              },
+              "connector_id": {
+                "type": "string"
+              },
+              "confirmation": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "quote_id",
+              "address_label",
+              "connector_id",
+              "confirmation"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "ui.update_card",
+          "description": "模拟：ui.update_card",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "card_id": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "amount_cny": {
+                "type": "integer"
+              },
+              "eta_min": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "card_id",
+              "status"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {
+    "time_at_ms": null,
+    "world_signal": [
+      {
+        "screen_content": null
+      },
+      {
+        "canlendar_time": null,
+        "canlendar_content": null
+      },
+      {}
+    ]
+  },
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "帮我点一杯瑞幸的茉莉花奶茶。",
+      "start_at_ms": 0,
+      "end_at_ms": 3100
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯……我看一下瑞幸这边。",
+      "start_at_ms": 4800,
+      "end_at_ms": 7600
+    },
+    {
+      "id": "u003",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好的，一杯瑞幸茉莉花奶茶，送到公司，对吧？",
+      "start_at_ms": 10400,
+      "end_at_ms": 14750
+    },
+    {
+      "id": "u004",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "是的。",
+      "start_at_ms": 15250,
+      "end_at_ms": 16150
+    },
+    {
+      "id": "u005",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好，这就下单。",
+      "start_at_ms": 16800,
+      "end_at_ms": 18450
+    },
+    {
+      "id": "u006",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "下好了，一共十二块，大概三十分钟送到。付款点一下卡片就行。",
+      "start_at_ms": 23600,
+      "end_at_ms": 29650
+    }
+  ],
+  "events": [
+    {
+      "event_id": "loc",
+      "event_type": "function_call",
+      "tool_name": "location.current",
+      "time_at_ms": 4800,
+      "query": "{}"
+    },
+    {
+      "event_id": "addr",
+      "event_type": "function_call",
+      "tool_name": "memory.get",
+      "time_at_ms": 4800,
+      "query": "{\"key\":\"user_frequent_addresses_key\"}"
+    },
+    {
+      "event_id": "pref",
+      "event_type": "function_call",
+      "tool_name": "memory.get",
+      "time_at_ms": 4800,
+      "query": "{\"key\":\"drink_preferences_key\"}"
+    },
+    {
+      "event_id": "mcp",
+      "event_type": "function_call",
+      "tool_name": "mcps.search",
+      "time_at_ms": 4800,
+      "query": "{\"capability_query\":\"支持瑞幸饮品报价与建单的服务\"}"
+    },
+    {
+      "event_id": "loc",
+      "event_type": "function_call",
+      "tool_name": "location.current",
+      "time_at_ms": 5600,
+      "results": {
+        "district": "朝阳区",
+        "place_name": "创研中心",
+        "accuracy_m": 25,
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "addr",
+      "event_type": "function_call",
+      "tool_name": "memory.get",
+      "time_at_ms": 5600,
+      "results": {
+        "positions": "",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "pref",
+      "event_type": "function_call",
+      "tool_name": "memory.get",
+      "time_at_ms": 5600,
+      "results": {
+        "value": null,
+        "status": "not_recorded",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "mcp",
+      "event_type": "function_call",
+      "tool_name": "mcps.search",
+      "time_at_ms": 6800,
+      "results": {
+        "selected_connector_id": "sim_luckin_delivery",
+        "connection_status": "connected",
+        "authorization_status": "authorized",
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "quote",
+      "event_type": "function_call",
+      "tool_name": "delivery.quote",
+      "time_at_ms": 8400,
+      "query": "{\"product\":\"茉莉花奶茶\",\"address_label\":\"公司\",\"connector_id\":\"sim_luckin_delivery\"}"
+    },
+    {
+      "event_id": "quote",
+      "event_type": "function_call",
+      "tool_name": "delivery.quote",
+      "time_at_ms": 10000,
+      "results": {
+        "quote_id": "q_5512",
+        "price_cny": 12,
+        "eta_min": 30,
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "card",
+      "event_type": "function_call",
+      "tool_name": "ui.show_card",
+      "time_at_ms": 10400,
+      "query": "{\"card_id\":\"order_confirm_1\",\"card_type\":\"order_confirm\",\"source_event_id\":\"quote\",\"content_summary\":\"茉莉花奶茶 x1 / 公司 / 12 元 / 约 30 分钟\"}"
+    },
+    {
+      "event_id": "card",
+      "event_type": "function_call",
+      "tool_name": "ui.show_card",
+      "time_at_ms": 11600,
+      "results": {
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "order",
+      "event_type": "function_call",
+      "tool_name": "delivery.create_order",
+      "time_at_ms": 18000,
+      "query": "{\"quote_id\":\"q_5512\",\"address_label\":\"公司\",\"connector_id\":\"sim_luckin_delivery\",\"confirmation\":\"voice\"}"
+    },
+    {
+      "event_id": "confirm",
+      "event_type": "function_call",
+      "tool_name": "ui.update_card",
+      "time_at_ms": 18000,
+      "query": "{\"card_id\":\"order_confirm_1\",\"status\":\"confirmed_by_voice\"}"
+    },
+    {
+      "event_id": "confirm",
+      "event_type": "function_call",
+      "tool_name": "ui.update_card",
+      "time_at_ms": 19200,
+      "results": {
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "order",
+      "event_type": "function_call",
+      "tool_name": "delivery.create_order",
+      "time_at_ms": 20400,
+      "results": {
+        "order_id": "LK20260910_0417",
+        "status": "created_pending_payment",
+        "amount_cny": 12,
+        "eta_min": 30,
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "pay",
+      "event_type": "function_call",
+      "tool_name": "ui.update_card",
+      "time_at_ms": 22000,
+      "query": "{\"card_id\":\"order_confirm_1\",\"status\":\"pending_payment\",\"amount_cny\":12,\"eta_min\":30}"
+    },
+    {
+      "event_id": "pay",
+      "event_type": "function_call",
+      "tool_name": "ui.update_card",
+      "time_at_ms": 23200,
+      "results": {
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [
+    {
+      "fdx_type": "垫句",
+      "role": "assistant",
+      "start_at_ms": 4800,
+      "end_at_ms": 7600
+    },
+    {
+      "fdx_type": "慢说",
+      "role": "assistant",
+      "start_at_ms": 4800,
+      "end_at_ms": 7600
+    },
+    {
+      "fdx_type": "垫句",
+      "role": "assistant",
+      "start_at_ms": 16800,
+      "end_at_ms": 18450
+    }
+  ],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [
+    {
+      "type": "低语",
+      "role": "user",
+      "start_at_ms": 0,
+      "end_at_ms": 3100
+    },
+    {
+      "type": "低语",
+      "role": "user",
+      "start_at_ms": 15250,
+      "end_at_ms": 16150
+    }
+  ],
+  "custom_annotation": []
+}
