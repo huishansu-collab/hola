@@ -33,3 +33,6 @@ export const FolderOpen=symbol("FolderOpen");
 export const NewCase=symbol("NewCase");
 
 export const Download=symbol("Download");
+// 撤销 / 重做：一条绕回去的箭头，和 Kay 那版一致。
+export const Undo = ({size=18}:{size?:number})=><svg aria-hidden="true" width={size+4} height={size+4} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M8 5 4 9l4 4M4 9h9a5 5 0 0 1 0 10h-3"/></svg>;
+export const Redo = ({size=18}:{size?:number})=><svg aria-hidden="true" width={size+4} height={size+4} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="m16 5 4 4-4 4m4-4h-9a5 5 0 0 0 0 10h3"/></svg>;

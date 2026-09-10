@@ -6,13 +6,16 @@ import {
   type RefObject,
 } from 'react';
 import type { Scenario } from '../app/page';
-import { canResizeClip, editTimeline } from './timeline-edit';
+import { canResizeClip, editTimeline, moveClips } from './timeline-edit';
+export type ClipRef = { ti: number; ci: number };
 export function useClipDrag({
   scenario,
   caseId,
   scale,
   scroller,
   onStart,
+  selected = [],
+  onSelect,
   onCommit,
 }: {
   scenario: Scenario;
@@ -20,6 +23,9 @@ export function useClipDrag({
   scale: number;
   scroller: RefObject<HTMLDivElement | null>;
   onStart: () => void;
+  // 框选之后拖其中任意一个，整组一起走。
+  selected?: ClipRef[];
+  onSelect?: (list: ClipRef[]) => void;
   onCommit: (s: Scenario) => void;
 }) {
   const [preview, setPreview] = useState<Scenario | null>(null),
@@ -66,8 +72,11 @@ export function useClipDrag({
     suppressClick.current = false;
     (e.currentTarget as HTMLElement).focus({ preventScroll: true });
     const base = latest.current.scenario;
+    const targets = mode === 'move' && selected.some((t) => t.ti === ti && t.ci === ci) ? selected : [{ ti, ci }];
+    onSelect?.(targets);
     active.current = {
       base,
+      targets,
       ti,
       ci,
       mode,
@@ -100,13 +109,10 @@ export function useClipDrag({
         const original = d.base.tracks[d.ti].clips[d.ci];
         const delta =
           ((d.x - d.startX + d.scroll - d.startScroll) / d.scale) * 1000;
-        const result = editTimeline(
-          d.base,
-          d.ti,
-          d.ci,
-          d.mode,
-          (d.mode === 'move' ? original.a : original.b) + delta,
-        );
+        const result =
+          d.mode === 'move' && d.targets.length > 1
+            ? moveClips(d.base, d.targets, delta)
+            : editTimeline(d.base, d.ti, d.ci, d.mode, (d.mode === 'move' ? original.a : original.b) + delta);
         d.result = result;
         setPreview(result);
         setExtent(
@@ -142,13 +148,9 @@ export function useClipDrag({
       const delta =
         ((e.clientX - d.startX + d.scroll - d.startScroll) / d.scale) * 1000;
       latest.current.onCommit(
-        editTimeline(
-          d.base,
-          d.ti,
-          d.ci,
-          d.mode,
-          (d.mode === 'move' ? c.a : c.b) + delta,
-        ),
+        d.mode === 'move' && d.targets.length > 1
+          ? moveClips(d.base, d.targets, delta)
+          : editTimeline(d.base, d.ti, d.ci, d.mode, (d.mode === 'move' ? c.a : c.b) + delta),
       );
     }
     cancel();

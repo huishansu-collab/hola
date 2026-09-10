@@ -542,3 +542,32 @@ body,.studio{background:#080808;color:#ededed}
 .ppl-prompt{border:0;border-top:1px solid #37393d;padding:9px 0 0;margin:0}
 .ppl-prompt summary{font-size:11px;color:#8e8e8e}
 .ppl-prompt pre{margin:8px 0 0;padding:10px 11px;max-height:180px;overflow:auto;background:#1b1d20;border:1px solid #37393d;border-radius:4px;font-family:ui-monospace,monospace;font-size:11px;line-height:1.75;color:#b9b9b9;white-space:pre-wrap;scrollbar-width:thin}
+
+/* 片段的增删改：框选、片段配置窗口。 */
+.region-selected .clip{outline:1px solid #cbd3dc;outline-offset:1px}
+.clip-marquee{position:absolute;z-index:7;pointer-events:none;border:1px solid #b9c2cc;background:#c3ccd612}
+.block-actions{display:flex;gap:6px;margin:8px 0 2px}
+.block-actions button{flex:1;font-size:11px;padding:5px 8px;border:1px solid #4a4d53;border-radius:3px;color:#d3d3d3}
+.block-actions button:last-child{color:#d9a9a5;border-color:#6d4c4c}
+.block-editor{position:fixed;inset:0;margin:auto;width:min(520px,calc(100vw - 32px));height:fit-content;max-height:min(86vh,760px);padding:0;border:1px solid #3c3e42;border-radius:6px;background:#25272a;color:#dcdcdc;overflow:hidden;box-shadow:0 24px 90px #0009}
+.block-editor[open]{display:flex;flex-direction:column}
+.block-editor::backdrop{background:#0e0f1199}
+.block-editor header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid #37393d}
+.block-editor h2{margin:0;font-size:14px;font-weight:500;color:#eee}
+.block-close{padding:4px;color:#a8a8a8}
+.block-editor form{display:flex;flex-direction:column;min-height:0}
+.block-form-fields{display:flex;flex-direction:column;gap:11px;padding:14px;overflow-y:auto;min-height:0;scrollbar-width:thin;scrollbar-color:#4d5056 transparent}
+.block-form-fields label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#a8a8a8}
+.block-form-fields input,.block-form-fields select,.block-form-fields textarea{background:#1b1d20;border:1px solid #42464c;border-radius:3px;padding:6px 8px;color:#ddd;font-size:13px;min-height:0}
+.block-form-fields textarea{min-height:64px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.6;resize:vertical}
+.block-form-fields input:focus,.block-form-fields select:focus,.block-form-fields textarea:focus{outline:1px solid #8d9aa8}
+.block-time-fields{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.block-help{margin:-4px 0 0;font-size:11px;line-height:1.7;color:#8e8e8e}
+.block-notice{margin:0;padding:11px 12px;font-size:12px;line-height:1.8;color:#c9bfa4;background:#2e2b26;border:1px solid #58513f;border-radius:4px}
+.block-error{margin:0;padding:8px 10px;font-size:12px;line-height:1.6;color:#d9b7b4;background:#2f2829;border-left:2px solid #8a5b57;border-radius:0 3px 3px 0}
+.block-editor footer{display:flex;align-items:center;gap:8px;padding:11px 14px;border-top:1px solid #37393d;background:#282a2d}
+.block-editor footer>span{flex:1}
+.block-editor footer button{flex:0 0 auto;font-size:12px;padding:6px 12px;border:1px solid #4a4d53;border-radius:3px;white-space:nowrap}
+.block-delete{color:#d9a9a5;border-color:#6d4c4c!important}
+.block-save{background:#a9c1af;color:#20252b;border-color:transparent!important}
+.block-save:hover{background:#bdd3c2}

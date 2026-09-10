@@ -33,13 +33,15 @@ export function editTimeline(
   clipIndex: number,
   mode: 'move' | 'resize',
   value: number,
+  // 整体移动时传 1：位移已经按网格取过一次，逐个再取一次会把片段拉散。
+  stepOverride?: number,
 ): Scenario {
   if (mode === 'resize' && !canResizeClip(base.tracks[trackIndex], base.tracks[trackIndex].clips[clipIndex])) return base;
   const s = structuredClone(base),
     track = s.tracks[trackIndex],
     c = track.clips[clipIndex],
     old = { ...c };
-  const step = track.name === '用户' ? 1 : 400;
+  const step = stepOverride ?? (track.name === '用户' ? 1 : 400);
   const snap = (n: number) => Math.round(n / step) * step;
   if (mode === 'move') {
     c.a = Math.max(0, snap(value));
@@ -73,6 +75,21 @@ export function editTimeline(
       u.start_at_ms = c.a;
       u.end_at_ms = c.audioEnd ?? c.b;
     }
+  }
+  // 助手那句挪了，贴着它的表达标注和文字消息跟着挪，不然标注对不上人声。
+  if (track.name === '助手') {
+    const messages = (s.meta as any)?.dynamic_context?.text_messages;
+    if (c.messageId && Array.isArray(messages))
+      for (const m of messages)
+        if (m.id === c.messageId) { m.start_at_ms = c.a; m.end_at_ms = c.b; }
+    for (const e of s.tracks.find((t) => t.name === '表达控制')?.clips ?? [])
+      if ((c.utteranceId && e.utteranceId === c.utteranceId) || (c.messageId && e.messageId === c.messageId)) {
+        e.a = c.a;
+        e.b = c.b;
+        for (const list of Object.values(s.controlAnnotations))
+          for (const a of list as any[])
+            if (e.annotationId && a.annotation_id === e.annotationId) { a.start_at_ms = c.a; a.end_at_ms = c.b; }
+      }
   }
   if (track.name === '工具调用') {
     const requests = s.inputEvents.filter(
@@ -135,7 +152,7 @@ export function editTimeline(
   }
   if (track.name === '用户控制' || track.name === '世界' || track.name === '工具调用')
     for (const e of s.inputEvents) {
-      if (!e.tool_name && e.time_at_ms === old.a) e.time_at_ms = c.a;
+      if (!e.tool_name && (c.inputEventId ? e.event_id === c.inputEventId : e.time_at_ms === old.a)) e.time_at_ms = c.a;
     }
   if (track.name === '表达控制') {
     for (const list of Object.values(s.controlAnnotations))
@@ -199,4 +216,17 @@ export function editTimeline(
       },
     };
   return withExpressionMode(s);
+}
+
+// 框选之后整体移动：位移只取一次网格，最靠前的片段不许被推到 0 之前。
+// 表达控制放到最后处理——它贴着助手语音，先挪助手才不会算错。
+export function moveClips(base: Scenario, targets: {ti: number; ci: number}[], delta: number): Scenario {
+  const list = targets.filter((t, i) => targets.findIndex((x) => x.ti === t.ti && x.ci === t.ci) === i);
+  if (!list.length) return base;
+  const step = list.every((t) => base.tracks[t.ti].name === '用户') ? 1 : 400;
+  const first = Math.min(...list.map((t) => base.tracks[t.ti].clips[t.ci].a));
+  const shift = Math.max(-Math.floor(first / step) * step, Math.round(delta / step) * step);
+  return list
+    .sort((a, b) => Number(base.tracks[a.ti].name === '表达控制') - Number(base.tracks[b.ti].name === '表达控制'))
+    .reduce((s, t) => editTimeline(s, t.ti, t.ci, 'move', base.tracks[t.ti].clips[t.ci].a + shift, 1), base);
 }

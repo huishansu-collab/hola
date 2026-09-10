@@ -60,6 +60,24 @@ npm run ppl -- make taxi-late                              # 配音 → 对齐 �
 npm run ppl -- status                                      # 每条走到哪一步
 ```
 
+## 在时间线上直接改片段
+
+拖动改的是时间，这一节说的是「有哪些片段、它们是什么」：
+
+- **点轨道空白处**新建片段，**双击片段**配置，片段右上角 ⓘ 的悬浮卡里也有「配置 / 删除」。
+- 工具片段选工具（Memory / 系统 / MCP / 其他四组）、填参数和模拟返回，保存时按 schema 校验
+  必填项、数字和 JSON；片段标题按实际参数渲染，背后自动生成请求 / 返回一对 Events，
+  工具定义写进 `meta.static_context.tools`。
+- 用户控制和世界片段带来源、动作和内容 JSON，生成对应的 `ui_event` / `world_event`。
+- 表达控制片段挑一句助手回复贴上去，起止时间跟着它走；垫句、慢说进 `fdx_annotation`，
+  仅文字回复等进 `custom_annotation`。
+- 用户和助手语音不在这里建也不在这里删——那是录音和导入的事，界面会直说。
+- 删片段会把它背后的 Events 和标注一起删掉；删 `audio.play` 时配对的 `audio.stop` 一起走。
+- **⌘Z / Ctrl+Z 撤销，⇧⌘Z / Ctrl+Shift+Z 重做**，按 Case 分开记。
+- 在轨道里**框选**一组片段，拖其中任意一个整体移动，相对位置不变。
+
+改动保存在浏览器本地，按 Case 记；导出 ZIP / JSON 时带的是改过之后的数据。
+
 ## 流水线这一页：脚本 → 自动切轨 → 手动拖
 
 界面顶部有两页。「时间线」是拖片段的地方，「流水线」是把脚本变成七轨的地方：
@@ -123,6 +141,7 @@ node scripts/check-all-json.mjs
 node scripts/check-case-viewport.mjs
 node scripts/check-case-set.mjs
 node scripts/check-script-dsl.mjs
+node scripts/check-clip-edit.mjs
 ```
 
 `check-all-json.mjs` 会检查工具与事件关联，并把各 Case 的完整 JSON 写入同级 `Case Exports/` 目录。
@@ -136,6 +155,7 @@ PLAYWRIGHT_MODULE=/path/to/playwright \
 CHROME_PATH=/path/to/chrome \
 node scripts/check-case-viewport-browser.cjs
 node scripts/check-script-page-browser.cjs
+node scripts/check-clip-edit-browser.cjs
 ```
 
 运行前先启动本地预览，也可以通过 `STUDIO_URL` 指定已构建页面。

@@ -3,7 +3,9 @@ import type {Scenario} from '../app/page';
 const label = '悄悄话模式 · 仅文字回复';
 /** Each expression annotation describes one actual Assistant reply interval. */
 export function withExpressionMode(s: Scenario): Scenario {
-  const messages = s.tracks.find(t => t.name === '助手')?.clips.filter(c => c.outputMode === 'text') ?? [];
+  // 手动删掉的那条不再自动长回来。
+  const messages = s.tracks.find(t => t.name === '助手')?.clips.filter(c => c.outputMode === 'text' &&
+    !s.suppressedExpressionIds?.includes(c.messageId ?? `${c.a}:${c.b}`)) ?? [];
   const track = s.tracks.find(t => t.name === '表达控制');
   if (!messages.length || !track) return s;
   // Replace the former full-Case span, including copies saved in edited snapshots.
