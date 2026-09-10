@@ -67,27 +67,6 @@
       "clips": [
         {
           "kind": "expression",
-          "label": "暂不发声",
-          "description": "暂不发声",
-          "trigger": "",
-          "delivery": "",
-          "annotation": "暂不发声",
-          "start_at_ms": 0,
-          "end_at_ms": 400
-        },
-        {
-          "kind": "expression",
-          "label": "暂不发声",
-          "description": "暂不发声",
-          "trigger": "",
-          "delivery": "",
-          "annotation": "暂不发声",
-          "start_at_ms": 0,
-          "end_at_ms": 2400,
-          "lane": 1
-        },
-        {
-          "kind": "expression",
           "label": "接话延迟0ms（≤400ms）",
           "description": "接话延迟0ms（≤400ms）；轻声，自然拖长“嗯”，占满这一个微轮次；缓存汇率300ms就回，战术性啰嗦只够这一声，不铺垫“你稍等一下”；准备：“2127元。”",
           "trigger": "",
@@ -108,44 +87,13 @@
         },
         {
           "kind": "expression",
-          "label": "听完，不抢话",
-          "description": "听完，不抢话",
-          "trigger": "",
-          "delivery": "",
-          "annotation": "听完，不抢话",
-          "start_at_ms": 5600,
-          "end_at_ms": 6400
-        },
-        {
-          "kind": "expression",
-          "label": "准备：“3545元。”",
-          "description": "准备：“3545元。”；答案已在手，这一轮只做本地组织，保持静默；语气词只在结果还没回来时用",
-          "trigger": "",
-          "delivery": "",
-          "annotation": "准备：“3545元。”；答案已在手，这一轮只做本地组织，保持静默；语气词只在结果还没回来时用",
-          "start_at_ms": 6400,
-          "end_at_ms": 6800
-        },
-        {
-          "kind": "expression",
           "label": "接话延迟400ms（句尾后第一个微轮次用于组织，未超上限）",
           "description": "接话延迟400ms（句尾后第一个微轮次用于组织，未超上限）；常规语速；禁止反问“你是说美元吗”，省掉的部分自己补",
           "trigger": "",
           "delivery": "",
           "annotation": "接话延迟400ms（句尾后第一个微轮次用于组织，未超上限）；常规语速；禁止反问“你是说美元吗”，省掉的部分自己补",
           "start_at_ms": 6400,
-          "end_at_ms": 8000,
-          "lane": 1
-        },
-        {
-          "kind": "expression",
-          "label": "听完改口，不抢话",
-          "description": "听完改口，不抢话；丢弃3545这个结论，不辩解“刚才您说的是美元”",
-          "trigger": "",
-          "delivery": "",
-          "annotation": "听完改口，不抢话；丢弃3545这个结论，不辩解“刚才您说的是美元”",
-          "start_at_ms": 8000,
-          "end_at_ms": 12400
+          "end_at_ms": 8000
         },
         {
           "kind": "expression",
@@ -166,16 +114,6 @@
           "annotation": "首音“嗯……”已在上一行发出，本行接正式答案；常规语速；量级差异大时用“便宜多了”点一句；小数保留一位，不念“二十四点五零元”",
           "start_at_ms": 13200,
           "end_at_ms": 16400
-        },
-        {
-          "kind": "expression",
-          "label": "保持静默",
-          "description": "保持静默",
-          "trigger": "",
-          "delivery": "",
-          "annotation": "保持静默",
-          "start_at_ms": 19200,
-          "end_at_ms": 19600
         }
       ]
     },
@@ -188,15 +126,15 @@
       "clips": [
         {
           "kind": "state",
-          "label": "触后≤50ms亮光，进入聆听态",
-          "description": "触后≤50ms亮光，进入聆听态",
+          "label": "触后≤50ms亮光，进入聆听态；表达：暂不发声",
+          "description": "触后≤50ms亮光，进入聆听态；表达：暂不发声",
           "start_at_ms": 0,
           "end_at_ms": 400
         },
         {
           "kind": "state",
-          "label": "持续收听；金额300、源币种USD、目标币种按常驻地默认CNY，信息完整",
-          "description": "持续收听；金额300、源币种USD、目标币种按常驻地默认CNY，信息完整",
+          "label": "持续收听；金额300、源币种USD、目标币种按常驻地默认CNY，信息完整；表达：",
+          "description": "持续收听；金额300、源币种USD、目标币种按常驻地默认CNY，信息完整；表达：暂不发声",
           "start_at_ms": 0,
           "end_at_ms": 2400,
           "lane": 1
@@ -217,15 +155,15 @@
         },
         {
           "kind": "state",
-          "label": "追问不带上文；币种沿用上一轮USD→CNY，只换金额",
-          "description": "追问不带上文；币种沿用上一轮USD→CNY，只换金额",
+          "label": "追问不带上文；币种沿用上一轮USD→CNY，只换金额；表达：听完，不抢话",
+          "description": "追问不带上文；币种沿用上一轮USD→CNY，只换金额；表达：听完，不抢话",
           "start_at_ms": 5600,
           "end_at_ms": 6400
         },
         {
           "kind": "state",
           "label": "币种从上一轮补全，复用同一汇率，不重查；本地换算即时出数，没有等待要填，不发语气",
-          "description": "币种从上一轮补全，复用同一汇率，不重查；本地换算即时出数，没有等待要填，不发语气词",
+          "description": "币种从上一轮补全，复用同一汇率，不重查；本地换算即时出数，没有等待要填，不发语气词；表达：准备：“3545元。”；答案已在手，这一轮只做本地组织，保持静默；语气词只在结果还没回来时用",
           "start_at_ms": 6400,
           "end_at_ms": 6800
         },
@@ -239,8 +177,8 @@
         },
         {
           "kind": "state",
-          "label": "用户自我纠正源币种；作废USD那一轮，只留改后的JPY→CNY",
-          "description": "用户自我纠正源币种；作废USD那一轮，只留改后的JPY→CNY",
+          "label": "用户自我纠正源币种；作废USD那一轮，只留改后的JPY→CNY；表达：听完改口，",
+          "description": "用户自我纠正源币种；作废USD那一轮，只留改后的JPY→CNY；表达：听完改口，不抢话；丢弃3545这个结论，不辩解“刚才您说的是美元”",
           "start_at_ms": 8000,
           "end_at_ms": 12400
         },
@@ -267,8 +205,8 @@
         },
         {
           "kind": "state",
-          "label": "用户明确收尾并退出界面；end_reason=user_end；灯环熄灭",
-          "description": "用户明确收尾并退出界面；end_reason=user_end；灯环熄灭",
+          "label": "用户明确收尾并退出界面；end_reason=user_end；灯环熄灭；表达：",
+          "description": "用户明确收尾并退出界面；end_reason=user_end；灯环熄灭；表达：保持静默",
           "start_at_ms": 19200,
           "end_at_ms": 19600
         }

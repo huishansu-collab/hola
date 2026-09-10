@@ -48,27 +48,6 @@
       "clips": [
         {
           "kind": "expression",
-          "label": "暂不发声",
-          "description": "暂不发声",
-          "trigger": "",
-          "delivery": "",
-          "annotation": "暂不发声",
-          "start_at_ms": 0,
-          "end_at_ms": 800
-        },
-        {
-          "kind": "expression",
-          "label": "暂不发声",
-          "description": "暂不发声",
-          "trigger": "",
-          "delivery": "",
-          "annotation": "暂不发声",
-          "start_at_ms": 0,
-          "end_at_ms": 2800,
-          "lane": 1
-        },
-        {
-          "kind": "expression",
           "label": "接话延迟0ms（≤400ms）",
           "description": "接话延迟0ms（≤400ms）；常规语速4.4字/秒；先结论后依据；禁止播整周天气",
           "trigger": "",
@@ -79,16 +58,6 @@
         },
         {
           "kind": "expression",
-          "label": "听完，不抢话",
-          "description": "听完，不抢话",
-          "trigger": "",
-          "delivery": "",
-          "annotation": "听完，不抢话",
-          "start_at_ms": 6800,
-          "end_at_ms": 10000
-        },
-        {
-          "kind": "expression",
           "label": "常规语速",
           "description": "常规语速；两句收住；禁止反问“约在哪家”扩大话题",
           "trigger": "",
@@ -96,16 +65,6 @@
           "annotation": "常规语速；两句收住；禁止反问“约在哪家”扩大话题",
           "start_at_ms": 10000,
           "end_at_ms": 14800
-        },
-        {
-          "kind": "expression",
-          "label": "保持静默",
-          "description": "保持静默",
-          "trigger": "",
-          "delivery": "",
-          "annotation": "保持静默",
-          "start_at_ms": 16000,
-          "end_at_ms": 16400
         }
       ]
     },
@@ -118,15 +77,15 @@
       "clips": [
         {
           "kind": "state",
-          "label": "触后≤50ms亮光，进入聆听态；亮屏即预取常驻地天气",
-          "description": "触后≤50ms亮光，进入聆听态；亮屏即预取常驻地天气",
+          "label": "触后≤50ms亮光，进入聆听态；亮屏即预取常驻地天气；表达：暂不发声",
+          "description": "触后≤50ms亮光，进入聆听态；亮屏即预取常驻地天气；表达：暂不发声",
           "start_at_ms": 0,
           "end_at_ms": 800
         },
         {
           "kind": "state",
-          "label": "持续收听；提取“今天＋带伞”＝要降雨时段，不是整周预报",
-          "description": "持续收听；提取“今天＋带伞”＝要降雨时段，不是整周预报",
+          "label": "持续收听；提取“今天＋带伞”＝要降雨时段，不是整周预报；表达：暂不发声",
+          "description": "持续收听；提取“今天＋带伞”＝要降雨时段，不是整周预报；表达：暂不发声",
           "start_at_ms": 0,
           "end_at_ms": 2800,
           "lane": 1
@@ -140,8 +99,8 @@
         },
         {
           "kind": "state",
-          "label": "追问中午雨情；“王姐”只是语境，不建联系人任务",
-          "description": "追问中午雨情；“王姐”只是语境，不建联系人任务",
+          "label": "追问中午雨情；“王姐”只是语境，不建联系人任务；表达：听完，不抢话",
+          "description": "追问中午雨情；“王姐”只是语境，不建联系人任务；表达：听完，不抢话",
           "start_at_ms": 6800,
           "end_at_ms": 10000
         },
@@ -161,8 +120,8 @@
         },
         {
           "kind": "state",
-          "label": "用户明确收尾；end_reason=user_end；灯环熄灭",
-          "description": "用户明确收尾；end_reason=user_end；灯环熄灭",
+          "label": "用户明确收尾；end_reason=user_end；灯环熄灭；表达：保持静默",
+          "description": "用户明确收尾；end_reason=user_end；灯环熄灭；表达：保持静默",
           "start_at_ms": 16000,
           "end_at_ms": 16400
         }

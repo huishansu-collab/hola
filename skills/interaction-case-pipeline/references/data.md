@@ -26,3 +26,19 @@ timeline.schema_version 为 1，固定七轨 ID 顺序：user、control、assist
 alignment.schema_version 为 1，clips 对每个 utterance_id 指向相对 source 路径及 source_start_ms/source_end_ms。来源为本次真实母带；区间长度匹配实播区间。不能把旧母带切点套到新录音。
 
 当前 source/1 CLI 使用 48 kHz、16 bit PCM WAV，只构建语音。网站 snapshot/1 ZIP 可以保留旧 Case 的 Loading 音频与七轨完整状态。需要在新源包中加入当前适配器不支持的非语音播放资产时，先完成相应适配并验证；不能静默删掉资产，也不能把“通过语音校验”当作完整交付。
+
+## 纯文字回复与外部模式信号的适配边界
+
+上文 Utterances、speech clip 和 alignment 的关联约定描述当前语音源包。悄悄话模式需要助手轨道的明确文字输出类型，不能直接给现有 speech clip 去掉音频后当作支持。按当前项目契约补齐文字片段、校验、播放器与导入导出支持，文字回复不需要音频切点或波形，禁止伪造静音 WAV。文字片段的起止时间表示显示窗口，不是录音时长。用户仍可提供真实whisper语音，不能因助手纯文字而删除用户音频。
+
+living_edge.double_tap 是外部世界事件，不填写虚构 tool_name；若信号触发 audio.stop，则停播调用另记工具 Events 并关联实际播放实例。外部信号引起的停声不能套用要求用户语音重叠的 interruption 数据伪造一段用户语音。
+
+表达控制及对应 fdx 标注仅关联助手；用户说话特征不进入 expression 轨道。Loading 是独立音效资产与工具播放事件，不是 Utterance。
+
+工具名称与参数语义优先查阅[工具字典](tools.md)。它是 Case 模拟约定，不代替当前项目结构校验或真实服务接口；需要映射时明确记录差异。
+
+## 显示参数与依赖记录
+
+工具标题由表意英文snake_case变量构成，禁止类型缩写前缀和直接展开实际值；保存逐调用变量绑定映射及真实query，不改真实工具字段契约。标准source/1的tool clip仍仅引用event_id，不违规添加label。通过播放器派生标题或用snapshot/1保留标题，同时携带完整source/；不能将带参数标题塞入tool_name。
+
+跨轨道依赖记录需覆盖判断、世界和用户控制，不能仅检查tool_dependencies。适配器未支持混合事件引用时，以独立依赖清单保存前后片段ID、开始/结束时间和间隔，并验证与标准数据一致。所有非人工片段起点对齐400 ms，每条跨轨道依赖至少间隔400 ms。

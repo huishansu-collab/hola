@@ -202,11 +202,18 @@ def build(case):
         open_quote = {'user': odd(u) or (open_quote.get('user') and not odd(u) and not quoted(u)),
                       'assistant': odd(asst) or (open_quote.get('assistant') and not odd(asst) and not quoted(asst))}
         r = clean(row['reason'])
+        e = clean(row['expr'])
+        spoke = bool(assistants) and assistants[-1]['start_at_ms'] >= a
+        # 表达控制只描述助手「这一句怎么说」。文档这一列在助手不出声的行里写的是
+        # 「暂不发声」「听完，不抢话」这类决策，按契约它们不属于表达控制轨道
+        # （表达标注只关联助手实播片段），并进后台判断那一格。
+        if e and not DASH.match(e) and not spoke:
+            r = (r + '；' if r and not DASH.match(r) else '') + '表达：' + e
+            e = ''
         if r and not DASH.match(r):
             label = re.split(r'[（(]', r)[0][:40] or r[:40]
             states.append({'kind': 'state', 'label': label, 'description': r,
                            'start_at_ms': a, 'end_at_ms': b})
-        e = clean(row['expr'])
         if e and not DASH.match(e):
             exprs.append({'kind': 'expression', 'label': re.split(r'[；;]', e)[0][:40], 'description': e,
                           'trigger': '', 'delivery': '', 'annotation': e,

@@ -43,9 +43,14 @@ Gmail 与「老板反复改周会 / 吐槽时附和」已使用独立数据包�
 附和 Case 尚未配音，作为 `planned` 包入库：台词、时序与标注齐备，补录后写入切点并改为 `aligned` 即可产出音频与交付 TAR。
 
 ```sh
-npm run case:validate -- case-packages/gmail
-npm run case:build -- case-packages/gmail
+npm run case:validate -- case-packages/gmail   # 结构：引用、配对、音频切点、打断边界
+npm run case:build -- case-packages/gmail      # 构建导入文件与交付包
+npm run case:json                              # 契约体检：字段、轨道顺序、标注归属、等待承接
 ```
+
+`case:json` 查的是 `case:validate` 管不到的那半边——契约里写了但结构上不违法的规矩：
+根字段、七轨顺序、语音/工具片段不许重复时间、表达标注只关联助手、跨轨依赖间隔、
+等待超过 2 秒有没有垫句、旧目录的 Case 有没有迁到七轨。错会让退出码非零，提醒不会。
 
 导入文件位于 `case-packages/gmail/build/gmail.case.json`，交付文件为同目录的 `gmail.tar`。格式和新增 Case 方法见 [Case 包 v1](docs/case-package-v1.md)。
 
@@ -60,7 +65,8 @@ npm run case:build -- case-packages/gmail
 - `components/json-case.ts`：纯 JSON 驱动 Case 的共用加载器。
 - `local/`：离线构建入口、音频生成与整理脚本、提示词及源音频。
 - `local/explicit-cases/`：从 Explicit case 文档抽表（`tables.py`）并生成 Case 包（`import.py`）；`parsed.json` 是抽出来的中间结果，改完脚本重跑即可整体重生成。
-- `scripts/`：数据与界面回归检查。
+- `scripts/`：数据与界面回归检查。`check-case-json.mjs` 是契约体检，
+  `browser-env.cjs` 让几个浏览器检查按环境变量找 playwright 和页面，不写死本机路径。
 
 ## 检查
 
