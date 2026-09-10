@@ -2,7 +2,9 @@
 """把《语音双工 - Explicit case》文档里的 58 条脚本导成 Case 包 v1（planned，无音频）。
 
     python3 local/explicit-cases/import.py 文档.pdf     # 抽表 → parsed.json → case-packages/
-    python3 local/explicit-cases/import.py              # 直接用仓库里的 parsed.json 重新生成
+    python3 local/explicit-cases/import.py              # 重新生成仓库里保留的这几条（默认 A 组）
+    python3 local/explicit-cases/import.py c1 d1        # 按 case 号临时生成别的几条
+    python3 local/explicit-cases/import.py all          # 全部 58 条都生成
 
 文档是六列双轨表：时间 / 用户音频轨道 / Assistant 音频轨道 / 后台判断与反应 /
 AI 工具调用轨道 / AI 回复内容·表达控制。列的位置每张表都不一样，所以先按表头
@@ -444,11 +446,19 @@ def split_tables(cases):
     return out
 
 
+# 仓库里只保留 A 组，其余按需生成：parsed.json 留着全部 58 条，想要哪几条就传哪几条。
+KEEP = ['A1', 'A2', 'A3']
+
+
 def main():
     src = HERE / 'parsed.json'
-    if len(sys.argv) > 1:
-        subprocess.run([sys.executable, str(HERE / 'tables.py'), sys.argv[1], str(src)], check=True)
-    cases = split_tables(json.loads(src.read_text('utf-8')))
+    args = [a for a in sys.argv[1:] if not a.endswith('.pdf')]
+    pdf = next((a for a in sys.argv[1:] if a.endswith('.pdf')), None)
+    if pdf:
+        subprocess.run([sys.executable, str(HERE / 'tables.py'), pdf, str(src)], check=True)
+    want = [a.upper() for a in args] or KEEP
+    cases = [c for c in split_tables(json.loads(src.read_text('utf-8')))
+             if want == ['ALL'] or c['id'] in want]
     for c in cases:
         b = build(c)
         b['rowsrc'] = c['rows']
