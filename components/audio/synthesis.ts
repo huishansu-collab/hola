@@ -13,10 +13,10 @@ export async function synthesize(caseId:string,durationMs:number,clips:SpeechCli
  const rate=48000,frames=Math.round(durationMs*rate/1000),channels=[new Float32Array(frames),new Float32Array(frames)];
  const context=new OfflineAudioContext(1,1,rate),decoded=new Map<string,AudioBuffer>();
  for(const clip of clips){const source=audioClips[clip.audioKey??''];if(!source)throw new Error('语音文件缺失，请先生成这个 Case 的语音。');let audio=decoded.get(source.src);if(!audio){const r=await fetch(source.src);if(!r.ok)throw new Error('语音文件读取失败，请重试。');audio=await context.decodeAudioData(await r.arrayBuffer());decoded.set(source.src,audio)}
-  const start=Math.round(clip.a*rate/1000),length=Math.min(Math.round((clip.b-clip.a)*rate/1000),Math.round(source.duration*rate),frames-start),offset=Math.round(source.start*rate);
+  const start=Math.round(clip.a*rate/1000),length=Math.min(Math.round(((clip.audioEnd??clip.b)-clip.a)*rate/1000),Math.round(source.duration*rate),frames-start),offset=Math.round(source.start*rate);
   if(offset+length>audio.length+2)throw new Error('语音文件长度与时间线不一致，请检查音频。');
   const out=channels[clip.role==='user'?0:1];
-  for(let i=0;i<length;i++){const time=clip.a+i/rate*1000;let gain=1;if(clip.gainPoints?.length){const p=clip.gainPoints;gain=p[0][1];for(let j=1;j<p.length;j++){if(time<p[j][0]){gain=p[j-1][1]+(p[j][1]-p[j-1][1])*Math.max(0,(time-p[j-1][0])/(p[j][0]-p[j-1][0]));break}gain=p[j][1]}}if(clip.fadeMs)gain=Math.max(0,Math.min(1,(clip.b-time)/clip.fadeMs));let sample=0;for(let c=0;c<audio.numberOfChannels;c++)sample+=audio.getChannelData(c)[offset+i]??0;out[start+i]+=sample/audio.numberOfChannels*gain}
+  for(let i=0;i<length;i++){const time=clip.a+i/rate*1000;let gain=1;if(clip.gainPoints?.length){const p=clip.gainPoints;gain=p[0][1];for(let j=1;j<p.length;j++){if(time<p[j][0]){gain=p[j-1][1]+(p[j][1]-p[j-1][1])*Math.max(0,(time-p[j-1][0])/(p[j][0]-p[j-1][0]));break}gain=p[j][1]}}if(clip.fadeMs)gain=Math.max(0,Math.min(1,((clip.audioEnd??clip.b)-time)/clip.fadeMs));let sample=0;for(let c=0;c<audio.numberOfChannels;c++)sample+=audio.getChannelData(c)[offset+i]??0;out[start+i]+=sample/audio.numberOfChannels*gain}
  }
  // A shared gain keeps channel balance intact if overlapping clips exceed full scale.
  let max=1;for(const ch of channels)for(const value of ch)max=Math.max(max,Math.abs(value));if(max>1)for(const ch of channels)for(let i=0;i<ch.length;i++)ch[i]/=max;

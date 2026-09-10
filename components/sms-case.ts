@@ -5,7 +5,7 @@ import timeline from './cases/sms/timeline.json';
 
 export function createSmsCase():Scenario {
  const {utterances,events:inputEvents,fdx_annotation,emotion_annotation,paralinguistic_annotation,custom_annotation,...meta}=data;
- const colors:Record<string,string>={user:'green',control:'pink',assistant:'blue',expression:'purple',playback:'pink',world:'teal',reasoning:'amber',tools:'teal'};
+ const colors:Record<string,string>={user:'green',control:'pink',assistant:'blue',expression:'purple',playback:'pink',world:'gold',reasoning:'amber',tools:'teal'};
  const subtitles:Record<string,string>={user:'用户音频',control:'设备操作',assistant:'实际播出',expression:'语音表达',playback:'音效与播报',world:'外部信号与设备状态',reasoning:'决策与反应',tools:'模拟请求与结果'};
  const tracks=timeline.tracks.map(t=>({name:t.name,en:subtitles[t.id],color:colors[t.id],clips:t.clips.map(c=>({a:c.start_at_ms,b:c.end_at_ms,label:c.label,sub:c.sub,...('audio_key' in c?{audioKey:c.audio_key,wave:true}:{})} as Clip))}));
  const checkpoints=[

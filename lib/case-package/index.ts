@@ -4,13 +4,14 @@ export const roles = [
   ['control', '用户控制', 'pink'],
   ['assistant', '助手', 'blue'],
   ['expression', '表达控制', 'purple'],
-  ['world', '世界', 'teal'],
+  ['world', '世界', 'gold'],
   ['reasoning', '后台判断', 'amber'],
   ['tools', '工具调用', 'teal'],
 ] as const;
 // JSON records are validated at this boundary before the renderer consumes them.
 export type RecordData = Record<string, any>;
 export type CasePackage = {
+  attachments?: Record<string,string>;
   format: 'interaction-case/1';
   manifest: RecordData;
   case: RecordData;
@@ -296,7 +297,7 @@ export function validatePackage(input: unknown): CasePackage {
         check(typeof c.label === 'string', '片段缺少名称');
       }
       interval(start, end, duration, c.utterance_id ?? c.event_id ?? c.label);
-      if (!['user', 'control', 'world'].includes(tr.id))
+      if (!['user', 'control'].includes(tr.id))
         check(start % 400 === 0, '非用户轨道起点未对齐 400 ms');
       const lane = c.lane ?? 0;
       check(ms(lane), 'lane 无效');
@@ -433,11 +434,15 @@ export function validatePackage(input: unknown): CasePackage {
         g[0].time_at_ms === i.stop_command_at_ms &&
         g[1].results?.stopped_at_ms === i.stop_at_ms,
     );
-    check(stop, '打断缺少匹配的 audio.stop 请求与返回');
-    check(
-      stop![1].time_at_ms - stop![0].time_at_ms >= 400,
-      'audio.stop 控制窗口至少 400 ms',
-    );
+    // Speech interruption is internal playback control, not an audio-effect tool.
+    // Older packages keep their explicit audio.stop event contract.
+    if (i.control_type !== 'speech_interruption') {
+      check(stop, '打断缺少匹配的 audio.stop 请求与返回');
+      check(
+        stop![1].time_at_ms - stop![0].time_at_ms >= 400,
+        'audio.stop 控制窗口至少 400 ms',
+      );
+    }
   }
   const declaredOverlap = new Set<string>();
   for (const i of t.interruptions ?? [])

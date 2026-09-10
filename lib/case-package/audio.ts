@@ -1,5 +1,5 @@
 // Portable PCM utilities shared by the CLI and browser importer. No resampling.
-export function decodeWav(bytes: Uint8Array) {
+export function decodeWav(bytes: Uint8Array, allowOtherRates = false) {
   const v = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
     str = (n: number, l: number) =>
       String.fromCharCode(...bytes.slice(n, n + l));
@@ -30,12 +30,12 @@ export function decodeWav(bytes: Uint8Array) {
   if (
     format !== 1 ||
     bits !== 16 ||
-    rate !== 48000 ||
+    (allowOtherRates ? rate < 8000 || rate > 192000 : rate !== 48000) ||
     ![1, 2].includes(channels) ||
     !size ||
     size % (channels * 2)
   )
-    throw Error('v1 要求 48 kHz、16 bit、单声道或双声道 PCM WAV');
+    throw Error(allowOtherRates ? '要求 8–192 kHz、16 bit、单声道或双声道 PCM WAV' : 'v1 要求 48 kHz、16 bit、单声道或双声道 PCM WAV');
   const samples = new Float32Array(size / channels / 2);
   for (let i = 0; i < samples.length; i++) {
     let value = 0;
@@ -89,22 +89,32 @@ export function peaks(samples: Float32Array, count = 200) {
     return m;
   });
 }
+// Encode fixed-size byte groups without spreading audio into function arguments.
+// Browser engines have different call-stack limits, including embedded WebViews.
 export function base64(bytes: Uint8Array) {
-  let s = '';
-  for (let i = 0; i < bytes.length; i += 8192)
-    s += String.fromCharCode(...bytes.subarray(i, i + 8192));
-  return btoa(s);
+  const parts: string[] = [];
+  // Each complete group is divisible by three, so only the final group is padded.
+  for (let i = 0; i < bytes.length; i += 3072) {
+    let binary = '';
+    const end = Math.min(i + 3072, bytes.length);
+    for (let j = i; j < end; j++) binary += String.fromCharCode(bytes[j]);
+    parts.push(btoa(binary));
+  }
+  return parts.join('');
 }
 export function unbase64(text: string) {
-  // The grouped form `(?:[A-Za-z0-9+/]{4})*` keeps backtracking state per group
-  // and overflows the regex stack a few megabytes in, far below the size this
-  // format allows. Length carries the grouping; the alphabet scans linearly.
-  const pad = text.endsWith('==') ? 2 : text.endsWith('=') ? 1 : 0;
-  if (
-    text.length % 4 !== 0 ||
-    text.length === pad ||
-    !/^[A-Za-z0-9+/]*$/.test(text.slice(0, text.length - pad))
-  )
+  if (typeof text !== 'string' || text.length % 4 !== 0)
     throw Error('音频编码无效');
-  return Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
+  const padding = text.endsWith('==') ? 2 : text.endsWith('=') ? 1 : 0;
+  for (let i = 0; i < text.length - padding; i++) {
+    const c = text.charCodeAt(i);
+    if (!((c >= 65 && c <= 90) || (c >= 97 && c <= 122) ||
+          (c >= 48 && c <= 57) || c === 43 || c === 47))
+      throw Error('音频编码无效');
+  }
+  let binary: string;
+  try { binary = atob(text); } catch { throw Error('音频编码无效'); }
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
 }

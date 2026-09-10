@@ -8,8 +8,13 @@ export function loadCases(){
  const base=compile('components/loading-spacing.ts')+compile('components/scenario-utils.ts');
  const raw={weather:Function('audioClips',weather+';return weatherScenario')(audio),actor:Function('audioClips',base+compile('components/actor-case.ts')+';return createActorCase()')(audio),ride:Function('audioClips',base+compile('components/ride-case.ts')+';return createRideCase()')(audio),coffee:Function('data','timeline',compile('components/loading-spacing.ts')+compile('components/coffee-case.ts')+';return createCoffeeCase()')(JSON.parse(fs.readFileSync('components/cases/coffee/case.json')),JSON.parse(fs.readFileSync('components/cases/coffee/timeline.json')))};
  raw.sms=Function('data','timeline',compile('components/sms-case.ts')+';return createSmsCase()')(JSON.parse(fs.readFileSync('components/cases/sms/case.json')),JSON.parse(fs.readFileSync('components/cases/sms/timeline.json')));
- raw.backchannel=packageToScenario(JSON.parse(fs.readFileSync('case-packages/backchannel/build/runtime.json')),'package/backchannel');
- raw.gmail=packageToScenario(JSON.parse(fs.readFileSync('case-packages/gmail/build/runtime.json')),'package/gmail');
+ // Case 包按目录收，加一个包就自动进检查，不用回来补一行。
+ for(const dir of fs.readdirSync('case-packages',{withFileTypes:true})){
+  const file=`case-packages/${dir.name}/build/runtime.json`;
+  if(!dir.isDirectory()||!fs.existsSync(file))continue;
+  const runtime=JSON.parse(fs.readFileSync(file));
+  raw[runtime.manifest.case_id]=packageToScenario(runtime,`package/${runtime.manifest.case_id}`);
+ }
  for(const [id,fn] of [['interrupt','createInterruptCase'],['retry','createRetryCase'],['clarify','createClarifyCase'],['preempt','createPreemptCase']])raw[id]=Function('data','timeline',compile('components/json-case.ts')+compile(`components/${id}-case.ts`)+`;return ${fn}()`)(JSON.parse(fs.readFileSync(`components/cases/${id}/case.json`)),JSON.parse(fs.readFileSync(`components/cases/${id}/timeline.json`)));
  const stream=Function(compile('components/streaming-case.ts')+';return streamingCase')();
  return Object.fromEntries(Object.entries(raw).map(([id,s])=>[id,stream(s)]));

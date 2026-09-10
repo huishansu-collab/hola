@@ -1,15 +1,10 @@
 const fs = require('node:fs'),
   assert = require('node:assert/strict');
-const { chromium } = require(
-  process.env.PLAYWRIGHT_MODULE ||
-    '/Users/kaysaith/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright',
-);
+const { playwright, studioUrl, launchOptions } = require('./browser-env.cjs');
+const { chromium } = playwright();
 (async () => {
   const browser = await chromium.launch({
-    headless: true,
-    executablePath:
-      process.env.CHROME_PATH ||
-      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    ...launchOptions(),
   });
   try {
     const page = await browser.newPage({
@@ -18,8 +13,7 @@ const { chromium } = require(
       errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     await page.goto(
-      process.env.STUDIO_URL ||
-        'file:///Users/kaysaith/Desktop/feishu_cli/Track%20Studio%20Local/Track%20Studio.html',
+      studioUrl(),
     );
     await page
       .getByRole('button', { name: '新用户查 Gmail 邮件', exact: true })
@@ -134,7 +128,26 @@ const { chromium } = require(
       case_id: quiet.manifest.case_id,
       case_name: quiet.manifest.title,
     });
+    // 去掉打断标记，也要去掉那段人声重叠：校验器要求每一处用户与助手的重叠
+    // 都声明成打断或附和，只删标记会得到一个自相矛盾的包（导入会被拒）。
     quiet.timeline.interruptions = [];
+    {
+      const cut = quiet.timeline.interruptions.length
+        ? null
+        : copy.timeline.interruptions[0];
+      if (cut) {
+        const user = quiet.case.utterances.find((u) => u.id === cut.user_id),
+          assistant = quiet.case.utterances.find(
+            (u) => u.id === cut.assistant_id,
+          );
+        assistant.end_at_ms = user.start_at_ms;
+        const clip = quiet.alignment.clips.find(
+          (c) => c.utterance_id === assistant.id,
+        );
+        clip.source_end_ms =
+          clip.source_start_ms + assistant.end_at_ms - assistant.start_at_ms;
+      }
+    }
     await importData(quiet);
     assert.equal(await page.locator('.project').innerText(), '无打断节点');
     await page

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs/promises';
+import {createCaseId} from '../../lib/case-package/id.ts';
 import path from 'node:path';
 import {
   validatePackage,
@@ -20,6 +21,22 @@ async function load(folder) {
     manifest = JSON.parse(await file(root, 'manifest.json'));
   if (manifest.schema_version !== 1) throw Error('不支持的 manifest 版本');
   const json = async (p) => JSON.parse(await file(root, p));
+  const attachments = {};
+  for (const key of ['brief', 'script'])
+    attachments[manifest.files[key]] = (
+      await file(root, manifest.files[key])
+    ).toString('base64');
+  async function requests(dir) {
+    for (const entry of await fs
+      .readdir(path.join(root, dir), { withFileTypes: true })
+      .catch(() => [])) {
+      const p = dir + '/' + entry.name;
+      if (entry.isDirectory()) await requests(p);
+      else if (entry.isFile() && p.endsWith('.json'))
+        attachments[p] = (await file(root, p)).toString('base64');
+    }
+  }
+  await requests('generation/requests');
   const d = await json(manifest.files.case),
     timeline = await json(manifest.files.timeline),
     alignment = await json(manifest.files.alignment),
@@ -29,6 +46,7 @@ async function load(folder) {
     sources[p] = (await file(root, p)).toString('base64');
   return {
     format: 'interaction-case/1',
+    attachments,
     manifest,
     case: d,
     timeline,
@@ -65,6 +83,10 @@ function tar(files) {
   return Buffer.concat(parts);
 }
 try {
+  if (command === "id" && !folder && !flags.length) {
+    console.log(createCaseId());
+    process.exit(0);
+  }
   if (
     !['validate', 'build'].includes(command) ||
     !folder ||
@@ -72,7 +94,7 @@ try {
       (command !== 'build' || flags.length !== 2 || flags[0] !== '--out'))
   )
     throw Error(
-      '用法：npm run case:validate -- <目录> 或 npm run case:build -- <目录> [--out <产物目录>]',
+      '用法：npm run case:id 或 npm run case:validate -- <目录> 或 npm run case:build -- <目录> [--out <产物目录>]',
     );
   const pack = await load(folder);
   validatePackage(pack);

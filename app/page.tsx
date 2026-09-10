@@ -1,20 +1,18 @@
 'use client';
+import { withExpressionMode } from '@/components/expression-mode';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type CSSProperties } from 'react';
 import { audioClips, useTimelineAudio } from '@/components/audio/use-timeline-audio';
+import {useClipDrag} from '@/components/use-clip-drag';
+import {canResizeClip,editTimeline,readTimelineEdits,timelineEditKey,type TimelineEdit} from '@/components/timeline-edit';
 import {SynthesisPanel} from '@/components/synthesis-panel';
 import { JsonOverlay, type InputEvent, type Controls } from '@/components/json-overlay';
 import { createActorCase } from '@/components/actor-case';
 import {createRideCase} from '@/components/ride-case';
 import {packageRuntimes} from '@/components/case-packages';
 import {packageToScenario} from '@/components/package-scenario';
-import {backchannelUnits,resolve as resolveBackchannel,applyNudge,exportOffsets,type Nudge} from '@/components/backchannel-editor';
 import {storedPackages,importPackage,importedScenario,type ImportedCase} from '@/components/case-package-store';
 import {createSmsCase} from '@/components/sms-case';
 import {createCoffeeCase} from '@/components/coffee-case';
-import {createInterruptCase} from '@/components/interrupt-case';
-import {createRetryCase} from '@/components/retry-case';
-import {createClarifyCase} from '@/components/clarify-case';
-import {createPreemptCase} from '@/components/preempt-case';
 import {readViewports,resolveViewport,viewportStorageKey,type CaseViewport} from '@/components/case-viewport';
 import {streamingCase} from '@/components/streaming-case';
 import {reconcileCase} from '@/components/case-data';
@@ -26,7 +24,7 @@ function InspectorGroup({title,meta,children,defaultOpen=true,tone=''}:{title:st
 function InspectorSubsection({title,children}:{title:string;children:ReactNode}){return <section className="inspector-subsection"><h4>{title}</h4><div>{children}</div></section>}
 let END=31600;
 const fmt=(n:number)=>(n/1000).toFixed(3)+' 秒';
-export type Clip={playbackControl?:boolean;lane?:number;a:number;b:number;label:string;sub?:string;event?:number;wave?:boolean;muted?:boolean;expression?:number;discardTail?:boolean;fadeOut?:boolean;audioKey?:string;fadeMs?:number;loop?:boolean;gainPoints?:[number,number][]};
+export type Clip={audioEnd?:number;utteranceId?:string;toolEventId?:string;outputMode?:'text';messageId?:string;playbackControl?:boolean;lane?:number;a:number;b:number;label:string;sub?:string;event?:number;wave?:boolean;muted?:boolean;expression?:number;discardTail?:boolean;fadeOut?:boolean;audioKey?:string;fadeMs?:number;loop?:boolean;gainPoints?:[number,number][]};
 const events=[
  {id:0,t:5500,end:5900,name:'打断 01',title:'等待中补充需求',quote:'“主要……看下午，我要出去跑步。”',tag:'用户打断',plan:'嗯……好的，你稍等一下，我来看看。',heard:'嗯……好的，你稍等一下……',drop:'我来看看',actions:['检测到用户起声，让出话权','先执行淡出包络，再调用 audio.stop() 停止播报','保持 weather.query 查询执行','补充下午时段和跑步用途'],tool:'查询执行中 · 无需重新请求',note:'当前查询包含逐小时天气。停止播报不会取消查询请求。',overlap:[5500,5660]},
  {id:1,t:13400,end:14200,name:'打断 02',title:'切换查询时段',quote:'“那上午呢？”',tag:'用户打断',plan:'明天下午三点左右有小雨，气温二十度，跑步可以……',heard:'明天下午三点左右有小雨……',drop:'气温二十度，跑步可以……',actions:['切换至上午，停止下午的播报','先执行淡出包络，再调用 audio.stop() 停止播报','从已有结果读取上午天气','结合跑步用途组织新的回复'],tool:'使用已有结果 · 无需调用 API',note:'上午天气回复在听完用户请求并留出响应空白后播出。',overlap:[13400,13560]},
@@ -154,7 +152,7 @@ const controlAnnotations:Controls={
  custom_annotation:[]
 };
 const weatherScenario={END,events,tracks,expressions,playableClips,utterances,inputEvents,controlAnnotations};
-export type Scenario=typeof weatherScenario & {meta?:Record<string,unknown>;timingStatus?:'planned'|'aligned';breaths?:{utterance_id:string;host_start_ms:number;windows:[number,number][]}[]};
+export type Scenario=Omit<typeof weatherScenario,'events'> & {events:Array<Omit<(typeof weatherScenario)['events'][number],'overlap'>&{overlap:number[]|null}>;edited?:boolean;meta?:Record<string,unknown>;timingStatus?:'planned'|'aligned';breaths?:{utterance_id:string;host_start_ms:number;windows:[number,number][]}[]};
 const trackHeight=(t:Scenario['tracks'][number])=>76*(1+Math.max(0,...t.clips.map(c=>c.lane??0)));
 function Wave({width,audioKey}:{width:number;seed:number;audioKey?:string}){const peaks=audioKey?audioClips[audioKey]?.peaks:undefined;const n=Math.max(3,Math.floor(width/5));return <svg className="wave" width={width} height="32" aria-hidden="true">{Array.from({length:n},(_,i)=>{const h=peaks?Math.max(1,Math.sqrt(peaks[Math.min(peaks.length-1,Math.floor(i/n*peaks.length))])*29):1;return <line key={i} x1={i*5+2} x2={i*5+2} y1={(32-h)/2} y2={(32+h)/2}/>})}</svg>}
 export default function Studio(){
@@ -168,48 +166,32 @@ export default function Studio(){
  const [imported,setImported]=useState<Record<string,{item:ImportedCase;scenario:Scenario}>>({});
  const [packagesReady,setPackagesReady]=useState(false),[packageError,setPackageError]=useState('');
  useEffect(()=>{let live=true;storedPackages().then(items=>{if(live)setImported(Object.fromEntries(items.map(item=>[item.id,{item,scenario:importedScenario(item)}])))}).catch(()=>{if(live)setPackageError('已导入 Case 读取失败，请检查浏览器存储。')}).finally(()=>{if(live)setPackagesReady(true)});return()=>{live=false}},[]);
- const builtins=useMemo<Record<string,Scenario>>(()=>({...Object.fromEntries(packageRuntimes.map(r=>[String(r.manifest.case_id),packageToScenario(r,`package/${r.manifest.case_id}`)])),weather:reconcileCase('weather',streamingCase(weatherScenario)),actor:reconcileCase('actor',streamingCase(createActorCase())),ride:reconcileCase('ride',streamingCase(createRideCase())),coffee:reconcileCase('coffee',streamingCase(createCoffeeCase())),sms:reconcileCase('sms',streamingCase(createSmsCase())),interrupt:reconcileCase('interrupt',streamingCase(createInterruptCase())),retry:reconcileCase('retry',streamingCase(createRetryCase())),clarify:reconcileCase('clarify',streamingCase(createClarifyCase())),preempt:reconcileCase('preempt',streamingCase(createPreemptCase()))}),[]);
- const scenarios=useMemo(()=>({...builtins,...Object.fromEntries(Object.entries(imported).map(([id,v])=>[id,v.scenario]))}),[builtins,imported]);
+ const builtins=useMemo<Record<string,Scenario>>(()=>({...Object.fromEntries(packageRuntimes.map(r=>[String(r.manifest.case_id),packageToScenario(r,`package/${r.manifest.case_id}`)])),weather:reconcileCase('weather',streamingCase(weatherScenario)),actor:reconcileCase('actor',streamingCase(createActorCase())),ride:reconcileCase('ride',streamingCase(createRideCase())),coffee:reconcileCase('coffee',streamingCase(createCoffeeCase())),sms:reconcileCase('sms',streamingCase(createSmsCase()))}),[]);
+ const [timelineEdits,setTimelineEdits]=useState<Record<string,TimelineEdit>>(readTimelineEdits);
+ const baseScenarios=useMemo(()=>({...builtins,...Object.fromEntries(Object.entries(imported).map(([id,v])=>[id,v.scenario]))}),[builtins,imported]);
+ const scenarios=useMemo(()=>Object.fromEntries(Object.entries({...baseScenarios,...Object.fromEntries(Object.entries(timelineEdits).filter(([id,v])=>baseScenarios[id]&&v.sourceRevision===(imported[id]?.item.revision??'builtin')).map(([id,v])=>[id,v.scenario]))}).map(([id,s])=>[id,withExpressionMode(s)])),[baseScenarios,timelineEdits,imported]);
  const isWeather=!!scenarios[activeCase.id];
  const baseScenario=scenarios[activeCase.id]??scenarios.weather;
- // 附和位置靠耳朵定，不靠猜:界面把换气窗口画出来,拖动的位移只存在 nudge 里,
- // 原始 case 不动,导出的落点再回写给 local/retime_backchannel.py。
- const [nudge,setNudge]=useState<Nudge>({});
- const [dragUnit,setDragUnit]=useState<string|null>(null);
- const bcDrag=useRef<{id:string;x:number;at:number}|null>(null);
- useEffect(()=>{setNudge({});setDragUnit(null)},[activeCase.id]);
- const scenario=useMemo(()=>applyNudge(baseScenario,nudge),[baseScenario,nudge]);
- const bcUnits=useMemo(()=>backchannelUnits(baseScenario),[baseScenario]);
- const bcHeads=bcUnits.filter(u=>u.id===u.group[0]);
- // 起声可以略早于气口——压着换气进去照样自然，判定与 local/retime_backchannel.py 的 NEAR 一致。
- const bcSpot=(u:typeof bcUnits[number])=>{
-  const d=nudge[u.id]??0,host=(scenario.breaths??[]).find(b=>b.utterance_id===u.host);
-  const off=u.a+d-(host?.host_start_ms??u.a),win=host?.windows.find(w=>off>=w[0]-200&&off<=w[1]);
-  return {d,off,win,inBreath:!!win,exact:!!win&&off>=win[0]};
- };
- const bcMove=(u:typeof bcUnits[number],startMs:number)=>{
-  const r=resolveBackchannel(baseScenario,u,startMs);
-  if(!r)return;
-  const assistant=baseScenario.tracks.find(t=>t.name==='助手')?.clips??[];
-  setNudge(v=>{const out={...v};
-   for(const [id,a] of r.spans){const clip=assistant.find(c=>c.audioKey?.endsWith('/'+id));if(clip)out[id]=a-clip.a}
-   return out});
- };
- const importCase=async(file:File)=>{const item=await importPackage(file),scenario=importedScenario(item);setPlaying(false);setPos(0);setSelected(null);setRange([0,0]);setImported(v=>({...v,[item.id]:{item,scenario}}));return {id:item.id,name:item.title}};
+ const [scale,setScale]=useState(210);
+ const scroller=useRef<HTMLDivElement>(null);
+ const commitTimeline=(value:Scenario)=>{const next={...timelineEdits,[activeCase.id]:{sourceRevision:imported[activeCase.id]?.item.revision??'builtin',version:Date.now(),scenario:value}};setTimelineEdits(next);try{localStorage.setItem(timelineEditKey,JSON.stringify(next));setPackageError('')}catch{setPackageError('时间线已修改，但本地保存失败，请下载 Case ZIP 保留修改。')}};
+ const clipDrag=useClipDrag({scenario:baseScenario,caseId:activeCase.id,scale,scroller,onStart:()=>{moved.current=false;setPlaying(false);setHovered(null);viewMode.current='custom';persistViewport()},onCommit:commitTimeline});
+ const scenario=clipDrag.preview??baseScenario;
+ const importCase=async(file:File)=>{const item=await importPackage(file),scenario=importedScenario(item);const nextEdits={...timelineEdits};delete nextEdits[item.id];setTimelineEdits(nextEdits);try{localStorage.setItem(timelineEditKey,JSON.stringify(nextEdits))}catch{};setPlaying(false);setPos(0);setSelected(null);setRange([0,0]);setImported(v=>({...v,[item.id]:{item,scenario}}));return {id:item.id,name:item.title}};
  const importedFiles=useMemo(()=>Object.values(imported).map(v=>({id:v.item.id,name:v.item.title})),[imported]);
  const {END,events,tracks,expressions,playableClips,utterances,inputEvents,controlAnnotations}=scenario;
- const [scale,setScale]=useState(210),[pos,setPos]=useState(5900),[playing,setPlaying]=useState(false),[selected,setSelected]=useState<number|null>(0),[range,setRange]=useState<[number,number]>(()=>[events[0]?.t??0,events[0]?.end??0]);
+ const [pos,setPos]=useState(5900),[playing,setPlaying]=useState(false),[selected,setSelected]=useState<number|null>(0),[range,setRange]=useState<[number,number]>(()=>[events[0]?.t??0,events[0]?.end??0]);
  const audioError=useTimelineAudio(playableClips,pos,playing);
  const [expressionSelected,setExpressionSelected]=useState<number|null>(null);
  const [reasoningSelected,setReasoningSelected]=useState<Clip|null>(null);
  const [collapsedTracks,setCollapsedTracks]=useState<Record<string,boolean>>(()=>Object.fromEntries(tracks.map(t=>[t.name,t.clips.length===0])));
- useLayoutEffect(()=>{setCollapsedTracks(Object.fromEntries(tracks.map(t=>[t.name,t.clips.length===0])))},[activeCase.id,tracks]);
+ useLayoutEffect(()=>{setCollapsedTracks(Object.fromEntries(tracks.map(t=>[t.name,t.clips.length===0])))},[activeCase.id,tracks.map(t=>`${t.name}:${!t.clips.length}`).join('|')]);
  const [inspectorOpen,setInspectorOpen]=useState(true);
- const [bcCopied,setBcCopied]=useState('');
  const [hovered,setHovered]=useState<string|null>(null);
  const inspector=useRef<HTMLElement>(null);
  const scaleRef=useRef(scale);scaleRef.current=scale;
- const scroller=useRef<HTMLDivElement>(null),drag=useRef<{x:number;t:number}|null>(null),moved=useRef(false),jump=useRef<number|null>(null);
+ const drag=useRef<{x:number;t:number}|null>(null),moved=useRef(false),jump=useRef<number|null>(null);
+ const [rulerWindow,setRulerWindow]=useState<[number,number]>([0,10000]);
  const [minScale,setMinScale]=useState(1);
  const minScaleRef=useRef(1);
  const [viewportRevision,setViewportRevision]=useState(0);
@@ -223,7 +205,7 @@ export default function Studio(){
  useLayoutEffect(()=>{
   if(!viewsLoaded.current){try{views.current=readViewports(localStorage.getItem(viewportStorageKey))}catch{}viewsLoaded.current=true;}
   const el=scroller.current;if(!el||!isWeather){viewCase.current=null;return;}
-  const saved=views.current[activeCase.id];
+  const saved=viewCase.current===activeCase.id?{mode:viewMode.current,scale:scaleRef.current,scrollMs:el.scrollLeft/scaleRef.current*1000}:views.current[activeCase.id];
   viewCase.current=activeCase.id;viewMode.current=saved?.mode??'custom';
   const update=(initial=false)=>{
    if(!el.clientWidth)return;
@@ -236,13 +218,17 @@ export default function Studio(){
    el.scrollLeft=next.scrollMs*next.scale/1000;
    views.current[activeCase.id]=next;
   };
-  update(true);const observer=new ResizeObserver(()=>update());observer.observe(el);
+  const updateRuler=()=>setRulerWindow([Math.max(0,el.scrollLeft/scaleRef.current*1000-800),(el.scrollLeft+el.clientWidth)/scaleRef.current*1000+800]);
+  update(true);updateRuler();const observer=new ResizeObserver(()=>update());observer.observe(el);
   let timer:ReturnType<typeof setTimeout>|undefined;
-  const onScroll=()=>{clearTimeout(timer);timer=setTimeout(persistViewport,150)};
+  const onScroll=()=>{updateRuler();clearTimeout(timer);timer=setTimeout(persistViewport,150)};
   el.addEventListener('scroll',onScroll);window.addEventListener('pagehide',persistViewport);
   return()=>{observer.disconnect();clearTimeout(timer);el.removeEventListener('scroll',onScroll);window.removeEventListener('pagehide',persistViewport)};
  },[activeCase.id,END,isWeather]);
- const width=END/1000*scale,e=selected===null?null:events[selected];
+ useLayoutEffect(()=>{const el=scroller.current;if(el)setRulerWindow([Math.max(0,el.scrollLeft/scale*1000-800),(el.scrollLeft+el.clientWidth)/scale*1000+800])},[scale,viewportRevision,END]);
+ const nudgeClip=(ev:React.KeyboardEvent,ti:number,ci:number,resize=false)=>{if(!['ArrowLeft','ArrowRight'].includes(ev.key))return;ev.preventDefault();ev.stopPropagation();setPlaying(false);const t=baseScenario.tracks[ti],c=t.clips[ci],step=t.name==='用户'?1:400;commitTimeline(editTimeline(baseScenario,ti,ci,resize?'resize':'move',(resize?c.b:c.a)+(ev.key==='ArrowRight'?step:-step)))};
+ const rulerStart=Math.max(0,Math.floor(rulerWindow[0]/400)*400),rulerEnd=Math.min(Math.max(END,clipDrag.extent),rulerWindow[1]);
+ const width=Math.max(END,clipDrag.extent)/1000*scale,e=selected===null?null:events[selected];
  const px=(t:number)=>t/1000*scale;
  useLayoutEffect(()=>{if(scale!==scaleRef.current)return;if(jump.current!==null&&scroller.current){scroller.current.scrollLeft=jump.current/1000*scaleRef.current;jump.current=null}persistViewport()},[scale,activeCase.id,viewportRevision]);
  useEffect(()=>{
@@ -304,45 +290,22 @@ export default function Studio(){
  const timeAt=(ev:React.PointerEvent<HTMLDivElement>)=>{let t=(ev.clientX-ev.currentTarget.getBoundingClientRect().left)/scale*1000;t=Math.max(0,Math.min(END,t));return Math.round(t)};
  return <main className="studio">
  <header className="top"><div className="brand"><AudioLines size={21}/><b>交互模型数据合成管理平台</b><span className="divider"/><span className="project">{activeCase.id==='weather'?'天气查询 / 打断与改口':activeCase.name}</span></div><span className="prototype">本地会话</span></header>
- <div className="toolbar"><div className="transport"><button className={inspectorOpen?"inspector-toggle selected":"inspector-toggle"} aria-pressed={inspectorOpen} aria-label={inspectorOpen?"隐藏 Files":"显示 Files"} aria-expanded={inspectorOpen} aria-controls="event-inspector" onClick={()=>setInspectorOpen(v=>!v)}>{inspectorOpen?<PanelLeftClose size={17}/>:<PanelLeftOpen size={17}/>}</button><span className="divider"/><button title="回到起点 · Enter" aria-keyshortcuts="Enter" aria-label="回到起点 · 0 秒" onClick={()=>{setPos(0);setPlaying(false);if(scroller.current)scroller.current.scrollLeft=0}}><SkipBack size={18}/></button><button disabled={!isWeather||!playableClips.length} className={'play '+(playing?'active':'')} title={playing?'暂停播放 · Space':'播放时间线 · Space'} aria-keyshortcuts="Space" aria-label={playing?'暂停播放':'播放时间线'} onClick={()=>{if(pos>=END)setPos(0);setPlaying(v=>!v)}}>{playing?<Pause size={18}/>:<Play size={18}/>}</button><span className="timecode">{fmt(pos)} <small>/ {(END/1000).toFixed(3)}</small></span></div><div className="tool-right"><SynthesisPanel key={activeCase.id+':'+(imported[activeCase.id]?.item.revision??'builtin')} caseId={activeCase.id} caseTitle={activeCase.name} scenario={scenario} enabled={isWeather&&playableClips.length>0} timelinePlaying={playing} onOpen={()=>setPlaying(false)}/><JsonOverlay caseId={activeCase.id} caseTitle={activeCase.name} metaOverride={scenario.meta} durationMs={isWeather?END:0} utterances={isWeather?utterances:[]} events={isWeather?inputEvents:[]} controls={isWeather?controlAnnotations:{fdx_annotation:[],emotion_annotation:[],paralinguistic_annotation:[],custom_annotation:[]}} onOpen={()=>setPlaying(false)}/><span className="divider"/><button onClick={()=>zoom(scale/1.4)} disabled={scale<=minScale+.01} title="缩小" aria-label="缩小"><ZoomOut size={17}/></button><Slider aria-label="时间线缩放" className="zoomslider" min={minScale} max={Math.max(700,minScale)} value={[scale]} onValueChange={v=>zoom(Array.isArray(v)?v[0]:v)}/><button onClick={()=>zoom(scale*1.4)} title="放大" aria-label="放大"><ZoomIn size={17}/></button><button onClick={fit} aria-label="适应窗口" title="适应窗口"><ScanLine size={18}/></button><button onClick={locatePlayhead} disabled={!isWeather} aria-label="定位当前播放位置" title="定位当前播放位置"><Crosshair size={18}/></button></div></div>
+ <div className="toolbar"><div className="transport"><button className={inspectorOpen?"inspector-toggle selected":"inspector-toggle"} aria-pressed={inspectorOpen} aria-label={inspectorOpen?"隐藏 Files":"显示 Files"} aria-expanded={inspectorOpen} aria-controls="event-inspector" onClick={()=>setInspectorOpen(v=>!v)}>{inspectorOpen?<PanelLeftClose size={17}/>:<PanelLeftOpen size={17}/>}</button><span className="divider"/><button title="回到起点 · Enter" aria-keyshortcuts="Enter" aria-label="回到起点 · 0 秒" onClick={()=>{setPos(0);setPlaying(false);if(scroller.current)scroller.current.scrollLeft=0}}><SkipBack size={18}/></button><button disabled={!isWeather||!playableClips.length} className={'play '+(playing?'active':'')} title={playing?'暂停播放 · Space':'播放时间线 · Space'} aria-keyshortcuts="Space" aria-label={playing?'暂停播放':'播放时间线'} onClick={()=>{if(pos>=END)setPos(0);setPlaying(v=>!v)}}>{playing?<Pause size={18}/>:<Play size={18}/>}</button><span className="timecode">{fmt(pos)} <small>/ {(END/1000).toFixed(3)}</small></span></div><div className="tool-right"><SynthesisPanel key={activeCase.id+':'+(imported[activeCase.id]?.item.revision??'builtin')+':'+(timelineEdits[activeCase.id]?.version??0)} caseId={activeCase.id} caseTitle={activeCase.name} scenario={scenario} enabled={isWeather&&playableClips.length>0} timelinePlaying={playing} onOpen={()=>setPlaying(false)}/><JsonOverlay caseId={activeCase.id} caseTitle={activeCase.name} metaOverride={scenario.meta} durationMs={isWeather?END:0} utterances={isWeather?utterances:[]} events={isWeather?inputEvents:[]} controls={isWeather?controlAnnotations:{fdx_annotation:[],emotion_annotation:[],paralinguistic_annotation:[],custom_annotation:[]}} onOpen={()=>setPlaying(false)}/><span className="divider"/><button onClick={()=>zoom(scale/1.4)} disabled={scale<=minScale+.01} title="缩小" aria-label="缩小"><ZoomOut size={17}/></button><Slider aria-label="时间线缩放" className="zoomslider" min={minScale} max={Math.max(700,minScale)} value={[scale]} onValueChange={v=>zoom(Array.isArray(v)?v[0]:v)}/><button onClick={()=>zoom(scale*1.4)} title="放大" aria-label="放大"><ZoomIn size={17}/></button><button onClick={fit} aria-label="适应窗口" title="适应窗口"><ScanLine size={18}/></button><button onClick={locatePlayhead} disabled={!isWeather} aria-label="定位当前播放位置" title="定位当前播放位置"><Crosshair size={18}/></button></div></div>
  <div className={"body "+(!inspectorOpen?"inspector-collapsed":"")+(resizingFiles?" resizing-files":"")} style={{"--files-width":`${filesWidth}px`} as CSSProperties}><section className="editor">{isWeather?<><div className="eventbar"><span><Flag size={15}/>事件</span>{events.map((v,i)=><button key={i} className={selected===i?'current':''} onClick={()=>focusEvent(i)}>{v.name}<small>{fmt(v.t)}</small></button>)}</div>
- <div className="timeline-shell"><div className="track-headers"><div className="ruler-label">时间 / 秒</div>{tracks.map((t,i)=><div className={'track-name '+t.color+(collapsedTracks[t.name]?' track-collapsed':'')} style={{height:collapsedTracks[t.name]?24:trackHeight(t),minHeight:collapsedTracks[t.name]?24:trackHeight(t),maxHeight:collapsedTracks[t.name]?24:trackHeight(t)}} key={t.name}><button className="track-fold" aria-label={`${collapsedTracks[t.name]?'展开':'折叠'}${t.name}轨道`} aria-expanded={!collapsedTracks[t.name]} onClick={()=>setCollapsedTracks(v=>({...v,[t.name]:!v[t.name]}))}><ChevronRight size={11}/></button><span className="track-number">0{i+1}</span><div><b>{t.name}</b><small>{t.en}</small></div></div>)}</div>
+ <div className="timeline-shell"><div className="track-headers"><div className="ruler-label">时间 / 秒</div>{tracks.map((t,i)=><div className={'track-name '+(t.name==='世界'?'gold':t.color)+(collapsedTracks[t.name]?' track-collapsed':'')} style={{height:collapsedTracks[t.name]?24:trackHeight(t),minHeight:collapsedTracks[t.name]?24:trackHeight(t),maxHeight:collapsedTracks[t.name]?24:trackHeight(t)}} key={t.name}><button className="track-fold" aria-label={`${collapsedTracks[t.name]?'展开':'折叠'}${t.name}轨道`} aria-expanded={!collapsedTracks[t.name]} onClick={()=>setCollapsedTracks(v=>({...v,[t.name]:!v[t.name]}))}><ChevronRight size={11}/></button><span className="track-number">0{i+1}</span><div><b>{t.name}</b><small>{t.en}</small></div></div>)}</div>
  <div className="timeline-scroll" ref={scroller}><div className="timeline" style={{width}} onPointerDown={ev=>{if(ev.button!==0)return;moved.current=false;const t=timeAt(ev);drag.current={x:ev.clientX,t};setPlaying(false);setPos(t)}} onPointerMove={ev=>{if(!drag.current)return;if(Math.abs(ev.clientX-drag.current.x)>4){moved.current=true;ev.currentTarget.setPointerCapture(ev.pointerId);const t=timeAt(ev);setRange([Math.min(t,drag.current.t),Math.max(t,drag.current.t)])}}} onPointerUp={ev=>{if(!moved.current){const t=timeAt(ev);setPos(t)}drag.current=null;if(ev.currentTarget.hasPointerCapture(ev.pointerId))ev.currentTarget.releasePointerCapture(ev.pointerId)}}>
- <div className="ruler">{Array.from({length:Math.ceil(END/400)+1},(_,i)=>i*400).map(t=><div className="tick" key={t} style={{left:px(t)}}><span>{scale>140||t%2000===0?(t/1000).toFixed(1):''}</span></div>)}</div>
+ <div className="ruler">{Array.from({length:Math.max(0,Math.floor((rulerEnd-rulerStart)/400)+1)},(_,i)=>rulerStart+i*400).map(t=><div className="tick" key={t} style={{left:px(t)}}><span>{scale>140||t%2000===0?(t/1000).toFixed(1):''}</span></div>)}</div>
  <div className="selection" style={{left:px(range[0]),width:px(range[1]-range[0])}}><span>{range[1]>range[0]?`${Math.round(range[1]-range[0])} 毫秒`:''}</span></div>
  {events.filter(v=>v.overlap).map(v=><div className="overlap" key={v.id} style={{left:px(v.overlap![0]),width:px(v.overlap![1]-v.overlap![0]),height:tracks.slice(0,tracks.findIndex(t=>t.name==='助手')+1).reduce((sum,t)=>sum+(collapsedTracks[t.name]?24:trackHeight(t)),0)}}><span>重叠*</span></div>)}
- {tracks.map((t,ti)=><div className={'track '+t.color+(collapsedTracks[t.name]?' track-collapsed':'')} style={{height:collapsedTracks[t.name]?24:trackHeight(t),minHeight:collapsedTracks[t.name]?24:trackHeight(t),maxHeight:collapsedTracks[t.name]?24:trackHeight(t),backgroundSize:`${px(400)}px 100%`}} key={t.name}>{t.clips.map((c,ci)=><div key={ci} className={'region '+(c.expression===3||c.expression===9?'interruption-control':'')} style={{left:px(c.a),top:collapsedTracks[t.name]?8:7+(c.lane??0)*76,width:Math.max(5,px(c.b-c.a)-3)}}><button type="button" className={'clip '+(c.wave?'audio ':'')+(c.gainPoints?'loading-region ':'')+(c.muted?'discard ':'')+(c.discardTail?'discard-tail ':'')+(c.fadeOut?'fade-out ':'')+(c.event===selected||(c.expression!==undefined&&c.expression===expressionSelected)?'related':'')} aria-label={c.label} onClick={()=>{if(moved.current)return;setReasoningSelected(t.name==='后台判断'?c:null);if(t.name==='后台判断'){setInspectorOpen(true);requestAnimationFrame(()=>inspector.current?.scrollTo({top:0}))}setExpressionSelected(c.expression??null);if(c.expression!==undefined){setInspectorOpen(true);setSelected(null);setRange([c.a,c.b]);requestAnimationFrame(()=>inspector.current?.scrollTo({top:0}));return}if(c.event!==undefined){setSelected(c.event);setRange([events[c.event].t,events[c.event].end])}else{setSelected(null);setRange([c.a,c.b])}}}>{c.fadeMs&&<svg className="fade-envelope audible-fade" style={{left:Math.max(0,px(c.b-c.a-c.fadeMs)),width:px(c.fadeMs)}} viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path className="fade-area" d="M 1 3 C 42 3 47 37 99 37 L 99 40 L 1 40 Z"/><path className="fade-curve" d="M 1 3 C 42 3 47 37 99 37"/></svg>}{c.gainPoints&&<svg className="loading-envelope" viewBox="0 0 1000 30" preserveAspectRatio="none" aria-label="Loading 音量曲线"><polyline points={c.gainPoints.map(([time,gain])=>`${(time-c.a)/(c.b-c.a)*1000},${28-gain/.6*24}`).join(' ')} fill="none" stroke="currentColor" strokeWidth="1.5" vectorEffect="non-scaling-stroke"/></svg>}<span>{c.discardTail?`【${c.label}】`:c.label}</span>{c.wave?<Wave audioKey={c.audioKey} width={Math.max(5,px(c.b-c.a)-16)} seed={ci+ti*8}/>:<small>{c.sub|| (c.muted?'未播出 / 已丢弃':`${fmt(c.a)} — ${fmt(c.b)}`)}</small>}</button><HoverCard open={hovered===`${ti}-${ci}`} onOpenChange={open=>setHovered(open?`${ti}-${ci}`:null)}><HoverCardTrigger delay={160} closeDelay={180} render={<button type="button"/>} className="region-info" aria-label={`详情：${c.label}`} onPointerDown={ev=>ev.stopPropagation()} onPointerUp={ev=>ev.stopPropagation()} onClick={ev=>ev.stopPropagation()}><Info size={13}/></HoverCardTrigger><HoverCardContent className="clip-preview" side="top" sideOffset={9} align="start" onPointerDown={ev=>ev.stopPropagation()} onPointerMove={ev=>ev.stopPropagation()} onPointerUp={ev=>ev.stopPropagation()}><div className="preview-heading"><span>{t.name}</span><span>{c.wave?'音频':c.muted?'已丢弃':t.en}</span></div><p className="preview-transcript">{c.label}</p><dl className="preview-timing"><div><dt>开始</dt><dd>{fmt(c.a)}</dd></div><div><dt>结束</dt><dd>{fmt(c.b)}</dd></div><div><dt>时长</dt><dd>{(c.b-c.a).toLocaleString('en-US')} 毫秒</dd></div></dl>{c.sub&&<p className="preview-detail">{c.sub}</p>}{c.gainPoints&&<div className="preview-detail">{c.gainPoints.map(([time,gain])=><div key={time}>{fmt(time)} · 音量 {Math.round(gain*100)}%</div>)}</div>}{c.discardTail&&<p className="preview-detail">红色部分表示停止后丢弃的内容；淡出曲线位于前一段真实音频的尾部，对齐实际播放增益。</p>}{c.event!==undefined&&<div className="preview-event"><div>{events[c.event].name} · {events[c.event].title}</div><button onClick={()=>{if(c.event!==undefined)focusEvent(c.event)}}>查看事件 <ChevronRight size={13}/></button></div>}</HoverCardContent></HoverCard></div>)}</div>)}
- {bcHeads.length>0&&<div className="bc-layer" style={{height:(()=>{const t=tracks.find(x=>x.name==='用户');return t?(collapsedTracks['用户']?24:trackHeight(t)):0})()}}>
-  {(scenario.breaths??[]).flatMap(b=>b.windows.map((w,i)=><div className="bc-breath" key={b.utterance_id+'-'+i} style={{left:px(b.host_start_ms+w[0]),width:Math.max(2,px(w[1]-w[0]))}}/>))}
-  {bcHeads.map(u=>{
-   const tail=bcUnits.filter(x=>x.host===u.host).slice(-1)[0],{d,inBreath}=bcSpot(u),end=tail.b+(nudge[tail.id]??0);
-   return <button type="button" key={u.id} className={'bc-handle'+(dragUnit===u.id?' dragging':'')+(inBreath?'':' bad')}
-    style={{left:px(u.a+d),width:Math.max(30,px(end-(u.a+d)))}}
-    title={`拖动或用左右方向键调整附和「${u.label}」的起声时间`} aria-label={`附和「${u.label}」起声 ${Math.round(u.a+d)} 毫秒，左右方向键每次 400 毫秒`}
-    onPointerDown={ev=>{ev.stopPropagation();ev.preventDefault();ev.currentTarget.setPointerCapture(ev.pointerId);bcDrag.current={id:u.id,x:ev.clientX,at:u.a+d};setDragUnit(u.id);setPlaying(false)}}
-    onPointerMove={ev=>{const st=bcDrag.current;if(!st||st.id!==u.id)return;ev.stopPropagation();bcMove(u,st.at+(ev.clientX-st.x)/scale*1000)}}
-    onPointerUp={ev=>{ev.stopPropagation();bcDrag.current=null;setDragUnit(null)}}
-    onKeyDown={ev=>{if(ev.key==='ArrowLeft'){ev.preventDefault();bcMove(u,u.a+d-400)}if(ev.key==='ArrowRight'){ev.preventDefault();bcMove(u,u.a+d+400)}}}
-   ><span>{bcUnits.filter(x=>x.host===u.host).map(x=>x.label).join(' ')}</span></button>;
-  })}
+ {tracks.map((t,ti)=><div className={'track '+(t.name==='世界'?'gold':t.color)+(collapsedTracks[t.name]?' track-collapsed':'')} style={{height:collapsedTracks[t.name]?24:trackHeight(t),minHeight:collapsedTracks[t.name]?24:trackHeight(t),maxHeight:collapsedTracks[t.name]?24:trackHeight(t),backgroundSize:`${px(400)}px 100%`}} key={t.name}>{t.clips.map((c,ci)=><div key={ci} data-track-index={ti} data-clip-index={ci} data-start-ms={c.a} data-end-ms={c.b} className={'region '+(clipDrag.dragging&&clipDrag.target?.ti===ti&&clipDrag.target?.ci===ci?'region-dragging ':'')+(c.expression===3||c.expression===9?'interruption-control':'')} style={{left:px(c.a),top:collapsedTracks[t.name]?8:7+(c.lane??0)*76,width:Math.max(5,px(c.b-c.a)-3)}}><button type="button" className={'clip '+(c.wave?'audio ':'')+(c.gainPoints?'loading-region ':'')+(c.muted?'discard ':'')+(c.discardTail?'discard-tail ':'')+(c.fadeOut?'fade-out ':'')+(c.event===selected||(c.expression!==undefined&&c.expression===expressionSelected)?'related':'')} aria-label={c.label} onKeyDown={ev=>nudgeClip(ev,ti,ci)} onPointerDown={ev=>clipDrag.begin(ev,ti,ci,'move')} onPointerMove={clipDrag.move} onPointerUp={clipDrag.end} onPointerCancel={clipDrag.cancel} onClick={()=>{if(clipDrag.suppressClick.current){clipDrag.suppressClick.current=false;return}if(moved.current)return;setReasoningSelected(t.name==='后台判断'?c:null);if(t.name==='后台判断'){setInspectorOpen(true);requestAnimationFrame(()=>inspector.current?.scrollTo({top:0}))}setExpressionSelected(c.expression??null);if(c.expression!==undefined){setInspectorOpen(true);setSelected(null);setRange([c.a,c.b]);requestAnimationFrame(()=>inspector.current?.scrollTo({top:0}));return}if(c.event!==undefined){setSelected(c.event);setRange([events[c.event].t,events[c.event].end])}else{setSelected(null);setRange([c.a,c.b])}}}>{c.fadeMs&&<svg className="fade-envelope audible-fade" style={{left:Math.max(0,px((c.audioEnd??c.b)-c.a-c.fadeMs)),width:px(c.fadeMs)}} viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path className="fade-area" d="M 1 3 C 42 3 47 37 99 37 L 99 40 L 1 40 Z"/><path className="fade-curve" d="M 1 3 C 42 3 47 37 99 37"/></svg>}{c.gainPoints&&<svg className="loading-envelope" viewBox="0 0 1000 30" preserveAspectRatio="none" aria-label="Loading 音量曲线"><polyline points={c.gainPoints.map(([time,gain])=>`${(time-c.a)/(c.b-c.a)*1000},${28-gain/.6*24}`).join(' ')} fill="none" stroke="currentColor" strokeWidth="1.5" vectorEffect="non-scaling-stroke"/></svg>}<span>{c.discardTail?`【${c.label}】`:c.label}</span>{c.wave?<Wave audioKey={c.audioKey} width={Math.max(5,px((c.audioEnd??c.b)-c.a)-16)} seed={ci+ti*8}/>:<small>{c.sub|| (c.muted?'未播出 / 已丢弃':`${fmt(c.a)} — ${fmt(c.b)}`)}</small>}</button>{canResizeClip(t,c)&&<button className="clip-resize-handle" aria-label={`调整片段尾部：${c.label}`} title="拖动调整片段尾部" onKeyDown={ev=>nudgeClip(ev,ti,ci,true)} onPointerDown={ev=>clipDrag.begin(ev,ti,ci,'resize')} onPointerMove={clipDrag.move} onPointerUp={clipDrag.end} onPointerCancel={clipDrag.cancel} onClick={ev=>ev.stopPropagation()}/>}{clipDrag.dragging&&clipDrag.target?.ti===ti&&clipDrag.target?.ci===ci&&<span className="clip-drag-time">{fmt(c.a)} — {fmt(c.b)}</span>}<HoverCard open={hovered===`${ti}-${ci}`} onOpenChange={open=>setHovered(open?`${ti}-${ci}`:null)}><HoverCardTrigger delay={160} closeDelay={180} render={<button type="button"/>} className="region-info" aria-label={`详情：${c.label}`} onPointerDown={ev=>ev.stopPropagation()} onPointerUp={ev=>ev.stopPropagation()} onClick={ev=>ev.stopPropagation()}><Info size={13}/></HoverCardTrigger><HoverCardContent className="clip-preview" side="top" sideOffset={9} align="start" onPointerDown={ev=>ev.stopPropagation()} onPointerMove={ev=>ev.stopPropagation()} onPointerUp={ev=>ev.stopPropagation()}><div className="preview-heading"><span>{t.name}</span><span>{c.outputMode==='text'?'文字':c.wave?'音频':c.muted?'已丢弃':t.en}</span></div><p className="preview-transcript">{c.label}</p><dl className="preview-timing"><div><dt>开始</dt><dd>{fmt(c.a)}</dd></div><div><dt>结束</dt><dd>{fmt(c.b)}</dd></div><div><dt>时长</dt><dd>{(c.b-c.a).toLocaleString('en-US')} 毫秒</dd></div></dl>{c.sub&&<p className="preview-detail">{c.sub}</p>}{c.gainPoints&&<div className="preview-detail">{c.gainPoints.map(([time,gain])=><div key={time}>{fmt(time)} · 音量 {Math.round(gain*100)}%</div>)}</div>}{c.discardTail&&<p className="preview-detail">红色部分表示停止后丢弃的内容；淡出曲线位于前一段真实音频的尾部，对齐实际播放增益。</p>}{c.event!==undefined&&<div className="preview-event"><div>{events[c.event].name} · {events[c.event].title}</div><button onClick={()=>{if(c.event!==undefined)focusEvent(c.event)}}>查看事件 <ChevronRight size={13}/></button></div>}</HoverCardContent></HoverCard></div>)}</div>)}
+ {/* 气口:用户那句话里真实的换气窗口（timeline.breaths）。只画不拖——
+     片段本身用 Kay 的通用拖拽移动，这里负责让人看见该往哪儿放。 */}
+ {(scenario.breaths??[]).length>0&&<div className="bc-layer" style={{height:(()=>{const t=tracks.find(x=>x.name==='用户');return t?(collapsedTracks['用户']?24:trackHeight(t)):0})()}}>
+  {(scenario.breaths??[]).flatMap(b=>b.windows.map((w,i)=><div className="bc-breath" key={b.utterance_id+'-'+i} style={{left:px(b.host_start_ms+w[0]),width:Math.max(2,px(w[1]-w[0]))}} title={`${b.utterance_id} 换气 ${w[0]}–${w[1]} ms`}/>))}
  </div>}
  {events.map(v=><div className="eventline" key={v.id} style={{left:px(v.t)}}><button onClick={()=>focusEvent(v.id)}>{v.id+1}</button></div>)}<div className="playhead" style={{left:px(pos)}}><span/></div>
  </div></div></div>
- <div className="bottom"><span><MousePointer2 size={14}/>捏合缩放 · 双指滚动 · 拖动选区 · 空格播放 / 暂停 · Enter 回到起点</span><span>{range[1]>range[0]?`${fmt(range[0])} — ${fmt(range[1])}`:'未选择区域'}</span></div>
- {bcHeads.length>0&&<div className="bc-readout">
-  <div className="bc-title"><b>附和落点</b><span>拖动用户轨上的手柄；浅色竖条是这句话里真实的换气口，按 400 毫秒微轮次吸附</span>
-   <span className="bc-actions"><button onClick={()=>{setNudge({});setBcCopied('')}} disabled={!Object.keys(nudge).length}>复位</button><button onClick={()=>{const text=exportOffsets(baseScenario,bcUnits,nudge);void navigator.clipboard?.writeText(text).then(()=>setBcCopied('已复制落点，可回填 local/retime_backchannel.py'),()=>setBcCopied(text))}}>复制落点</button></span></div>
-  {bcCopied&&<p className="bc-copied">{bcCopied}</p>}
-  {bcHeads.map(u=>{
-   const {d,off,inBreath,exact}=bcSpot(u),hostClip=(tracks.find(t=>t.name==='用户')?.clips??[]).find(c=>c.audioKey?.endsWith('/'+u.host));
-   return <div className={'bc-item'+(inBreath?' in-breath':'')} key={u.id}>
-    <button onClick={()=>{setPlaying(false);setPos(Math.max(0,(hostClip?.a??u.a)-500));setPlaying(true)}}>试听</button>
-    <b>{bcUnits.filter(x=>x.host===u.host).map(x=>x.label).join(' / ')}</b>
-    <span className="bc-host">{hostClip?.label??u.host}</span>
-    <span className="bc-offset">起声 +{Math.round(off)} ms{d?`（原 +${Math.round(u.a-(hostClip?.a??0))}）`:''} · {exact?'落在换气口':inBreath?'压着换气口起声':'不在换气口'}</span>
-   </div>;
-  })}
- </div>}
+ <div className="bottom"><span><MousePointer2 size={14}/>捏合缩放 · 双指滚动 · 拖动片段 · 拖尾调整 · 空白处拖动选区 · 空格播放 / 暂停 · Enter 回到起点</span><span>{range[1]>range[0]?`${fmt(range[0])} — ${fmt(range[1])}`:'未选择区域'}</span></div>
  <div id="case-preview-dock"/>
  {scenario.timingStatus==='planned'&&<div className="notice">语音待生成 · 当前时间为设计估计</div>}
  {audioError&&<div className="notice" role="alert">{audioError}</div>}

@@ -1,0 +1,100 @@
+{
+  "manifest": {
+    "schema_version": 1,
+    "case_id": null,
+    "title": null,
+    "files": {
+      "case": "case.json",
+      "timeline": "timeline.json",
+      "alignment": "generation/alignment.json",
+      "brief": "brief.md",
+      "script": "script.md"
+    }
+  },
+  "case": {
+    "meta_data": {
+      "sample": {
+        "sample_id": null,
+        "sample_name": null,
+        "case_id": null,
+        "case_name": null,
+        "source_type": "simulated_case",
+        "case_spec_ref": null
+      },
+      "media": {
+        "audio": {
+          "duration_ms": null,
+          "file": null,
+          "tracks": [
+            {
+              "track_ref": "Channel 1",
+              "role": "user"
+            },
+            {
+              "track_ref": "Channel 2",
+              "role": "assistant"
+            }
+          ]
+        }
+      }
+    },
+    "static_context": {
+      "system prompts": {},
+      "memory": {},
+      "constraints": {
+        "simulated": true,
+        "timing_status": "planned",
+        "audio_status": "pending",
+        "stream_step_ms": 400
+      },
+      "tools": []
+    },
+    "dynamic_context": {},
+    "utterances": [],
+    "events": [],
+    "fdx_annotation": [],
+    "emotion_annotation": [],
+    "paralinguistic_annotation": [],
+    "custom_annotation": []
+  },
+  "timeline": {
+    "schema_version": 1,
+    "tracks": [
+      {
+        "id": "user",
+        "clips": []
+      },
+      {
+        "id": "control",
+        "clips": []
+      },
+      {
+        "id": "assistant",
+        "clips": []
+      },
+      {
+        "id": "expression",
+        "clips": []
+      },
+      {
+        "id": "world",
+        "clips": []
+      },
+      {
+        "id": "reasoning",
+        "clips": []
+      },
+      {
+        "id": "tools",
+        "clips": []
+      }
+    ],
+    "response_links": [],
+    "interruptions": [],
+    "tool_dependencies": []
+  },
+  "alignment": {
+    "schema_version": 1,
+    "clips": []
+  }
+}

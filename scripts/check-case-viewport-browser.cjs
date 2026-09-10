@@ -1,7 +1,8 @@
 const assert=require('node:assert/strict');
-const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const {playwright,launchOptions}=require('./browser-env.cjs');
+const {chromium}=playwright();
 (async()=>{
- const browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{})});
+ const browser=await chromium.launch(launchOptions());
  try{
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
   await page.goto(process.env.STUDIO_URL||'http://127.0.0.1:5180/');
