@@ -136,16 +136,18 @@ function packageCase(dir) {
     if (!plays.some((p) => p.time_at_ms <= s.time_at_ms))
       warn('P11 播放闭环', `${s.time_at_ms} ms 的 audio.stop 找不到更早的 audio.play`);
 
-  // P12 用户说完到助手实质回答超过 2 秒，中间得有垫句
+  // P12 静默超过 2 秒才有实质回答，中间得有垫句。
+  // 量的是「最后一次有人出声」到助手开口——用户自己连着说下去不算等待。
   const sorted = [...d.utterances].sort((a, b) => a.start_at_ms - b.start_at_ms);
-  for (const u of users) {
-    const next = sorted.find((x) => x.speaker === 'assistant' && x.start_at_ms >= u.end_at_ms);
-    if (!next) continue;
-    const gap = next.start_at_ms - u.end_at_ms;
+  for (const r of assistant) {
+    const before = sorted.filter((x) => x.end_at_ms <= r.start_at_ms);
+    if (!before.length) continue;
+    const quietFrom = Math.max(...before.map((x) => x.end_at_ms));
+    const gap = r.start_at_ms - quietFrom;
     const filler = (d.fdx_annotation ?? []).some((a) =>
-      a.start_at_ms >= u.end_at_ms && a.start_at_ms <= next.start_at_ms);
+      a.start_at_ms >= quietFrom && a.start_at_ms <= r.start_at_ms);
     if (gap > WAIT && !filler)
-      warn('P12 等待承接', `${u.id} 说完等了 ${gap} ms 才有回应，中间没有垫句`);
+      warn('P12 等待承接', `${quietFrom} ms 起静了 ${gap} ms 才等到 ${r.id}，中间没有垫句`);
   }
 
   // P13/P14 关联与回应

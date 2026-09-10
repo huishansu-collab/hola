@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "case_id": "taxi-late",
+  "title": "加班叫车 / 派单后打断取消，发完文件再叫",
+  "group": "D 出行与位置",
+  "files": {
+    "case": "case.json",
+    "timeline": "timeline.json",
+    "alignment": "generation/alignment.json",
+    "brief": "brief.md",
+    "script": "script.md"
+  }
+}

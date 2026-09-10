@@ -1,0 +1,302 @@
+{
+  "schema_version": 1,
+  "tracks": [
+    {
+      "id": "user",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u001"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u004"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u006"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u007"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u009"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u012"
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "clips": [
+        {
+          "kind": "action",
+          "label": "触碰 LIVING EDGE",
+          "description": "收拾包时按亮手机，进入聆听态",
+          "start_at_ms": 0,
+          "end_at_ms": 400
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "clips": [
+        {
+          "kind": "speech",
+          "utterance_id": "u002"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u003"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u005"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u008"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u010"
+        },
+        {
+          "kind": "speech",
+          "utterance_id": "u011"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "clips": [
+        {
+          "kind": "expression",
+          "label": "垫句 · 嗯……",
+          "description": "轻声拖长，占一个微轮次；只表示在等结果，不是回答",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "轻声拖长，占一个微轮次；只表示在等结果，不是回答",
+          "start_at_ms": 2800,
+          "end_at_ms": 3200
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速 · 报价一句收住",
+          "description": "只报车型、接单时间、价钱，不念优惠说明",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "只报车型、接单时间、价钱，不念优惠说明",
+          "start_at_ms": 3600,
+          "end_at_ms": 7200
+        },
+        {
+          "kind": "expression",
+          "label": "念司机信息 · 略慢一档",
+          "description": "车牌逐字念；用户开口即停，丢弃未播完的车牌",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "车牌逐字念；用户开口即停，丢弃未播完的车牌",
+          "start_at_ms": 8400,
+          "end_at_ms": 12000
+        },
+        {
+          "kind": "expression",
+          "label": "短确认",
+          "description": "四个字收住，回执到了才说「取消了」",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "四个字收住，回执到了才说「取消了」",
+          "start_at_ms": 16400,
+          "end_at_ms": 18000
+        },
+        {
+          "kind": "expression",
+          "label": "垫句 · 嗯……",
+          "description": "轻声拖长；第二次叫车仍先出声占住话权",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "轻声拖长；第二次叫车仍先出声占住话权",
+          "start_at_ms": 30000,
+          "end_at_ms": 30400
+        },
+        {
+          "kind": "expression",
+          "label": "常规语速 · 报到派单为止",
+          "description": "只说重新叫上和几分钟到，不承诺司机到达",
+          "trigger": "",
+          "delivery": "",
+          "annotation": "只说重新叫上和几分钟到，不承诺司机到达",
+          "start_at_ms": 30800,
+          "end_at_ms": 34000
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "clips": []
+    },
+    {
+      "id": "reasoning",
+      "clips": [
+        {
+          "kind": "state",
+          "label": "意图明确 · 直接报价",
+          "description": "家与公司都在常用地址里，不反问去哪",
+          "start_at_ms": 2000,
+          "end_at_ms": 2400
+        },
+        {
+          "kind": "state",
+          "label": "报价已回 · 先出声占住话权",
+          "description": "价钱和接单时间都在手，但先给一声垫句",
+          "start_at_ms": 2400,
+          "end_at_ms": 2800
+        },
+        {
+          "kind": "state",
+          "label": "用户授权 · 立即下单",
+          "description": "「叫吧」是明确授权，不再确认一遍",
+          "start_at_ms": 8000,
+          "end_at_ms": 8400
+        },
+        {
+          "kind": "state",
+          "label": "派单成功 · 报司机信息",
+          "description": "回执到了才说叫上了",
+          "start_at_ms": 9200,
+          "end_at_ms": 9600
+        },
+        {
+          "kind": "state",
+          "label": "用户开口 · 让出话权",
+          "description": "≤400 ms 停播，丢弃未播完的车牌",
+          "start_at_ms": 11600,
+          "end_at_ms": 12000
+        },
+        {
+          "kind": "state",
+          "label": "在途修改 · 先取消再等",
+          "description": "已派单不能当没发生；取消回执到了才说取消了",
+          "start_at_ms": 15200,
+          "end_at_ms": 15600
+        },
+        {
+          "kind": "state",
+          "label": "用户自己要十分钟 · 不催",
+          "description": "这段等待归用户，助手不出声也不追问进度",
+          "start_at_ms": 18000,
+          "end_at_ms": 18400
+        },
+        {
+          "kind": "state",
+          "label": "二次下单 · 复用同一报价",
+          "description": "报价没过期，不重新问一遍去哪",
+          "start_at_ms": 29600,
+          "end_at_ms": 30000
+        },
+        {
+          "kind": "state",
+          "label": "派单成功 · 到此为止",
+          "description": "受理边界止于派单，不跟到司机到达",
+          "start_at_ms": 34000,
+          "end_at_ms": 34400
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "clips": [
+        {
+          "kind": "tool",
+          "event_id": "quote_1",
+          "description": "报价：快车 3 分钟 · 26 元"
+        },
+        {
+          "kind": "tool",
+          "event_id": "order_1",
+          "description": "下单 → 派单成功"
+        },
+        {
+          "kind": "tool",
+          "event_id": "stop_1",
+          "description": "用户开口，停播当前语音"
+        },
+        {
+          "kind": "tool",
+          "event_id": "cancel_1",
+          "description": "取消订单，无取消费"
+        },
+        {
+          "kind": "tool",
+          "event_id": "order_2",
+          "description": "复用报价重新下单 → 派单成功"
+        }
+      ]
+    }
+  ],
+  "response_links": [],
+  "interruptions": [
+    {
+      "user_id": "u006",
+      "assistant_id": "u005",
+      "detected_at_ms": 11600,
+      "stop_command_at_ms": 11600,
+      "fade_start_at_ms": 11600,
+      "stop_at_ms": 12000,
+      "user_voice_onset_at_ms": 11600,
+      "discarded_text": "京N·7T13",
+      "timing_basis": "设计值：用户开口后一个微轮次内停声，配音后按录音重排"
+    }
+  ],
+  "backchannels": [],
+  "checkpoints": [
+    {
+      "name": "打断取消",
+      "title": "派单之后用户改口",
+      "tag": "用户打断",
+      "start_at_ms": 11600,
+      "end_at_ms": 16400,
+      "note": "助手停播、丢弃未念完的车牌，先取消再等；回执到了才说「取消了」。"
+    },
+    {
+      "name": "二次下单",
+      "title": "复用同一报价重新叫",
+      "start_at_ms": 29600,
+      "end_at_ms": 34000,
+      "note": "报价没过期就不重新问去哪；受理边界止于派单。"
+    }
+  ],
+  "tool_dependencies": [
+    {
+      "event_id": "quote_1",
+      "depends_on": []
+    },
+    {
+      "event_id": "order_1",
+      "depends_on": [
+        "quote_1"
+      ]
+    },
+    {
+      "event_id": "stop_1",
+      "depends_on": []
+    },
+    {
+      "event_id": "cancel_1",
+      "depends_on": [
+        "order_1"
+      ]
+    },
+    {
+      "event_id": "order_2",
+      "depends_on": [
+        "cancel_1"
+      ]
+    }
+  ]
+}

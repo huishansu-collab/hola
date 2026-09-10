@@ -48,6 +48,19 @@ npm run case:build -- case-packages/gmail      # 构建导入文件与交付包
 npm run case:json                              # 契约体检：字段、轨道顺序、标注归属、等待承接
 ```
 
+跑一整条的话用流水线，它把创作前后的确定性步骤串起来，并守住「人没点头不配音」这条线：
+
+```sh
+npm run ppl -- new taxi-late "加班到十点，让助手叫车回家"   # 建骨架，按 skill 写脚本
+npm run ppl -- review taxi-late                            # 把脚本交给人看
+npm run ppl -- approve taxi-late --by 名字                  # 人 review 通过，才允许配音
+npm run ppl -- make taxi-late                              # 配音 → 对齐 → 重排 → 校验 → 构建
+npm run ppl -- status                                      # 每条走到哪一步
+```
+
+`make` 可重入：母带没回来就停在等 CI，回来后再跑一次接着往下走；识别匹配率低于 0.5 直接停，
+不带病往下走。状态记在 `local/ppl/<id>.json`，包括谁在什么时候 review 通过的。
+
 `case:json` 查的是 `case:validate` 管不到的那半边——契约里写了但结构上不违法的规矩：
 根字段、七轨顺序、语音/工具片段不许重复时间、表达标注只关联助手、跨轨依赖间隔、
 等待超过 2 秒有没有垫句、旧目录的 Case 有没有迁到七轨。错会让退出码非零，提醒不会。

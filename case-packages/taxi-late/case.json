@@ -1,0 +1,357 @@
+{
+  "meta_data": {
+    "sample": {
+      "sample_id": null,
+      "sample_name": null,
+      "case_id": "taxi-late",
+      "case_name": "加班叫车 / 派单后打断取消，发完文件再叫",
+      "source_type": "simulated_case",
+      "case_spec_ref": null
+    },
+    "media": {
+      "audio": {
+        "duration_ms": 36000,
+        "file": null,
+        "tracks": [
+          {
+            "track_ref": "Channel 1",
+            "role": "user"
+          },
+          {
+            "track_ref": "Channel 2",
+            "role": "assistant"
+          }
+        ]
+      }
+    }
+  },
+  "static_context": {
+    "system prompts": {},
+    "memory": {
+      "常用地址": "家 / 公司"
+    },
+    "constraints": {
+      "simulated": true,
+      "timing_status": "planned",
+      "audio_status": "none",
+      "stream_step_ms": 400,
+      "uuid_v7": "01a08a1e-c911-73b2-88ef-003f0f8b173f",
+      "task_goal": "叫车回家；派单后用户改口取消，文件发完再叫一次",
+      "completion_boundary": "第二次派单成功即结束，不跟到司机到达",
+      "audio_note": "语音待生成；时间为设计值，配音后按录音重排。中段等待为用户发文件，配音版压到 10 秒。"
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "taxi.quote",
+          "description": "按当前位置与常用地址报价并预估接单时间。",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "from",
+              "to"
+            ],
+            "properties": {
+              "from": {
+                "type": "string",
+                "description": "上车点"
+              },
+              "to": {
+                "type": "string",
+                "description": "目的地"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "taxi.order",
+          "description": "下单叫车，返回止于派单，不跟到司机到达。",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "quote_id"
+            ],
+            "properties": {
+              "quote_id": {
+                "type": "string",
+                "description": "报价单号"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "taxi.cancel",
+          "description": "取消已派单的订单。",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "order_id"
+            ],
+            "properties": {
+              "order_id": {
+                "type": "string",
+                "description": "订单号"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "audio.stop",
+          "description": "用户打断时停止当前助手语音。",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "playback_event_id",
+              "fade_ms"
+            ],
+            "properties": {
+              "playback_event_id": {
+                "type": "string",
+                "description": "正在播的语音"
+              },
+              "fade_ms": {
+                "type": "integer",
+                "description": "淡出毫秒"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "dynamic_context": {},
+  "utterances": [
+    {
+      "id": "u001",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "帮我叫个车回家。",
+      "start_at_ms": 0,
+      "end_at_ms": 2400
+    },
+    {
+      "id": "u002",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯……",
+      "start_at_ms": 2800,
+      "end_at_ms": 3200
+    },
+    {
+      "id": "u003",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "快车三分钟内接单，二十六块，叫吗？",
+      "start_at_ms": 3600,
+      "end_at_ms": 7200
+    },
+    {
+      "id": "u004",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "叫吧。",
+      "start_at_ms": 7200,
+      "end_at_ms": 8000
+    },
+    {
+      "id": "u005",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "好，叫上了。司机三分钟到，白色捷达，车牌——",
+      "start_at_ms": 8400,
+      "end_at_ms": 12000
+    },
+    {
+      "id": "u006",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "等下——",
+      "start_at_ms": 11600,
+      "end_at_ms": 12400
+    },
+    {
+      "id": "u007",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "先取消，我还得把文件发完，得十分钟。",
+      "start_at_ms": 12400,
+      "end_at_ms": 15600
+    },
+    {
+      "id": "u008",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "行，取消了。",
+      "start_at_ms": 16400,
+      "end_at_ms": 18000
+    },
+    {
+      "id": "u009",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "好了，现在叫吧。",
+      "start_at_ms": 28000,
+      "end_at_ms": 29600
+    },
+    {
+      "id": "u010",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "嗯……",
+      "start_at_ms": 30000,
+      "end_at_ms": 30400
+    },
+    {
+      "id": "u011",
+      "speaker": "assistant",
+      "speaker_id": "assistant",
+      "text": "重新叫上了，司机四分钟到。",
+      "start_at_ms": 30800,
+      "end_at_ms": 34000
+    },
+    {
+      "id": "u012",
+      "speaker": "user",
+      "speaker_id": "user_1",
+      "text": "行。",
+      "start_at_ms": 34000,
+      "end_at_ms": 35200
+    }
+  ],
+  "events": [
+    {
+      "event_id": "quote_1",
+      "event_type": "function_call",
+      "tool_name": "taxi.quote",
+      "time_at_ms": 2400,
+      "query": "{\"from\": \"公司\", \"to\": \"家\"}"
+    },
+    {
+      "event_id": "quote_1",
+      "event_type": "function_call",
+      "tool_name": "taxi.quote",
+      "time_at_ms": 3200,
+      "results": {
+        "quote_id": "q_8842",
+        "car_type": "快车",
+        "eta_pickup_min": 3,
+        "price_cny": 26,
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "order_1",
+      "event_type": "function_call",
+      "tool_name": "taxi.order",
+      "time_at_ms": 8000,
+      "query": "{\"quote_id\": \"q_8842\"}"
+    },
+    {
+      "event_id": "order_1",
+      "event_type": "function_call",
+      "tool_name": "taxi.order",
+      "time_at_ms": 9200,
+      "results": {
+        "order_id": "o_5517",
+        "status": "dispatched",
+        "driver": "白色捷达",
+        "plate": "京N·7T13",
+        "eta_pickup_min": 3,
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "stop_1",
+      "event_type": "function_call",
+      "tool_name": "audio.stop",
+      "time_at_ms": 11600,
+      "query": "{\"playback_event_id\": \"taxi_u005\", \"fade_ms\": 120}"
+    },
+    {
+      "event_id": "stop_1",
+      "event_type": "function_call",
+      "tool_name": "audio.stop",
+      "time_at_ms": 12000,
+      "results": {
+        "status": "stopped",
+        "playback_event_id": "taxi_u005",
+        "stopped_at_ms": 12000,
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "cancel_1",
+      "event_type": "function_call",
+      "tool_name": "taxi.cancel",
+      "time_at_ms": 15600,
+      "query": "{\"order_id\": \"o_5517\"}"
+    },
+    {
+      "event_id": "cancel_1",
+      "event_type": "function_call",
+      "tool_name": "taxi.cancel",
+      "time_at_ms": 16400,
+      "results": {
+        "order_id": "o_5517",
+        "status": "cancelled",
+        "fee_cny": 0,
+        "simulated": true
+      }
+    },
+    {
+      "event_id": "order_2",
+      "event_type": "function_call",
+      "tool_name": "taxi.order",
+      "time_at_ms": 29600,
+      "query": "{\"quote_id\": \"q_8842\"}"
+    },
+    {
+      "event_id": "order_2",
+      "event_type": "function_call",
+      "tool_name": "taxi.order",
+      "time_at_ms": 30800,
+      "results": {
+        "order_id": "o_5603",
+        "status": "dispatched",
+        "driver": "灰色朗逸",
+        "plate": "京N·2K06",
+        "eta_pickup_min": 4,
+        "simulated": true
+      }
+    }
+  ],
+  "fdx_annotation": [
+    {
+      "fdx_type": "垫句",
+      "role": "assistant",
+      "start_at_ms": 2800,
+      "end_at_ms": 3200
+    },
+    {
+      "fdx_type": "垫句",
+      "role": "assistant",
+      "start_at_ms": 30000,
+      "end_at_ms": 30400
+    }
+  ],
+  "emotion_annotation": [],
+  "paralinguistic_annotation": [],
+  "custom_annotation": [
+    {
+      "label": "在途修改",
+      "role": "user",
+      "start_at_ms": 11600,
+      "end_at_ms": 15600
+    }
+  ]
+}
